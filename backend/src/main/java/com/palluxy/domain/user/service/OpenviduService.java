@@ -24,7 +24,7 @@ public class OpenviduService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public String createSession(Map<String, Object> params) {
+    public Session createSession(Map<String, Object> params) {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = null;
 
@@ -32,9 +32,10 @@ public class OpenviduService {
             session = openvidu.createSession(properties);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
-        return session.getSessionId();
+        return session;
     }
 
     public Session getSession(String sessionId) {
@@ -42,12 +43,7 @@ public class OpenviduService {
         return session;
     }
 
-    public String getToken(String sessionId, Map<String, Object> params) {
-        Session session = this.getSession(sessionId);
-        if (session == null) {
-            return null;
-        }
-
+    public Connection createConnection(Session session, Map<String, Object> params) {
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = null;
 
@@ -55,8 +51,37 @@ public class OpenviduService {
             connection = session.createConnection(properties);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
-        return connection.getToken();
+        return connection;
+    }
+
+    public boolean closeSession(Session session) {
+        try {
+            session.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean disconnection(Session session, String connectionId) {
+        Connection connection = session.getConnection(connectionId);
+
+        if (connection == null) {
+            return false;
+        }
+
+        try {
+            session.forceDisconnect(connection);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }
