@@ -7,7 +7,12 @@ export default {
         'main-background': "url('@assets/images/homePage/mainBackground.svg')",
       },
       colors: {
-        overlay: '#1C1515',
+        'pal-overlay': '#1C1515',
+        'pal-purple': '#4B4376',
+        'pal-lightwhite': '#F9F9F9',
+        'pal-error': '#CA0238',
+        'pal-blue': '#215597',
+        'pal-disable': '#919191',
       },
     },
   },
