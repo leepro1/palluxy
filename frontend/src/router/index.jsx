@@ -1,4 +1,5 @@
 import HomePage from '@pages/HomePage';
+import MemorySpacePage from '@pages/MemorySpacePage';
 import MainLayout from '@layout/MainLayout';
 
 const routerInfo = [
@@ -7,7 +8,7 @@ const routerInfo = [
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      //   { path: '/signup', element: <SignupPage /> },
+      { path: '/memoryspace', element: <MemorySpacePage /> },
       //   { path: '/signin', element: <SigninPage /> },
       //   { path: '/community', element: <CommunityPage /> },
     ],
