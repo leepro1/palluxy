@@ -1,9 +1,7 @@
 package com.palluxy.domain.memoryRoom.room.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.palluxy.domain.user.entity.User;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,4 +15,8 @@ public class Room {
     private Long id;
     private String name;
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
 }
