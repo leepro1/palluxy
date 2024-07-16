@@ -1,11 +1,10 @@
 package com.palluxy.domain.user.controller;
 
+import com.palluxy.domain.user.dto.GroupDto;
 import com.palluxy.domain.user.entity.Group;
 import com.palluxy.domain.user.service.GroupService;
+import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,46 +17,47 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("")
-    public ResponseEntity<?> getGroups() {
-        List<Group> findGroups = groupService.findAllGroups();
-
-        if (findGroups == null || findGroups.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public CommonResponse getGroups() {
+        List<GroupDto> findGroups = groupService.findAllGroups();
+        if (findGroups == null) {
+            return CommonResponse.ok("현재 그룹이 존재하지 않음");
         }
 
-        return new ResponseEntity<>(findGroups, HttpStatus.OK);
+        return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", findGroups);
     }
 
     @GetMapping("/{groupId}")
-    public ResponseEntity<?> getGroupDetail(@PathVariable("groupId") Long groupId) {
-        Group findGroup = groupService.findById(groupId);
-
+    public CommonResponse getGroupDetail(@PathVariable("groupId") Long groupId) {
+        GroupDto findGroup = groupService.findById(groupId);
         if (findGroup == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return CommonResponse.badRequest("해당 그룹이 존재하지 않음");
         }
 
-        return new ResponseEntity<>(findGroup, HttpStatus.OK);
+        return CommonResponse.ok("해당 그룹이 정상적으로 조회됨", findGroup);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createGroup(@RequestBody Group group) {
+    public CommonResponse createGroup(@RequestBody GroupDto group) {
         Group savedGroup = groupService.createGroup(group);
+        if (savedGroup == null) {
+            return CommonResponse.badRequest("그룹이 생성되지 않았음");
+        }
 
-        return null;
+        return CommonResponse.ok("정상적으로 그룹이 생성되었음", savedGroup.getId());
     }
 
     @PatchMapping("/{groupId}")
-    public ResponseEntity<?> updateGroup(@PathVariable("groupId") Long groupId) {
+    public CommonResponse updateGroup(@PathVariable("groupId") Long groupId) {
         return null;
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<?> createJoin() {
+    @PostMapping("/join/{groupId}")
+    public CommonResponse createJoin(@PathVariable("groupId") Long groupId) {
         return null;
     }
 
-    @DeleteMapping("/join")
-    public ResponseEntity<?> cancelJoin() {
+    @DeleteMapping("/join/{groupId}")
+    public CommonResponse cancelJoin(@PathVariable("groupId") Long groupId) {
         return null;
     }
 }

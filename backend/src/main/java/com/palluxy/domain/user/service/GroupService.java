@@ -1,11 +1,12 @@
 package com.palluxy.domain.user.service;
 
+import com.palluxy.domain.user.dto.GroupDto;
 import com.palluxy.domain.user.entity.Group;
 import com.palluxy.domain.user.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,15 +15,32 @@ public class GroupService {
 
     private final GroupRepository groupRepository;
 
-    public List<Group> findAllGroups() {
-        return groupRepository.findAll();
+    public List<GroupDto> findAllGroups() {
+        List<Group> findGroups =  groupRepository.findAll();
+        if (findGroups == null || findGroups.isEmpty()) {
+            return null;
+        }
+
+        List<GroupDto> findGroupsDto = new ArrayList<>();
+        for(Group group : findGroups) {
+            findGroupsDto.add(new GroupDto(group));
+        }
+
+        return findGroupsDto;
     }
 
-    public Group findById(Long groupId) {
-        return groupRepository.getReferenceById(groupId);
+    public GroupDto findById(Long groupId) {
+        Group findGroup = groupRepository.getReferenceById(groupId);
+        if (findGroup == null) {
+            return null;
+        }
+
+        GroupDto groupDto = new GroupDto(findGroup);
+        return groupDto;
     }
 
-    public Group createGroup(Group group) {
+    public Group createGroup(GroupDto groupDto) {
+        Group group = groupDto.convertToEntity();
         return groupRepository.saveAndFlush(group);
     }
 }
