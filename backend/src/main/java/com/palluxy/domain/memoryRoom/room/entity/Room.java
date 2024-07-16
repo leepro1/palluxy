@@ -1,4 +1,4 @@
-package com.palluxy.domain.room.entity;
+package com.palluxy.domain.memoryRoom.room.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

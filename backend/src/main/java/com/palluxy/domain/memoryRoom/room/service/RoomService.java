@@ -1,6 +1,6 @@
-package com.palluxy.domain.room.service;
+package com.palluxy.domain.memoryRoom.room.service;
 
-import com.palluxy.domain.room.dto.RoomDto;
+import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import java.util.List;
 
 public interface RoomService {

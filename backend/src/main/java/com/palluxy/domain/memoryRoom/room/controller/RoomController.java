@@ -1,7 +1,7 @@
-package com.palluxy.domain.room.controller;
+package com.palluxy.domain.memoryRoom.room.controller;
 
-import com.palluxy.domain.room.dto.RoomDto;
-import com.palluxy.domain.room.service.RoomService;
+import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
+import com.palluxy.domain.memoryRoom.room.service.RoomService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

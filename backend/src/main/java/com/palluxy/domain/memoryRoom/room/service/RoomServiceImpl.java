@@ -1,8 +1,8 @@
-package com.palluxy.domain.room.service;
+package com.palluxy.domain.memoryRoom.room.service;
 
-import com.palluxy.domain.room.dto.RoomDto;
-import com.palluxy.domain.room.entity.Room;
-import com.palluxy.domain.room.repository.RoomRepository;
+import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
+import com.palluxy.domain.memoryRoom.room.entity.Room;
+import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
-package com.palluxy.domain.room.dto;
+package com.palluxy.domain.memoryRoom.room.dto;
 
-import com.palluxy.domain.room.entity.Room;
+import com.palluxy.domain.memoryRoom.room.entity.Room;
 import lombok.Data;
 
 @Data
