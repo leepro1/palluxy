@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
+    "@react-three/drei": "^9.108.3",
+    "@react-three/fiber": "^8.16.8",
     "@tanstack/react-query": "^5.51.1",
     "@tanstack/react-query-devtools": "^5.51.1",
     "axios": "^1.7.2",
@@ -18,6 +20,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.24.1",
+    "three": "^0.166.1",
     "zustand": "^4.5.4"
   },
   "devDependencies": {
