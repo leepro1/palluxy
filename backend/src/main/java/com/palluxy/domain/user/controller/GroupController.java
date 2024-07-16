@@ -1,6 +1,7 @@
 package com.palluxy.domain.user.controller;
 
 import com.palluxy.domain.user.dto.GroupDto;
+import com.palluxy.domain.user.dto.UserDto;
 import com.palluxy.domain.user.entity.Group;
 import com.palluxy.domain.user.service.GroupService;
 import com.palluxy.global.common.CommonResponse;
@@ -37,7 +38,7 @@ public class GroupController {
     }
 
     @PostMapping("")
-    public CommonResponse createGroup(@RequestBody GroupDto group) {
+    public CommonResponse createGroup(@RequestBody GroupDto group, @RequestBody UserDto user) {
         Group savedGroup = groupService.createGroup(group);
         if (savedGroup == null) {
             return CommonResponse.badRequest("그룹이 생성되지 않았음");
@@ -52,12 +53,12 @@ public class GroupController {
     }
 
     @PostMapping("/join/{groupId}")
-    public CommonResponse createJoin(@PathVariable("groupId") Long groupId) {
+    public CommonResponse createJoin(@PathVariable("groupId") Long groupId, @RequestBody UserDto user) {
         return null;
     }
 
     @DeleteMapping("/join/{groupId}")
-    public CommonResponse cancelJoin(@PathVariable("groupId") Long groupId) {
+    public CommonResponse cancelJoin(@PathVariable("groupId") Long groupId, @RequestBody UserDto user) {
         return null;
     }
 }
