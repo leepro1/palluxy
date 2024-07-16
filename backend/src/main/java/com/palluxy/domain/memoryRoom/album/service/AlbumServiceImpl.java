@@ -4,9 +4,9 @@ import com.palluxy.domain.memoryRoom.album.dto.AlbumDto;
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
 import com.palluxy.domain.memoryRoom.album.entity.Album;
 import com.palluxy.domain.memoryRoom.album.entity.Image;
-import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.album.repository.AlbumRepository;
 import com.palluxy.domain.memoryRoom.album.repository.ImageRepository;
+import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,8 +38,8 @@ public class AlbumServiceImpl implements AlbumService {
   }
 
   @Override
-  public AlbumDto getAlbumById(Long id) {
-    Album album = albumRepository.findById(id)
+  public AlbumDto getAlbumById(Long albumId) {
+    Album album = albumRepository.findById(albumId)
         .orElseThrow(() -> new IllegalArgumentException("Album not found"));
     return new AlbumDto(album);
   }
@@ -51,8 +51,8 @@ public class AlbumServiceImpl implements AlbumService {
   }
 
   @Override
-  public AlbumDto updateAlbum(Long id, AlbumDto albumDto) {
-    Album album = albumRepository.findById(id)
+  public AlbumDto updateAlbum(Long albumId, AlbumDto albumDto) {
+    Album album = albumRepository.findById(albumId)
         .orElseThrow(() -> new IllegalArgumentException("Album not found"));
     album.setTitle(albumDto.getTitle());
     album = albumRepository.save(album);
@@ -60,8 +60,8 @@ public class AlbumServiceImpl implements AlbumService {
   }
 
   @Override
-  public void deleteAlbum(Long id) {
-    albumRepository.deleteById(id);
+  public void deleteAlbum(Long albumId) {
+    albumRepository.deleteById(albumId);
   }
 
   @Override

@@ -6,14 +6,14 @@ import lombok.Data;
 @Data
 public class RoomDto {
 
-    private Long id;
+    private Long roomId;
     private String name;
     private String description;
 
     public RoomDto() {}
 
     public RoomDto(Room room) {
-        this.id = room.getId();
+        this.roomId = room.getRoomId();
         this.name = room.getName();
         this.description = room.getDescription();
     }

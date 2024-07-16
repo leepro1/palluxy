@@ -20,9 +20,9 @@ public class AlbumController {
         return albumService.createAlbum(roomId, albumDto);
     }
 
-    @GetMapping("/{id}")
-    public AlbumDto getAlbum(@PathVariable Long id) {
-        return albumService.getAlbumById(id);
+    @GetMapping("/{albumId}")
+    public AlbumDto getAlbum(@PathVariable Long albumId) {
+        return albumService.getAlbumById(albumId);
     }
 
     @GetMapping("/room/{roomId}")
@@ -30,14 +30,14 @@ public class AlbumController {
         return albumService.getAllAlbumsByRoomId(roomId);
     }
 
-    @PutMapping("/{id}")
-    public AlbumDto updateAlbum(@PathVariable Long id, @RequestBody AlbumDto albumDto) {
-        return albumService.updateAlbum(id, albumDto);
+    @PutMapping("/{albumId}")
+    public AlbumDto updateAlbum(@PathVariable Long albumId, @RequestBody AlbumDto albumDto) {
+        return albumService.updateAlbum(albumId, albumDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteAlbum(@PathVariable Long id) {
-        albumService.deleteAlbum(id);
+    @DeleteMapping("/{albumId}")
+    public void deleteAlbum(@PathVariable Long albumId) {
+        albumService.deleteAlbum(albumId);
     }
 
     @PostMapping("/{albumId}/images")

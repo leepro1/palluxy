@@ -6,15 +6,15 @@ import lombok.Data;
 @Data
 public class LikeDto {
 
-    private Long id;
+    private Long likeId;
     private Long roomId;
     private Long userId;
 
     public LikeDto() {}
 
     public LikeDto(Like like) {
-        this.id = like.getId();
-        this.roomId = like.getRoom().getId();
+        this.likeId = like.getLikeId();
+        this.roomId = like.getRoom().getRoomId();
         this.userId = like.getUser().getId();
     }
 }

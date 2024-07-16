@@ -18,9 +18,9 @@ public class RoomController {
         return roomService.createRoom(roomDto);
     }
 
-    @GetMapping("/{id}")
-    public RoomDto getRoom(@PathVariable Long id) {
-        return roomService.getRoomById(id);
+    @GetMapping("/{roomId}")
+    public RoomDto getRoom(@PathVariable Long roomId) {
+        return roomService.getRoomById(roomId);
     }
 
     @GetMapping
@@ -28,13 +28,13 @@ public class RoomController {
         return roomService.getAllRooms();
     }
 
-    @PutMapping("/{id}")
-    public RoomDto updateRoom(@PathVariable Long id, @RequestBody RoomDto roomDto) {
-        return roomService.updateRoom(id, roomDto);
+    @PutMapping("/{roomId}")
+    public RoomDto updateRoom(@PathVariable Long roomId, @RequestBody RoomDto roomDto) {
+        return roomService.updateRoom(roomId, roomDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteRoom(@PathVariable Long id) {
-        roomService.deleteRoom(id);
+    @DeleteMapping("/{roomId}")
+    public void deleteRoom(@PathVariable Long roomId) {
+        roomService.deleteRoom(roomId);
     }
 }

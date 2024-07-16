@@ -42,8 +42,8 @@ public class GuestbookServiceImpl implements GuestbookService {
   }
 
   @Override
-  public GuestbookDto getGuestbookEntryById(Long id) {
-    Guestbook guestbook = guestbookRepository.findById(id)
+  public GuestbookDto getGuestbookEntryById(Long guestbookId) {
+    Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook not found"));
     return new GuestbookDto(guestbook);
   }
@@ -55,8 +55,8 @@ public class GuestbookServiceImpl implements GuestbookService {
   }
 
   @Override
-  public GuestbookDto updateGuestbookEntry(Long id, Long userId, GuestbookDto guestbookDto) {
-    Guestbook guestbook = guestbookRepository.findById(id)
+  public GuestbookDto updateGuestbookEntry(Long guestbookId, Long userId, GuestbookDto guestbookDto) {
+    Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook not found"));
     if (!guestbook.getUser().getId().equals(userId)) {
       throw new IllegalStateException("You can only update your own guestbook entries");
@@ -67,12 +67,12 @@ public class GuestbookServiceImpl implements GuestbookService {
   }
 
   @Override
-  public void deleteGuestbookEntry(Long id, Long userId) {
-    Guestbook guestbook = guestbookRepository.findById(id)
+  public void deleteGuestbookEntry(Long guestbookId, Long userId) {
+    Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook not found"));
     if (!guestbook.getUser().getId().equals(userId) && !guestbook.getRoom().getOwner().getId().equals(userId)) {
       throw new IllegalStateException("You can only delete your own guestbook entries or if you are the room owner");
     }
-    guestbookRepository.deleteById(id);
+    guestbookRepository.deleteById(guestbookId);
   }
 }

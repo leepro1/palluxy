@@ -19,9 +19,9 @@ public class GuestbookController {
         return guestbookService.createGuestbookEntry(roomId, userId, guestbookDto);
     }
 
-    @GetMapping("/{id}")
-    public GuestbookDto getGuestbookEntry(@PathVariable Long id) {
-        return guestbookService.getGuestbookEntryById(id);
+    @GetMapping("/{guestbookId}")
+    public GuestbookDto getGuestbookEntry(@PathVariable Long guestbookId) {
+        return guestbookService.getGuestbookEntryById(guestbookId);
     }
 
     @GetMapping("/room/{roomId}")
@@ -29,13 +29,13 @@ public class GuestbookController {
         return guestbookService.getAllGuestbookEntriesByRoomId(roomId);
     }
 
-    @PutMapping("/{id}/user/{userId}")
-    public GuestbookDto updateGuestbookEntry(@PathVariable Long id, @PathVariable Long userId, @RequestBody GuestbookDto guestbookDto) {
-        return guestbookService.updateGuestbookEntry(id, userId, guestbookDto);
+    @PutMapping("/{guestbookId}/user/{userId}")
+    public GuestbookDto updateGuestbookEntry(@PathVariable Long guestbookId, @PathVariable Long userId, @RequestBody GuestbookDto guestbookDto) {
+        return guestbookService.updateGuestbookEntry(guestbookId, userId, guestbookDto);
     }
 
-    @DeleteMapping("/{id}/user/{userId}")
-    public void deleteGuestbookEntry(@PathVariable Long id, @PathVariable Long userId) {
-        guestbookService.deleteGuestbookEntry(id, userId);
+    @DeleteMapping("/{guestbookId}/user/{userId}")
+    public void deleteGuestbookEntry(@PathVariable Long guestbookId, @PathVariable Long userId) {
+        guestbookService.deleteGuestbookEntry(guestbookId, userId);
     }
 }

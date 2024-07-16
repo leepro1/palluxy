@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class GuestbookDto {
 
-    private Long id;
+    private Long guestbookId;
     private Long roomId;
     private Long userId;
     private String content;
@@ -14,8 +14,8 @@ public class GuestbookDto {
     public GuestbookDto() {}
 
     public GuestbookDto(Guestbook guestbook) {
-        this.id = guestbook.getId();
-        this.roomId = guestbook.getRoom().getId();
+        this.guestbookId = guestbook.getGuestbookId();
+        this.roomId = guestbook.getRoom().getRoomId();
         this.userId = guestbook.getUser().getId();
         this.content = guestbook.getContent();
     }

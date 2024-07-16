@@ -13,7 +13,7 @@ public class Album {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long albumId;
 
     private String title;
 

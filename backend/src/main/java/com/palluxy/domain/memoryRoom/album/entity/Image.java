@@ -11,7 +11,7 @@ public class Image {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long imageId;
 
   private String url;
 

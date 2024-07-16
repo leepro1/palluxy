@@ -6,13 +6,15 @@ import lombok.Data;
 @Data
 public class ImageDto {
 
-  private Long id;
+  private Long imageId;
   private String url;
+  private Long albumId;
 
   public ImageDto() {}
 
   public ImageDto(Image image) {
-    this.id = image.getId();
+    this.imageId = image.getImageId();
     this.url = image.getUrl();
+    this.albumId = image.getAlbum().getAlbumId();
   }
 }
