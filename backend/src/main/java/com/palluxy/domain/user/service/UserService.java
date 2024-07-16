@@ -7,4 +7,5 @@ public interface UserService {
 
     void signup(UserSignupRequest request) throws DuplicateUserException;
 
+    void duplicateNickname(String nickname) throws DuplicateUserException;
 }

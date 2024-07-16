@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> find = userRepository.findByEmail(request.email());
 
         if (find.isPresent()) {
-            throw new DuplicateUserException();
+            throw new DuplicateUserException("이미 가입된 이메일입니다.");
         }
 
         User user = new User(request.email(), request.nickname(), request.password(), request.acceptedTerms());
@@ -28,5 +28,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void duplicateNickname(String nickname) {
+        Optional<User> find = userRepository.findByNickname(nickname);
 
+        if (find.isPresent()) {
+            throw new DuplicateUserException("이미 존재하는 닉네임입니다.");
+        }
+    }
 }

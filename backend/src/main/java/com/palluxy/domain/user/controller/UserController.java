@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -20,11 +20,16 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<?> join(@Valid @RequestBody UserSignupRequest request, BindingResult bindingResult) throws Exception {
-        System.out.println(request.email());
         if (bindingResult.hasErrors()) {
             throw new SignupFormatException();
         }
         userService.signup(request);
         return CommonResponse.created("회원가입 성공");
+    }
+
+    @GetMapping("/{nickname}")
+    public CommonResponse<?> deleteMember(@PathVariable("nickname") String nickname) {
+        userService.duplicateNickname(nickname);
+        return CommonResponse.ok("닉네임 사용 가능");
     }
 }
