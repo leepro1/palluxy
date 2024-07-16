@@ -1,7 +1,5 @@
 package com.palluxy.domain.user.controller;
 
-import com.palluxy.domain.user.entity.Group;
-import com.palluxy.domain.user.service.GroupService;
 import com.palluxy.domain.user.service.OpenviduService;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.Session;
@@ -15,43 +13,27 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/session")
 public class SessionController {
 
     private OpenviduService openviduService;
-    private GroupService groupService;
 
-    public SessionController(OpenviduService openviduService, GroupService groupService) {
+    public SessionController(OpenviduService openviduService) {
         this.openviduService = openviduService;
-        this.groupService = groupService;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/api/sessions")
     public ResponseEntity<?> createSession(@RequestBody Map<String, Object> params) {
-//        Group findGroup = groupService.findGroup(group.getId());
-//
-//        if (findGroup == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        if (!findGroup.getApproveKey().equals(group.getApproveKey())) {
-//            return new ResponseEntity<>(HttpStatus.CONFLICT);
-//        }
-
         Session session = openviduService.createSession(params);
 
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Map<String, String> result = new HashMap<>();
-        result.put("sessionId", session.getSessionId());
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
-    @PostMapping("/connect")
-    public ResponseEntity<?> createConnection(@RequestBody String sessionId, @RequestBody Map<String, Object> params) {
+    @PostMapping("/api/sessions/{sessionId}/connections")
+    public ResponseEntity<?> createConnection(@PathVariable("sessionId") String sessionId, @RequestBody(required = false) Map<String, Object> params) {
         Session session = openviduService.getSession(sessionId);
 
         if (session == null) {
@@ -64,14 +46,11 @@ public class SessionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("connection", connection);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
 
-    @PostMapping("/close")
-    public ResponseEntity<?> closeSession(@RequestBody String sessionId) {
+    @PostMapping("/api/sessions/{sessionId}")
+    public ResponseEntity<?> closeSession(@PathVariable("sessionId") String sessionId) {
 
         Session session = openviduService.getSession(sessionId);
         if (session == null){
@@ -86,8 +65,8 @@ public class SessionController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/disconnect")
-    public ResponseEntity<?> disconnect(@RequestBody String sessionId, @RequestBody String connectionId) {
+    @PostMapping("/api/sessions/{sessionId}/connection/{connectionId}")
+    public ResponseEntity<?> disconnect(@PathVariable("sessionId") String sessionId, @PathVariable("connectionId") String connectionId) {
         Session session = openviduService.getSession(sessionId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
