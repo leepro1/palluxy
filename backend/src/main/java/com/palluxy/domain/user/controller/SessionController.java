@@ -3,6 +3,7 @@ package com.palluxy.domain.user.controller;
 import com.palluxy.domain.user.service.OpenviduService;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.Session;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +14,10 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
+@RequiredArgsConstructor
 public class SessionController {
 
-    private OpenviduService openviduService;
-
-    public SessionController(OpenviduService openviduService) {
-        this.openviduService = openviduService;
-    }
+    private final OpenviduService openviduService;
 
     @PostMapping("/api/sessions")
     public ResponseEntity<?> createSession(@RequestBody Map<String, Object> params) {

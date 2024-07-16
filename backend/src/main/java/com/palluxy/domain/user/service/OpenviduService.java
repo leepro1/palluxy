@@ -21,8 +21,6 @@ public class OpenviduService {
 
     @PostConstruct
     public void init() {
-    System.out.println(OPENVIDU_URL);
-    System.out.println(OPENVIDU_SECRET);
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
