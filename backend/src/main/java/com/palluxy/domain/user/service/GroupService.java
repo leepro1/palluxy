@@ -35,12 +35,20 @@ public class GroupService {
             return null;
         }
 
-        GroupDto groupDto = new GroupDto(findGroup);
-        return groupDto;
+        return new GroupDto(findGroup);
     }
 
     public Group createGroup(GroupDto groupDto) {
         Group group = groupDto.convertToEntity();
         return groupRepository.saveAndFlush(group);
+    }
+
+    public boolean validateApproveKey(Long groupId, String approveKey) {
+        Group findGroup = groupRepository.getReferenceById(groupId);
+        if (findGroup == null || !findGroup.getApproveKey().equals(approveKey)) {
+            return false;
+        }
+
+        return true;
     }
 }

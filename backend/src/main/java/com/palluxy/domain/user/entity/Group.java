@@ -30,10 +30,10 @@ public class Group {
     private boolean isApproved;
     private String approveKey;
 
-//    @ManyToOne
-//    @JoinColumn(name = "leader_id")
-//    private User leader;
+    @ManyToOne
+    @JoinColumn(name = "leader_id")
+    private User leader;
 
-//    @OneToMany(mappedBy = "group")
-//    private Set<GroupUser> groupUser = new HashSet<>();
+    @OneToMany(mappedBy = "group")
+    private Set<GroupUser> groupUser = new HashSet<>();
 }

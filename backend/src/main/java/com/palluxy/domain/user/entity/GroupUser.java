@@ -21,12 +21,12 @@ public class GroupUser {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-//    @ManyToOne
-//    @JoinColumn(name = "group_id")
-//    private Group group;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
