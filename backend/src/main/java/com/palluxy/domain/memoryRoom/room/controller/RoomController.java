@@ -13,9 +13,9 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    @PostMapping
-    public RoomDto createRoom(@RequestBody RoomDto roomDto) {
-        return roomService.createRoom(roomDto);
+    @PostMapping("/{userId}")
+    public RoomDto createRoom(@RequestBody RoomDto roomDto, @PathVariable long userId) {
+        return roomService.createRoom(roomDto, userId);
     }
 
     @GetMapping("/{roomId}")

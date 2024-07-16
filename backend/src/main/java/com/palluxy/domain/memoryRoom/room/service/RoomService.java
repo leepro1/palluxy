@@ -4,7 +4,7 @@ import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import java.util.List;
 
 public interface RoomService {
-    RoomDto createRoom(RoomDto roomDto);
+    RoomDto createRoom(RoomDto roomDto, long userId);
     RoomDto getRoomById(Long roomId);
     List<RoomDto> getAllRooms();
     RoomDto updateRoom(Long roomId, RoomDto roomDto);
