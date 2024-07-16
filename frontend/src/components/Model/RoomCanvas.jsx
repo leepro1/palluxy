@@ -6,7 +6,8 @@ import {
   PerspectiveCamera,
 } from '@react-three/drei';
 
-import Modeling from '@components/Model/Modeling';
+import PalModel from '@components/Model/PalModel';
+import RooomModel from '@components/Model/RoomModel';
 
 const RoomCanvas = () => {
   return (
@@ -25,7 +26,10 @@ const RoomCanvas = () => {
         />
         <ambientLight intensity={Math.PI / 2} />
         <group>
-          <Modeling />
+          <RooomModel />
+          <mesh>
+            <PalModel />
+          </mesh>
         </group>
         <Environment
           preset="city"
