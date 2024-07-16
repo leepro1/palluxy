@@ -1,21 +1,49 @@
 package com.palluxy.domain.user.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import com.palluxy.global.common.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class User {
+@Table(name = "user")
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nickname;
+
+    @Column(unique = true, nullable = false, updatable = false)
     private String email;
+
+    @Column(unique = true, nullable = false, length = 20)
+    private String nickname;
+
     private String password;
+
+    private boolean isAdmin;
+
+    private boolean isBanned;
+
+    private boolean acceptedTerms;
+
+    private LocalDateTime acceptedTermsAt;
+
+    @Builder
+    public User(String email, String nickname, String password, boolean acceptedTerms) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.acceptedTerms = acceptedTerms;
+        this.acceptedTermsAt = LocalDateTime.now();
+    }
+
+    //임시 메서드
+  public Object getUserId() {
+
+    return null;
+  }
 }
