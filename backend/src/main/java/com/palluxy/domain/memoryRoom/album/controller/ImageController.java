@@ -1,13 +1,16 @@
 package com.palluxy.domain.memoryRoom.album.controller;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
+import com.palluxy.domain.memoryRoom.album.service.FileStorageService;
 import com.palluxy.domain.memoryRoom.album.service.ImageService;
 import com.palluxy.global.common.CommonResponse;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.Valid;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,11 +20,21 @@ public class ImageController {
   @Autowired
   private ImageService imageService;
 
+  @Autowired
+  private FileStorageService fileStorageService;
+
   @PostMapping("/album/{albumId}")
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @Valid @RequestBody ImageDto imageDto) {
-    ImageDto createdImage = imageService.createImage(imageDto, albumId);
-    return CommonResponse.created("Image added successfully");
+  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file) {
+    try {
+      String filePath = fileStorageService.storeFile(file);
+      ImageDto imageDto = new ImageDto();
+      imageDto.setUrl(filePath);
+      ImageDto createdImage = imageService.createImage(imageDto, albumId);
+      return CommonResponse.created("Image added successfully");
+    } catch (IOException e) {
+      return CommonResponse.badRequest("Failed to upload image");
+    }
   }
 
   @GetMapping("/{imageId}")

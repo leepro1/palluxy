@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(name = "room_like")  // 'like' 대신 'room_like' 사용
 public class Like {
 
     @Id

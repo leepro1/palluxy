@@ -15,7 +15,7 @@ public class Image {
 
   private String url;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "album_id")
   private Album album;
 }

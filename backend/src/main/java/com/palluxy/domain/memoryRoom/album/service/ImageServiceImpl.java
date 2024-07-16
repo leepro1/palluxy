@@ -44,7 +44,7 @@ public class ImageServiceImpl implements ImageService {
 
   @Override
   public List<ImageDto> getAllImagesByAlbumId(Long albumId) {
-    List<Image> images = imageRepository.findByAlbumId(albumId);
+    List<Image> images = imageRepository.findByAlbum_AlbumId(albumId);
     return images.stream().map(ImageDto::new).collect(Collectors.toList());
   }
 

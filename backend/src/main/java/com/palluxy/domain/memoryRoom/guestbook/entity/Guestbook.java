@@ -15,7 +15,7 @@ public class Guestbook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long guestbookId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
 
