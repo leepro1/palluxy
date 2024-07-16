@@ -4,7 +4,6 @@ import com.palluxy.domain.memoryRoom.album.entity.Image;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-
 @Data
 public class ImageDto {
 
@@ -13,6 +12,8 @@ public class ImageDto {
   @NotNull
   private String url;
 
+  private double angle;
+
   private Long albumId;
 
   public ImageDto() {}
@@ -20,6 +21,7 @@ public class ImageDto {
   public ImageDto(Image image) {
     this.imageId = image.getImageId();
     this.url = image.getUrl();
+    this.angle = image.getAngle();
     this.albumId = image.getAlbum().getAlbumId();
   }
 }

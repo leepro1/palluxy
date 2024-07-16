@@ -25,11 +25,12 @@ public class ImageController {
 
   @PostMapping("/album/{albumId}")
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file) {
+  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("angle") double angle) {
     try {
       String filePath = fileStorageService.storeFile(file);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(filePath);
+      imageDto.setAngle(angle);
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
       return CommonResponse.created("Image added successfully");
     } catch (IOException e) {

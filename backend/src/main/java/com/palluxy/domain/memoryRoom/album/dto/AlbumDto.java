@@ -12,20 +12,16 @@ public class AlbumDto {
 
     private Long albumId;
 
-    @NotNull
-    private Long roomId;
+//    @NotNull
+//    private Long roomId;
 
-    private String filePath;
-    private double angle;
     private List<ImageDto> images;
 
     public AlbumDto() {}
 
     public AlbumDto(Album album) {
         this.albumId = album.getAlbumId();
-        this.roomId = album.getRoom().getRoomId();
-        this.filePath = album.getFilePath();
-        this.angle = album.getAngle();
+        //this.roomId = album.getRoom().getRoomId();
         this.images = album.getImages().stream().map(ImageDto::new).collect(Collectors.toList());
     }
 }

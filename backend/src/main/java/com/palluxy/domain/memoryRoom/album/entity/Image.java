@@ -14,6 +14,7 @@ public class Image {
   private Long imageId;
 
   private String url;
+  private double angle;
 
   @ManyToOne
   @JoinColumn(name = "album_id")

@@ -42,14 +42,14 @@ public class LikeServiceImpl implements LikeService {
 
   @Override
   public void removeLike(Long roomId, Long userId) {
-    Like like = likeRepository.findByRoomIdAndUserId(roomId, userId)
+    Like like = likeRepository.findByRoom_RoomIdAndUser_Id(roomId, userId)
         .orElseThrow(() -> new IllegalArgumentException("Like not found"));
     likeRepository.delete(like);
   }
 
   @Override
   public List<LikeDto> getLikesByUserId(Long userId) {
-    List<Like> likes = likeRepository.findByUserId(userId);
+    List<Like> likes = likeRepository.findByUser_Id(userId);
     return likes.stream().map(LikeDto::new).collect(Collectors.toList());
   }
 }

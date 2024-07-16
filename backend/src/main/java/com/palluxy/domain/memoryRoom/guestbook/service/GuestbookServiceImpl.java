@@ -50,7 +50,7 @@ public class GuestbookServiceImpl implements GuestbookService {
 
   @Override
   public List<GuestbookDto> getAllGuestbooksByRoomId(Long roomId) {
-    List<Guestbook> guestbooks = guestbookRepository.findByRoomId(roomId);
+    List<Guestbook> guestbooks = guestbookRepository.findByRoom_RoomId(roomId);
     return guestbooks.stream().map(GuestbookDto::new).collect(Collectors.toList());
   }
 

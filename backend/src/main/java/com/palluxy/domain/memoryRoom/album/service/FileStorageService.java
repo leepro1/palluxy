@@ -23,8 +23,8 @@ public class FileStorageService {
 
   public String storeFile(MultipartFile file) throws IOException {
     Path destinationFile = this.rootLocation.resolve(
-            Paths.get(file.getOriginalFilename()))
-        .normalize().toAbsolutePath();
+                    Paths.get(file.getOriginalFilename()))
+            .normalize().toAbsolutePath();
 
     if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
       throw new IOException("Cannot store file outside current directory.");

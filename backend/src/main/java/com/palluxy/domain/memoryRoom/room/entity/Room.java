@@ -25,8 +25,8 @@ public class Room {
     private int backgroundMusic;
     private int type;
 
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Album album;
+//    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Album album;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
