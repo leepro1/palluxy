@@ -2,6 +2,7 @@ import ContentsLayout from '@layout/ContentsLayout';
 
 import RoomCanvas from '@components/Model/RoomCanvas';
 import Slider from '@components/Model/Slider';
+import ImgRotationBtn from '@components/Model/ImgRotationBtn';
 
 const MemorySpacePage = () => {
   return (
@@ -51,6 +52,10 @@ const MemorySpacePage = () => {
                 type={'rotation'}
                 coordinate={'z'}
               />
+            </div>
+            <div>
+              <span>rotation Frame1</span>
+              <ImgRotationBtn />
             </div>
           </div>
         </div>
