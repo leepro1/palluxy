@@ -1,13 +1,18 @@
 package com.palluxy.domain.memoryRoom.album.dto;
 
 import com.palluxy.domain.memoryRoom.album.entity.Image;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
 
 @Data
 public class ImageDto {
 
   private Long imageId;
+
+  @NotNull
   private String url;
+
   private Long albumId;
 
   public ImageDto() {}

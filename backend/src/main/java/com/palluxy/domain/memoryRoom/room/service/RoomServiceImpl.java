@@ -21,7 +21,7 @@ public class RoomServiceImpl implements RoomService {
   private UserRepository userRepository;
 
   @Override
-  public RoomDto createRoom(RoomDto roomDto, long userId) {
+  public RoomDto createRoom(RoomDto roomDto, Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("User not found"));
     Room room = new Room();

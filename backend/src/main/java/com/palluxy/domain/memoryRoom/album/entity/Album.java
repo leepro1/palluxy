@@ -4,6 +4,7 @@ import com.palluxy.domain.memoryRoom.room.entity.Room;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 @Getter
@@ -15,11 +16,12 @@ public class Album {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long albumId;
 
-    private String title;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    private String filePath;
+    private double angle;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;

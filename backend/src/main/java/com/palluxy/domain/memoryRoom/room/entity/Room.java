@@ -1,5 +1,6 @@
 package com.palluxy.domain.memoryRoom.room.entity;
 
+import com.palluxy.domain.memoryRoom.album.entity.Album;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,4 +37,7 @@ public class Room {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Album album;
 }

@@ -26,53 +26,57 @@ public class GuestbookServiceImpl implements GuestbookService {
   private UserRepository userRepository;
 
   @Override
-  public GuestbookDto createGuestbookEntry(Long roomId, Long userId, GuestbookDto guestbookDto) {
+  public GuestbookDto createGuestbook(GuestbookDto guestbookDto, Long roomId, Long userId) {
     Room room = roomRepository.findById(roomId)
         .orElseThrow(() -> new IllegalArgumentException("Room not found"));
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
     Guestbook guestbook = new Guestbook();
+    guestbook.setContent(guestbookDto.getContent());
     guestbook.setRoom(room);
     guestbook.setUser(user);
-    guestbook.setContent(guestbookDto.getContent());
 
     guestbook = guestbookRepository.save(guestbook);
     return new GuestbookDto(guestbook);
   }
 
   @Override
-  public GuestbookDto getGuestbookEntryById(Long guestbookId) {
+  public GuestbookDto getGuestbookById(Long guestbookId) {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
-        .orElseThrow(() -> new IllegalArgumentException("Guestbook not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
     return new GuestbookDto(guestbook);
   }
 
   @Override
-  public List<GuestbookDto> getAllGuestbookEntriesByRoomId(Long roomId) {
+  public List<GuestbookDto> getAllGuestbooksByRoomId(Long roomId) {
     List<Guestbook> guestbooks = guestbookRepository.findByRoomId(roomId);
     return guestbooks.stream().map(GuestbookDto::new).collect(Collectors.toList());
   }
 
   @Override
-  public GuestbookDto updateGuestbookEntry(Long guestbookId, Long userId, GuestbookDto guestbookDto) {
+  public GuestbookDto updateGuestbook(Long guestbookId, Long userId, GuestbookDto guestbookDto) {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
-        .orElseThrow(() -> new IllegalArgumentException("Guestbook not found"));
-    if (!guestbook.getUser().getId().equals(userId)) {
-      throw new IllegalStateException("You can only update your own guestbook entries");
+        .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
+
+    if (!guestbook.getUser().getUserId().equals(userId)) {
+      throw new IllegalArgumentException("Only the creator can update the guestbook entry");
     }
+
     guestbook.setContent(guestbookDto.getContent());
     guestbook = guestbookRepository.save(guestbook);
     return new GuestbookDto(guestbook);
   }
 
   @Override
-  public void deleteGuestbookEntry(Long guestbookId, Long userId) {
+  public void deleteGuestbook(Long guestbookId, Long userId) {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
-        .orElseThrow(() -> new IllegalArgumentException("Guestbook not found"));
-    if (!guestbook.getUser().getId().equals(userId) && !guestbook.getRoom().getOwner().getId().equals(userId)) {
-      throw new IllegalStateException("You can only delete your own guestbook entries or if you are the room owner");
+        .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
+
+    if (!guestbook.getUser().getUserId().equals(userId) && !guestbook.getRoom().getUser().getUserId().equals(userId)) {
+      throw new IllegalArgumentException("Only the creator or the room owner can delete the guestbook entry");
     }
-    guestbookRepository.deleteById(guestbookId);
+
+    guestbookRepository.delete(guestbook);
   }
 }
