@@ -1,9 +1,8 @@
-package com.palluxy.domain.user.entity;
+package com.palluxy.domain.group.entity;
 
+import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

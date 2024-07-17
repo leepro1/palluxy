@@ -1,11 +1,15 @@
-package com.palluxy.domain.user.service;
+package com.palluxy.domain.group.service;
 
+import com.palluxy.domain.group.entity.Group;
+import com.palluxy.domain.group.entity.GroupHistory;
+import com.palluxy.domain.group.entity.GroupUser;
+import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.user.entity.*;
-import com.palluxy.domain.user.exception.NotFoundException;
-import com.palluxy.domain.user.exception.ValidateException;
-import com.palluxy.domain.user.repository.GroupHistoryRepository;
-import com.palluxy.domain.user.repository.GroupRepository;
-import com.palluxy.domain.user.repository.GroupUserRepository;
+import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.domain.group.exception.ValidateException;
+import com.palluxy.domain.group.repository.GroupHistoryRepository;
+import com.palluxy.domain.group.repository.GroupRepository;
+import com.palluxy.domain.group.repository.GroupUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

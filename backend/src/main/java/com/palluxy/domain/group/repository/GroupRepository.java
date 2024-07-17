@@ -1,7 +1,7 @@
-package com.palluxy.domain.user.repository;
+package com.palluxy.domain.group.repository;
 
-import com.palluxy.domain.user.entity.Group;
-import com.palluxy.domain.user.entity.Status;
+import com.palluxy.domain.group.entity.Group;
+import com.palluxy.domain.group.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

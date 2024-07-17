@@ -1,7 +1,6 @@
-package com.palluxy.domain.user.dto;
+package com.palluxy.domain.group.dto;
 
-import com.palluxy.domain.user.entity.Group;
-import lombok.Builder;
+import com.palluxy.domain.group.entity.Group;
 import lombok.Data;
 
 import java.time.LocalDateTime;

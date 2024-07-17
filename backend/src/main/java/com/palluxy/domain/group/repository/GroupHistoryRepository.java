@@ -1,6 +1,6 @@
-package com.palluxy.domain.user.repository;
+package com.palluxy.domain.group.repository;
 
-import com.palluxy.domain.user.entity.GroupHistory;
+import com.palluxy.domain.group.entity.GroupHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
