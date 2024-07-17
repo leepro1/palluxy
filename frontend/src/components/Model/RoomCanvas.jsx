@@ -14,8 +14,30 @@ const RoomCanvas = () => {
 
   const handleModelClick = (event) => {
     if (event.object.name.includes('frame')) {
-      setTarget(event.object.position);
-      setPosition({ x: -29, y: 24, z: -20 });
+      if (event.object.name === 'frame001') {
+        setTarget(event.object.position);
+        setPosition({ x: 20, y: 24, z: 28 });
+      }
+      if (event.object.name === 'frame002') {
+        setTarget(event.object.position);
+        setPosition({ x: 20, y: 24, z: 4 });
+      }
+      if (event.object.name === 'frame003') {
+        setTarget(event.object.position);
+        setPosition({ x: 20, y: 24, z: -20 });
+      }
+      if (event.object.name === 'frame004') {
+        setTarget(event.object.position);
+        setPosition({ x: 20, y: 24, z: -20 });
+      }
+      if (event.object.name === 'frame005') {
+        setTarget(event.object.position);
+        setPosition({ x: -5, y: 24, z: -20 });
+      }
+      if (event.object.name === 'frame006') {
+        setTarget(event.object.position);
+        setPosition({ x: -30, y: 24, z: -20 });
+      }
     }
   };
 
@@ -27,7 +49,7 @@ const RoomCanvas = () => {
   // frame 6 x: -30, y: 24, z: -20
 
   return (
-    <div style={{ height: 500, width: 700 }}>
+    <div className="h-[617px] w-[1000px]">
       <Canvas flat>
         <CameraOption
           position={position}

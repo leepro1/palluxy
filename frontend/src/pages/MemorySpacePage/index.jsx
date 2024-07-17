@@ -1,16 +1,35 @@
 import ContentsLayout from '@layout/ContentsLayout';
 
 import RoomCanvas from '@components/Model/RoomCanvas';
-import Slider from '@components/Model/Slider';
 import ImgRotationBtn from '@components/Model/ImgRotationBtn';
+import Button from '@components/Button';
+import MemoerySideBar from '@pages/MemorySpacePage/MemorySideBar';
 
 const MemorySpacePage = () => {
   return (
-    <div className="h-full w-full bg-white">
+    <div className="h-full w-full">
       <ContentsLayout>
         <div className="flex">
-          <RoomCanvas />
-          <div className="flex flex-col">
+          <div className="flex grow flex-col">
+            <div className="flex w-[1000px] justify-end gap-x-10 py-7">
+              <Button
+                className="bg-pal-purple text-white"
+                size={'md'}
+                text={'모델 생성'}
+              />
+              <Button
+                className="bg-pal-purple text-white"
+                size={'md'}
+                text={'추억공간 생성'}
+              />
+            </div>
+            <RoomCanvas />
+          </div>
+          <div className="w-[310px] rounded-xl bg-pal-purple">
+            <MemoerySideBar />
+          </div>
+
+          {/* <div className="flex flex-col">
             <div>
               <span>position x</span>
               <Slider
@@ -57,7 +76,7 @@ const MemorySpacePage = () => {
               <span>rotation Frame1</span>
               <ImgRotationBtn />
             </div>
-          </div>
+          </div> */}
         </div>
       </ContentsLayout>
     </div>
