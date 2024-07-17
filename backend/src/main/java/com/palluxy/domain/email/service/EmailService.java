@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -23,6 +24,10 @@ public class EmailService {
     private String generateVerificationCode() {
         Random random = new Random();
         return String.format("%06d", random.nextInt(1000000));
+    }
+
+    private String generateResetPasswordCode() {
+        return UUID.randomUUID().toString();
     }
 
     private String generateHtmlMessage(String subject, String code) {
@@ -72,12 +77,20 @@ public class EmailService {
 
     public void sendVerificationCode(String type, String to) {
         String subject = null;
-        switch (type) {
-            case "signup":
-                subject = "PAL:LUXY 인증코드입니다.";
+        String code = null;
+
+        if (type.equals("signup")) {
+            subject = "PAL:LUXY 인증코드입니다.";
+            code = generateVerificationCode();
+            redisTemplate.opsForValue().set(to, code, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
+        } else if (type.equals("password")) {
+            subject = "PAL:LUXY 비밀번호 변경 링크입니다.";
+            String token = generateResetPasswordCode();
+            code = "http://localhost:8080/api/users/reset-password?code=" + token;
+
+            redisTemplate.opsForValue().set(token, to, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
         }
 
-        String code = generateVerificationCode();
         String htmlMsg = generateHtmlMessage(subject, code);
         try {
             sendHtmlEmail(to, subject, htmlMsg);
@@ -85,7 +98,6 @@ public class EmailService {
             throw new EmailBadMessagingException();
         }
 
-        redisTemplate.opsForValue().set(to, code, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlMsg) throws MessagingException {
