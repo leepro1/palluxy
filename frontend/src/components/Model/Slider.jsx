@@ -1,5 +1,5 @@
-import useModelPositionStore from '@store/memorySpace';
 import PropTypes from 'prop-types';
+import { useModelPositionStore } from '@store/memorySpace';
 
 const Slider = ({ type, coordinate }) => {
   const position = useModelPositionStore((state) => state.position);
