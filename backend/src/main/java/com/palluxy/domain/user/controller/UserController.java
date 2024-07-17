@@ -1,41 +1,35 @@
 package com.palluxy.domain.user.controller;
 
-import com.palluxy.domain.user.dto.UserDto;
+import com.palluxy.domain.user.dto.request.UserSignupRequest;
+import com.palluxy.domain.user.exception.SignupFormatException;
 import com.palluxy.domain.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.palluxy.global.common.CommonResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommonResponse<?> join(@Valid @RequestBody UserSignupRequest request, BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            throw new SignupFormatException();
+        }
+        userService.signup(request);
+        return CommonResponse.created("회원가입 성공");
     }
 
-    @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Long id) {
-        return userService.getUserById(id);
-    }
-
-    @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        return userService.updateUser(id, userDto);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @GetMapping("/{nickname}")
+    public CommonResponse<?> deleteMember(@PathVariable("nickname") String nickname) {
+        userService.duplicateNickname(nickname);
+        return CommonResponse.ok("닉네임 사용 가능");
     }
 }
