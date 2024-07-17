@@ -1,6 +1,5 @@
 package com.palluxy.domain.user.service;
 
-import com.palluxy.domain.user.dto.GroupDto;
 import com.palluxy.domain.user.entity.Group;
 import com.palluxy.domain.user.entity.GroupHistory;
 import com.palluxy.domain.user.entity.GroupUser;
@@ -55,7 +54,7 @@ public class GroupService {
     }
 
     public void validateApproveKey(Group group, String approveKey) {
-        if (group.getApproveKey().equals(approveKey)) {
+        if (!group.isApproved() || !group.getApproveKey().equals(approveKey)) {
             throw new ValidateException("인증키가 유효하지 않음");
         }
     }
