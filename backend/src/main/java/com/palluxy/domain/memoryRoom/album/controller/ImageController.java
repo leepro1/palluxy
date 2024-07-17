@@ -23,13 +23,21 @@ public class ImageController {
   @Autowired
   private FileStorageService fileStorageService;
 
+  private String tempFilePath; // 단일 임시 파일 경로
+
   // /api/albums/{albumId}/images/temp
-  // 실제 사용자가 이미지를 업로드하는 메서드
   @PostMapping("/temp")
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<String> uploadTempImage(@RequestParam("file") MultipartFile file) {
     try {
-      String tempFilePath = fileStorageService.storeTempFile(file);
+      String newTempFilePath = fileStorageService.storeTempFile(file);
+
+      // 기존 임시 파일 삭제
+      if (tempFilePath != null) {
+        fileStorageService.deleteTempFile(tempFilePath);
+      }
+
+      tempFilePath = newTempFilePath;
       return CommonResponse.created("Temp image uploaded successfully");
     } catch (IOException e) {
       return CommonResponse.badRequest("Failed to upload temp image");
@@ -39,13 +47,21 @@ public class ImageController {
   // 사용자가 저장버튼을 눌렀을때 실행되는 메서드
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("tempFilePath") String tempFilePath) {
+  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId) {
     try {
+      if (tempFilePath == null) {
+        return CommonResponse.badRequest("No temp image to save");
+      }
+
       String filePath = fileStorageService.storeFileFromTemp(tempFilePath);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(filePath);
       imageDto.setAngle(0.0); // angle을 0으로 고정
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
+
+      // 임시 파일 경로 초기화
+      tempFilePath = null;
+
       return CommonResponse.created("Image added successfully");
     } catch (IOException e) {
       return CommonResponse.badRequest("Failed to upload image");

@@ -11,9 +11,6 @@ import java.util.UUID;
 
 @Service
 public class FileStorageService {
-  // 임시파일 위치와, 최종파일 저장 위치
-  // 이미지를 올릴때, 올리자마자 저장되는것이 아니라 임시로 형태를 보여주고
-  // 저장버튼을 누를때 실제로 저장되게 만드는것
   private final Path rootLocation = Paths.get("uploads");
   private final Path tempLocation = Paths.get("tempUploads");
 
@@ -52,7 +49,6 @@ public class FileStorageService {
     Files.deleteIfExists(Paths.get(tempFilePath));
   }
 
-  //실제 최종 저장소에 저장하는 메서드
   public String storeFile(MultipartFile file) throws IOException {
     Path destinationFile = this.rootLocation.resolve(
             Paths.get(file.getOriginalFilename()))
