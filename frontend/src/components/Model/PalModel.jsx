@@ -1,7 +1,7 @@
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { useLoader } from '@react-three/fiber';
 
-import useModelPositionStore from '@store/memorySpace';
+import { useModelPositionStore } from '@store/memorySpace';
 
 const PalModel = () => {
   const obj = useLoader(OBJLoader, '/models/cat.obj');

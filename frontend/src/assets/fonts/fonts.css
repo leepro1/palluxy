@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'JamsilThin';
+  src: url('./jamsil/The Jamsil OTF 1 Thin.otf');
+}
+@font-face {
+  font-family: 'JamsilLight';
+  src: url('./jamsil/The Jamsil OTF 2 Light.otf');
+}
+@font-face {
+  font-family: 'JamsilRegular';
+  src: url('./jamsil/The Jamsil OTF 3 Regular.otf');
+}
+@font-face {
+  font-family: 'JamsilMedium';
+  src: url('./jamsil/The Jamsil OTF 4 Medium.otf');
+}
+@font-face {
+  font-family: 'JamsilBold';
+  src: url('./jamsil/The Jamsil OTF 5 Bold.otf');
+}
+@font-face {
+  font-family: 'JamsilExtraBold';
+  src: url('./jamsil/The Jamsil OTF 6 ExtraBold.otf');
+}
+
+@layer base {
+  html,
+  body,
+  #root,
+  .app {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  }
+}

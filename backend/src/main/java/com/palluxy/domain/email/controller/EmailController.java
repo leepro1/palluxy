@@ -18,13 +18,14 @@ public class EmailController {
 
     private final EmailService emailService;
 
-    @PostMapping("/signup")
+    @PostMapping("/code")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> sendCode(@Valid @RequestBody EmailRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new SignupFormatException();
         }
-        emailService.sendVerificationCode("signup", request.email());
+
+        emailService.sendVerificationCode(request.type(), request.email());
         return CommonResponse.ok("이메일 전송 성공");
     }
 
