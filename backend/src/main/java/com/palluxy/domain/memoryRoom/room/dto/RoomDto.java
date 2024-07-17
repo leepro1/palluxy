@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-
 import java.time.LocalDateTime;
 
 @Data
@@ -25,7 +24,8 @@ public class RoomDto {
     private LocalDateTime updatedAt;
     private int backgroundMusic;
     private int type;
-    private Long userId;
+
+    // private Long userId;
 
     public RoomDto() {}
 
@@ -38,6 +38,6 @@ public class RoomDto {
         this.updatedAt = room.getUpdatedAt();
         this.backgroundMusic = room.getBackgroundMusic();
         this.type = room.getType();
-        //this.userId = room.getUser().getUserId();
+        // this.userId = room.getUser() != null ? room.getUser().getUserId() : null;
     }
 }

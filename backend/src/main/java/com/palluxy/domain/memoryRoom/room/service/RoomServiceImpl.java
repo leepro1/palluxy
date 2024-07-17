@@ -3,8 +3,6 @@ package com.palluxy.domain.memoryRoom.room.service;
 import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
-import com.palluxy.domain.user.entity.User;
-import com.palluxy.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +15,17 @@ public class RoomServiceImpl implements RoomService {
   @Autowired
   private RoomRepository roomRepository;
 
-  @Autowired
-  private UserRepository userRepository;
-
   @Override
-  public RoomDto createRoom(RoomDto roomDto, Long userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+  public RoomDto createRoom(RoomDto roomDto) {
     Room room = new Room();
     room.setName(roomDto.getName());
     room.setDescription(roomDto.getDescription());
     room.setThumbnailUrl(roomDto.getThumbnailUrl());
+    room.setCreatedAt(roomDto.getCreatedAt());
+    room.setUpdatedAt(roomDto.getUpdatedAt());
     room.setBackgroundMusic(roomDto.getBackgroundMusic());
     room.setType(roomDto.getType());
-    room.setUser(user);
+
     room = roomRepository.save(room);
     return new RoomDto(room);
   }
@@ -52,11 +47,14 @@ public class RoomServiceImpl implements RoomService {
   public RoomDto updateRoom(Long roomId, RoomDto roomDto) {
     Room room = roomRepository.findById(roomId)
         .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+
     room.setName(roomDto.getName());
     room.setDescription(roomDto.getDescription());
     room.setThumbnailUrl(roomDto.getThumbnailUrl());
+    room.setUpdatedAt(roomDto.getUpdatedAt());
     room.setBackgroundMusic(roomDto.getBackgroundMusic());
     room.setType(roomDto.getType());
+
     room = roomRepository.save(room);
     return new RoomDto(room);
   }

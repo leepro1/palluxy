@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Long> {
-  //Album findByRoom_RoomId(Long roomId);  // 수정된 부분
+  Album findByRoom_RoomId(Long roomId);  // 수정된 부분
 }

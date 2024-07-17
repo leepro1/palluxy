@@ -1,7 +1,6 @@
 package com.palluxy.domain.memoryRoom.room.entity;
 
 import com.palluxy.domain.memoryRoom.album.entity.Album;
-import com.palluxy.domain.user.entity.User; // Ensure this import exists
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,11 +24,21 @@ public class Room {
     private int backgroundMusic;
     private int type;
 
-//    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Album album;
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Album album;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    // 유저 검증 필요
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "user_id")
+    // private User user;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

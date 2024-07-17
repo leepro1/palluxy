@@ -17,10 +17,10 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    @PostMapping("/{userId}")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto, @PathVariable Long userId) {
-        RoomDto createdRoom = roomService.createRoom(roomDto, userId);
+    public CommonResponse<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto) {
+        RoomDto createdRoom = roomService.createRoom(roomDto);
         return CommonResponse.created("Room created successfully");
     }
 

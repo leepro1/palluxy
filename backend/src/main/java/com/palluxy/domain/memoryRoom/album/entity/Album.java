@@ -16,10 +16,10 @@ public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long albumId;
-//    파일 검증을 위해 잠시 주석처리
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "room_id")
-//    private Room room;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>(); // 필드 초기화

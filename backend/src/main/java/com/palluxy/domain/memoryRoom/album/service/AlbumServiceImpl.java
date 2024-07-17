@@ -14,18 +14,18 @@ public class AlbumServiceImpl implements AlbumService {
   @Autowired
   private AlbumRepository albumRepository;
 
-//  @Autowired
-//  private RoomRepository roomRepository;
+  @Autowired
+  private RoomRepository roomRepository;
 
   @Override
   public AlbumDto createAlbum(AlbumDto albumDto) {
-//    Room room = roomRepository.findById(albumDto.getRoomId())
-//            .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-//    if (room.getAlbum() != null) {
-//      throw new IllegalArgumentException("Album already exists for this room");
-//    }
+    Room room = roomRepository.findById(albumDto.getRoomId())
+            .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+    if (room.getAlbum() != null) {
+      throw new IllegalArgumentException("Album already exists for this room");
+    }
     Album album = new Album();
-//    album.setRoom(room);
+    album.setRoom(room);
 
     album = albumRepository.save(album);
     return new AlbumDto(album);
