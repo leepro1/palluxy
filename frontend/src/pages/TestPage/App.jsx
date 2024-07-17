@@ -1,0 +1,420 @@
+import { OpenVidu } from 'openvidu-browser';
+
+import axios from 'axios';
+import React, { Component } from 'react';
+import './App.css';
+import UserVideoComponent from './UserVideoComponent';
+
+const APPLICATION_SERVER_URL = 'http://localhost:5000/';
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    // These properties are in the state's component in order to re-render the HTML whenever their values change
+    this.state = {
+      mySessionId: 'SessionA',
+      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      session: undefined,
+      mainStreamManager: undefined, // Main video of the page. Will be the 'publisher' or one of the 'subscribers'
+      publisher: undefined,
+      subscribers: [],
+    };
+    console.log(this.state.subscribers);
+    this.joinSession = this.joinSession.bind(this);
+    this.leaveSession = this.leaveSession.bind(this);
+    this.switchCamera = this.switchCamera.bind(this);
+    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    this.handleChangeUserName = this.handleChangeUserName.bind(this);
+    this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
+    this.onbeforeunload = this.onbeforeunload.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('beforeunload', this.onbeforeunload);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.onbeforeunload);
+  }
+
+  onbeforeunload(event) {
+    this.leaveSession();
+  }
+
+  handleChangeSessionId(e) {
+    this.setState({
+      mySessionId: e.target.value,
+    });
+  }
+
+  handleChangeUserName(e) {
+    this.setState({
+      myUserName: e.target.value,
+    });
+  }
+
+  handleMainVideoStream(stream) {
+    if (this.state.mainStreamManager !== stream) {
+      this.setState({
+        mainStreamManager: stream,
+      });
+    }
+  }
+
+  deleteSubscriber(streamManager) {
+    let subscribers = this.state.subscribers;
+    let index = subscribers.indexOf(streamManager, 0);
+    if (index > -1) {
+      subscribers.splice(index, 1);
+      this.setState({
+        subscribers: subscribers,
+      });
+    }
+  }
+
+  joinSession() {
+    // --- 1) Get an OpenVidu object ---
+
+    this.OV = new OpenVidu();
+
+    // --- 2) Init a session ---
+
+    this.setState(
+      {
+        session: this.OV.initSession(),
+      },
+      () => {
+        var mySession = this.state.session;
+
+        // --- 3) Specify the actions when events take place in the session ---
+
+        // On every new Stream received...
+        mySession.on('streamCreated', (event) => {
+          // Subscribe to the Stream to receive it. Second parameter is undefined
+          // so OpenVidu doesn't create an HTML video by its own
+          var subscriber = mySession.subscribe(event.stream, undefined);
+          var subscribers = this.state.subscribers;
+          subscribers.push(subscriber);
+
+          // Update the state with the new subscribers
+          this.setState({
+            subscribers: subscribers,
+          });
+        });
+
+        // On every Stream destroyed...
+        mySession.on('streamDestroyed', (event) => {
+          // Remove the stream from 'subscribers' array
+          this.deleteSubscriber(event.stream.streamManager);
+        });
+
+        // On every asynchronous exception...
+        mySession.on('exception', (exception) => {
+          console.warn(exception);
+        });
+
+        // --- 4) Connect to the session with a valid user token ---
+
+        // Get a token from the OpenVidu deployment
+        this.getToken().then((token) => {
+          // First param is the token got from the OpenVidu deployment. Second param can be retrieved by every user on event
+          // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
+          mySession
+            .connect(token, { clientData: this.state.myUserName })
+            .then(async () => {
+              // --- 5) Get your own camera stream ---
+
+              // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
+              // element: we will manage it on our own) and with the desired properties
+              let publisher = await this.OV.initPublisherAsync(undefined, {
+                audioSource: undefined, // The source of audio. If undefined default microphone
+                videoSource: undefined, // The source of video. If undefined default webcam
+                publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+                publishVideo: true, // Whether you want to start publishing with your video enabled or not
+                resolution: '640x480', // The resolution of your video
+                frameRate: 30, // The frame rate of your video
+                insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
+                mirror: false, // Whether to mirror your local video or not
+              });
+
+              // --- 6) Publish your stream ---
+
+              mySession.publish(publisher);
+
+              // Obtain the current video device in use
+              var devices = await this.OV.getDevices();
+              var videoDevices = devices.filter(
+                (device) => device.kind === 'videoinput',
+              );
+              var currentVideoDeviceId = publisher.stream
+                .getMediaStream()
+                .getVideoTracks()[0]
+                .getSettings().deviceId;
+              var currentVideoDevice = videoDevices.find(
+                (device) => device.deviceId === currentVideoDeviceId,
+              );
+
+              // Set the main video in the page to display our webcam and store our Publisher
+              this.setState({
+                currentVideoDevice: currentVideoDevice,
+                mainStreamManager: publisher,
+                publisher: publisher,
+              });
+            })
+            .catch((error) => {
+              console.log(
+                'There was an error connecting to the session:',
+                error.code,
+                error.message,
+              );
+            });
+        });
+      },
+    );
+  }
+
+  leaveSession() {
+    // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
+
+    const mySession = this.state.session;
+
+    if (mySession) {
+      mySession.disconnect();
+    }
+
+    // Empty all properties...
+    this.OV = null;
+    this.setState({
+      session: undefined,
+      subscribers: [],
+      mySessionId: 'SessionA',
+      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      mainStreamManager: undefined,
+      publisher: undefined,
+    });
+  }
+
+  async switchCamera() {
+    try {
+      const devices = await this.OV.getDevices();
+      var videoDevices = devices.filter(
+        (device) => device.kind === 'videoinput',
+      );
+
+      if (videoDevices && videoDevices.length > 1) {
+        var newVideoDevice = videoDevices.filter(
+          (device) =>
+            device.deviceId !== this.state.currentVideoDevice.deviceId,
+        );
+
+        if (newVideoDevice.length > 0) {
+          // Creating a new publisher with specific videoSource
+          // In mobile devices the default and first camera is the front one
+          var newPublisher = this.OV.initPublisher(undefined, {
+            videoSource: newVideoDevice[0].deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            mirror: true,
+          });
+
+          //newPublisher.once("accessAllowed", () => {
+          await this.state.session.unpublish(this.state.mainStreamManager);
+
+          await this.state.session.publish(newPublisher);
+          this.setState({
+            currentVideoDevice: newVideoDevice[0],
+            mainStreamManager: newPublisher,
+            publisher: newPublisher,
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  render() {
+    const mySessionId = this.state.mySessionId;
+    const myUserName = this.state.myUserName;
+    console.log(this.state.subscribers);
+    return (
+      <div className="container mx-auto">
+        {this.state.session === undefined ? (
+          <div id="join">
+            <div
+              id="img-div"
+              className="my-4 flex justify-center"
+            >
+              <img
+                src="resources/images/openvidu_grey_bg_transp_cropped.png"
+                alt="OpenVidu logo"
+              />
+            </div>
+            <div
+              id="join-dialog"
+              className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md"
+            >
+              <h1 className="mb-4 text-2xl font-bold">
+                {' '}
+                Join a video session{' '}
+              </h1>
+              <form
+                className="space-y-4"
+                onSubmit={this.joinSession}
+              >
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-gray-700">
+                    Participant:
+                  </label>
+                  <input
+                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                    type="text"
+                    id="userName"
+                    value={myUserName}
+                    onChange={this.handleChangeUserName}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-gray-700">
+                    Session:
+                  </label>
+                  <input
+                    className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                    type="text"
+                    id="sessionId"
+                    value={mySessionId}
+                    onChange={this.handleChangeSessionId}
+                    required
+                  />
+                </div>
+                <div className="flex items-center justify-center">
+                  <input
+                    className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
+                    type="submit"
+                    value="JOIN"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
+        ) : null}
+
+        {this.state.session !== undefined ? (
+          <div id="session">
+            <div
+              id="session-header"
+              className="my-4 flex items-center justify-between"
+            >
+              <h1
+                id="session-title"
+                className="text-xl font-bold"
+              >
+                {mySessionId}
+              </h1>
+              <div>
+                <input
+                  className="focus:shadow-outline mr-2 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
+                  type="button"
+                  id="buttonLeaveSession"
+                  onClick={this.leaveSession}
+                  value="Leave session"
+                />
+                <input
+                  className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+                  type="button"
+                  id="buttonSwitchCamera"
+                  onClick={this.switchCamera}
+                  value="Switch Camera"
+                />
+              </div>
+            </div>
+            {/* 크게 보이는 화면 */}
+            {this.state.mainStreamManager !== undefined ? (
+              <div
+                id="main-video"
+                className="mx-auto w-6/12"
+              >
+                <UserVideoComponent
+                  streamManager={this.state.mainStreamManager}
+                />
+              </div>
+            ) : null}
+            <div
+              id="video-container"
+              className="mt-4 flex flex-wrap justify-center"
+            >
+              {/* 세션 호스트 화면 */}
+              {this.state.publisher !== undefined ? (
+                <div
+                  className="stream-container m-2 w-3/12 cursor-pointer"
+                  onClick={() =>
+                    this.handleMainVideoStream(this.state.publisher)
+                  }
+                >
+                  <UserVideoComponent streamManager={this.state.publisher} />
+                </div>
+              ) : null}
+              {/* 세션 호스트 아닌 놈들 화면 */}
+              {this.state.subscribers.map((sub, i) => (
+                <div
+                  key={sub.id}
+                  className="stream-container m-2 w-3/12 cursor-pointer"
+                  onClick={() => this.handleMainVideoStream(sub)}
+                >
+                  <span>{sub.id}</span>
+                  <UserVideoComponent streamManager={sub} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  /**
+   * --------------------------------------------
+   * GETTING A TOKEN FROM YOUR APPLICATION SERVER
+   * --------------------------------------------
+   * The methods below request the creation of a Session and a Token to
+   * your application server. This keeps your OpenVidu deployment secure.
+   *
+   * In this sample code, there is no user control at all. Anybody could
+   * access your application server endpoints! In a real production
+   * environment, your application server must identify the user to allow
+   * access to the endpoints.
+   *
+   * Visit https://docs.openvidu.io/en/stable/application-server to learn
+   * more about the integration of OpenVidu in your application server.
+   */
+  async getToken() {
+    const sessionId = await this.createSession(this.state.mySessionId);
+    return await this.createToken(sessionId);
+  }
+
+  async createSession(sessionId) {
+    const response = await axios.post(
+      APPLICATION_SERVER_URL + 'api/sessions',
+      { customSessionId: sessionId },
+      {
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    return response.data; // The sessionId
+  }
+
+  async createToken(sessionId) {
+    const response = await axios.post(
+      APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
+      {},
+      {
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    return response.data; // The token
+  }
+}
+
+export default App;
