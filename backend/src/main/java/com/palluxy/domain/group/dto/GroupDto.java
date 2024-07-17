@@ -26,7 +26,6 @@ public class GroupDto {
         this.startTime = group.getStartTime();
         this.endTime = group.getEndTime();
         this.maxCapacity = group.getMaxCapacity();
-        this.remainingCapacity = group.getRemainingCapacity();
     }
 
     public Group convertToEntity() {
@@ -38,7 +37,6 @@ public class GroupDto {
         group.setStartTime(this.startTime);
         group.setEndTime(this.endTime);
         group.setMaxCapacity(this.maxCapacity);
-        group.setRemainingCapacity(this.remainingCapacity);
         return group;
     }
 

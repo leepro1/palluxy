@@ -108,7 +108,7 @@ public class GroupService {
         groupUser.setLeader(false);
 
         groupUserRepository.saveAndFlush(groupUser);
-        group.setRemainingCapacity(group.getRemainingCapacity() + 1);
+        group.setRemainingCapacity(group.getRemainingCapacity() - 1);
     }
 
     public void cancelJoin(Group group, User user) {
