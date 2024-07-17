@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/api/albums/{albumId}/images")
 public class ImageController {
 
   @Autowired
@@ -23,7 +23,7 @@ public class ImageController {
   @Autowired
   private FileStorageService fileStorageService;
 
-  @PostMapping("/album/{albumId}")
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("angle") double angle) {
     try {
@@ -40,28 +40,54 @@ public class ImageController {
 
   @GetMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> getImage(@PathVariable Long imageId) {
+  public CommonResponse<ImageDto> getImage(@PathVariable Long albumId, @PathVariable Long imageId) {
     ImageDto image = imageService.getImageById(imageId);
     return CommonResponse.ok("Image retrieved successfully", image);
   }
 
-  @GetMapping("/album/{albumId}")
+  @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<List<ImageDto>> getImagesByAlbum(@PathVariable Long albumId) {
     List<ImageDto> images = imageService.getAllImagesByAlbumId(albumId);
     return CommonResponse.ok("Images retrieved successfully", images);
   }
 
+  // 전체 수정
   @PutMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImage(@PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
+  public CommonResponse<ImageDto> updateImage(@PathVariable Long albumId, @PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
     ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
     return CommonResponse.ok("Image updated successfully", updatedImage);
   }
 
+  // 각도에 대한 수정
+  @PutMapping("/{imageId}/angle")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<ImageDto> updateImageAngle(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("angle") double angle) {
+    ImageDto imageDto = imageService.getImageById(imageId);
+    imageDto.setAngle(angle);
+    ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+    return CommonResponse.ok("Image angle updated successfully", updatedImage);
+  }
+
+  // 이미지에 대한 수정
+  @PutMapping("/{imageId}/url")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<ImageDto> updateImageUrl(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("file") MultipartFile file) {
+    try {
+      String filePath = fileStorageService.storeFile(file);
+      ImageDto imageDto = imageService.getImageById(imageId);
+      imageDto.setUrl(filePath);
+      ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+      return CommonResponse.ok("Image URL updated successfully", updatedImage);
+    } catch (IOException e) {
+      return CommonResponse.badRequest("Failed to upload image");
+    }
+  }
+
   @DeleteMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<Void> deleteImage(@PathVariable Long imageId) {
+  public CommonResponse<Void> deleteImage(@PathVariable Long albumId, @PathVariable Long imageId) {
     imageService.deleteImage(imageId);
     return CommonResponse.ok("Image deleted successfully");
   }
