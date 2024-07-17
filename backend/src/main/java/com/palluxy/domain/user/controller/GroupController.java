@@ -2,11 +2,13 @@ package com.palluxy.domain.user.controller;
 
 import com.palluxy.domain.user.dto.GroupDto;
 import com.palluxy.domain.user.entity.Group;
+import com.palluxy.domain.user.exception.NotFoundException;
 import com.palluxy.domain.user.service.GroupService;
 import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,9 +20,17 @@ public class GroupController {
 
     @GetMapping("")
     public CommonResponse<?> getGroups() {
-        List<GroupDto> findGroups = groupService.findAllGroups();
-        if (findGroups == null) {
-            return CommonResponse.ok("현재 그룹이 존재하지 않음");
+        List<Group> findGroups = null;
+
+        try {
+            findGroups = groupService.findAllGroups();
+
+            List<GroupDto> groupDtos = new ArrayList<>();
+            for (Group group : findGroups) {
+                groupDtos.add(new GroupDto(group));
+            }
+        } catch (NotFoundException e) {
+            return CommonResponse.badRequest(e.getMessage());
         }
 
         return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", findGroups);
@@ -28,17 +38,20 @@ public class GroupController {
 
     @GetMapping("/{groupId}")
     public CommonResponse<?> getGroupDetail(@PathVariable("groupId") Long groupId) {
-        GroupDto findGroup = groupService.findById(groupId);
-        if (findGroup == null) {
-            return CommonResponse.badRequest("해당 그룹이 존재하지 않음");
+        Group findGroup = null;
+
+        try {
+            findGroup = groupService.findById(groupId);
+        } catch (NotFoundException e) {
+            return CommonResponse.badRequest(e.getMessage());
         }
 
-        return CommonResponse.ok("해당 그룹이 정상적으로 조회됨", findGroup);
+        return CommonResponse.ok("해당 그룹이 정상적으로 조회됨", new GroupDto(findGroup));
     }
 
     @PostMapping("")
     public CommonResponse<?> createGroup(@RequestBody GroupDto group) {
-        Group savedGroup = groupService.createGroup(group);
+        Group savedGroup = groupService.createGroup(group.convertToEntity());
         if (savedGroup == null) {
             return CommonResponse.badRequest("그룹이 생성되지 않았음");
         }

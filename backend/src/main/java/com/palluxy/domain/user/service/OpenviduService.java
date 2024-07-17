@@ -1,5 +1,6 @@
 package com.palluxy.domain.user.service;
 
+import com.palluxy.domain.user.exception.NotFoundException;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,20 @@ public class OpenviduService {
 
     public Session getSession(String sessionId) {
         Session session = openvidu.getActiveSession(sessionId);
+        if (session == null) {
+            throw new NotFoundException("세션");
+        }
+
         return session;
+    }
+
+    public Connection getConnection(Session session, String connectionId) {
+        Connection connection = session.getConnection(connectionId);
+        if (connection == null) {
+            throw new NotFoundException("연결");
+        }
+
+        return connection;
     }
 
     public Connection createConnection(Session session, Map<String, Object> params) {
@@ -68,13 +82,7 @@ public class OpenviduService {
         return true;
     }
 
-    public boolean disconnection(Session session, String connectionId) {
-        Connection connection = session.getConnection(connectionId);
-
-        if (connection == null) {
-            return false;
-        }
-
+    public boolean disconnection(Session session, Connection connection) {
         try {
             session.forceDisconnect(connection);
         } catch (Exception e) {
