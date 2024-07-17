@@ -19,5 +19,6 @@ const Button = ({ size, text, className }) => {
 Button.propTypes = {
   size: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
+  className: PropTypes.string,
 };
 export default Button;
