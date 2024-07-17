@@ -49,6 +49,11 @@ public class SessionController {
         Connection connection = null;
 
         try {
+            GroupUser groupUser = groupService.findByGroupIdAndUserId(groupId, userId);
+            if (groupUser.isBanned()) {
+                return CommonResponse.ok("강제 퇴장 당한 유저는 재입장이 불가능합니다.");
+            }
+
             Session session = openviduService.getSession(sessionId);
             connection = openviduService.createConnection(session, params);
 

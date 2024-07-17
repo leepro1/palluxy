@@ -1,6 +1,7 @@
 package com.palluxy.domain.user.dto;
 
 import com.palluxy.domain.user.entity.Group;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,14 +14,20 @@ public class GroupDto {
     private String filePath;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private int maxCapacity;
+    private int remainingCapacity;
+
+    public GroupDto() {}
 
     public GroupDto(Group group) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.filePath = filePath;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.id = group.getId();
+        this.title = group.getTitle();
+        this.description = group.getDescription();
+        this.filePath = group.getFilePath();
+        this.startTime = group.getStartTime();
+        this.endTime = group.getEndTime();
+        this.maxCapacity = group.getMaxCapacity();
+        this.remainingCapacity = group.getRemainingCapacity();
     }
 
     public Group convertToEntity() {
@@ -31,7 +38,9 @@ public class GroupDto {
         group.setFilePath(this.filePath);
         group.setStartTime(this.startTime);
         group.setEndTime(this.endTime);
-
+        group.setMaxCapacity(this.maxCapacity);
+        group.setRemainingCapacity(this.remainingCapacity);
         return group;
     }
+
 }

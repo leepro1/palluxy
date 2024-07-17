@@ -1,17 +1,17 @@
 package com.palluxy.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter @Setter
+@Data
 @Table(name="`group`")
 public class Group {
 
@@ -27,13 +27,16 @@ public class Group {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    private boolean isApproved;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private String approveKey;
+    private int maxCapacity;
+    private int remainingCapacity;
 
     @ManyToOne
     @JoinColumn(name = "leader_id")
     private User leader;
 
-    @OneToMany(mappedBy = "group")
-    private Set<GroupUser> groupUser = new HashSet<>();
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    private Set<GroupUser> groupUser;
 }
