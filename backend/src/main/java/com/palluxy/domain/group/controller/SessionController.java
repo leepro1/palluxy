@@ -1,21 +1,19 @@
-package com.palluxy.domain.user.controller;
+package com.palluxy.domain.group.controller;
 
-import com.palluxy.domain.user.entity.Action;
-import com.palluxy.domain.user.entity.Group;
-import com.palluxy.domain.user.entity.GroupHistory;
-import com.palluxy.domain.user.entity.GroupUser;
-import com.palluxy.domain.user.exception.NotFoundException;
-import com.palluxy.domain.user.exception.ValidateException;
-import com.palluxy.domain.user.service.GroupService;
-import com.palluxy.domain.user.service.OpenviduService;
+import com.palluxy.domain.group.entity.Action;
+import com.palluxy.domain.group.entity.Group;
+import com.palluxy.domain.group.entity.GroupHistory;
+import com.palluxy.domain.group.entity.GroupUser;
+import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.domain.group.exception.ValidateException;
+import com.palluxy.domain.group.service.GroupService;
+import com.palluxy.domain.group.service.OpenviduService;
 import com.palluxy.global.common.CommonResponse;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.Session;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

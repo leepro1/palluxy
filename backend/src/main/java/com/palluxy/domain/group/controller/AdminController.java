@@ -1,9 +1,9 @@
-package com.palluxy.domain.user.controller;
+package com.palluxy.domain.group.controller;
 
-import com.palluxy.domain.user.entity.Group;
-import com.palluxy.domain.user.entity.Status;
-import com.palluxy.domain.user.exception.NotFoundException;
-import com.palluxy.domain.user.service.GroupService;
+import com.palluxy.domain.group.entity.Group;
+import com.palluxy.domain.group.entity.Status;
+import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;

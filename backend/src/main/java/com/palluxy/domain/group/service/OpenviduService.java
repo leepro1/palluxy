@@ -1,11 +1,9 @@
-package com.palluxy.domain.user.service;
+package com.palluxy.domain.group.service;
 
-import com.palluxy.domain.user.exception.NotFoundException;
+import com.palluxy.domain.group.exception.NotFoundException;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
