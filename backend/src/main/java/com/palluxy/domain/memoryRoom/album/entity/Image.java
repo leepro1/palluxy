@@ -15,6 +15,7 @@ public class Image {
 
   private String url;
   private double angle;
+  private int imageIndex;
 
   @ManyToOne
   @JoinColumn(name = "album_id")

@@ -23,14 +23,28 @@ public class ImageController {
   @Autowired
   private FileStorageService fileStorageService;
 
+  // /api/albums/{albumId}/images/temp
+  // 실제 사용자가 이미지를 업로드하는 메서드
+  @PostMapping("/temp")
+  @ResponseStatus(HttpStatus.CREATED)
+  public CommonResponse<String> uploadTempImage(@RequestParam("file") MultipartFile file) {
+    try {
+      String tempFilePath = fileStorageService.storeTempFile(file);
+      return CommonResponse.created("Temp image uploaded successfully");
+    } catch (IOException e) {
+      return CommonResponse.badRequest("Failed to upload temp image");
+    }
+  }
+
+  // 사용자가 저장버튼을 눌렀을때 실행되는 메서드
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("angle") double angle) {
+  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("tempFilePath") String tempFilePath) {
     try {
-      String filePath = fileStorageService.storeFile(file);
+      String filePath = fileStorageService.storeFileFromTemp(tempFilePath);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(filePath);
-      imageDto.setAngle(angle);
+      imageDto.setAngle(0.0); // angle을 0으로 고정
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
       return CommonResponse.created("Image added successfully");
     } catch (IOException e) {
@@ -83,6 +97,16 @@ public class ImageController {
     } catch (IOException e) {
       return CommonResponse.badRequest("Failed to upload image");
     }
+  }
+
+  // 이미지 인덱스 수정
+  @PutMapping("/{imageId}/index")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<ImageDto> updateImageIndex(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
+    ImageDto imageDto = imageService.getImageById(imageId);
+    imageDto.setIndex(index);
+    ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+    return CommonResponse.ok("Image index updated successfully", updatedImage);
   }
 
   @DeleteMapping("/{imageId}")

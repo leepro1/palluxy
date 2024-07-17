@@ -16,6 +16,8 @@ public class ImageDto {
 
   private Long albumId;
 
+  private int index; // 이미지 인덱스 필드 추가
+
   public ImageDto() {}
 
   public ImageDto(Image image) {
@@ -23,5 +25,6 @@ public class ImageDto {
     this.url = image.getUrl();
     this.angle = image.getAngle();
     this.albumId = image.getAlbum().getAlbumId();
+    this.index = image.getImageIndex(); // 인덱스 값 설정
   }
 }
