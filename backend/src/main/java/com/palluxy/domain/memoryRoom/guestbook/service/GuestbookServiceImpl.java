@@ -72,7 +72,7 @@ public class GuestbookServiceImpl implements GuestbookService {
   public void deleteGuestbook(Long guestbookId, Long userId) {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
-
+// guestBook
 //    if (!guestbook.getUser().getUserId().equals(userId) && !guestbook.getRoom().getUser().getUserId().equals(userId)) {
 //      throw new IllegalArgumentException("Only the creator or the room owner can delete the guestbook entry");
 //    }
