@@ -15,6 +15,15 @@ export default {
         'pal-disable': '#919191',
       },
     },
+    fontFamily: {
+      JamsilThin: ['JamsilThin', 'sans-serif'],
+      JamsilLight: ['JamsilLight', 'sans-serif'],
+      JamsilRegular: ['JamsilRegular', 'sans-serif'],
+      JamsilMedium: ['JamsilMedium', 'sans-serif'],
+      JamsilBold: ['JamsilBold', 'sans-serif'],
+      JamsilExtraBold: ['JamsilExtraBold', 'sans-serif'],
+      pretendard: ['Pretendard', 'sans-serif'],
+    },
   },
   plugins: [],
 };
