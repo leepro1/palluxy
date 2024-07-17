@@ -404,7 +404,7 @@ class App extends Component {
     );
     return response.data; // The sessionId
   }
-
+  // 주석임
   async createToken(sessionId) {
     const response = await axios.post(
       APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
