@@ -101,7 +101,7 @@ public class GroupService {
         GroupUser groupUser = findGroupUser.get();
         Group group = findById(groupId);
         if (groupUser.isLeader()) {
-            groupRepository.delete(group);
+            group.setStatus(Status.CANCEL);
             return;
         }
 
