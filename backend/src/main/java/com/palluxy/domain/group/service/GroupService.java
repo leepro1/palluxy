@@ -14,16 +14,14 @@ import com.palluxy.domain.group.repository.GroupUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class GroupService {
-
     private final GroupRepository groupRepository;
+
     private final GroupUserRepository groupUserRepository;
     private final GroupHistoryRepository groupHistoryRepository;
 
@@ -44,27 +42,23 @@ public class GroupService {
         return findGroup.get();
     }
 
-    public Group createGroup(Group group, User leader) {
+    public GroupUser findByGroupIdAndUserId(Long groupId, Long userId) {
+        Optional<GroupUser> groupUser = groupUserRepository.findByGroupIdAndUserId(groupId, userId);
+        if (groupUser.isEmpty()) {
+            throw new NotFoundException("모임 참가자");
+        }
+
+        return groupUser.get();
+    }
+
+    public void createGroup(Group group, User leader) {
         group.setLeader(leader);
         group.setStatus(Status.WAIT);
         group.setRemainingCapacity(group.getMaxCapacity() - 1);
-
-        return groupRepository.saveAndFlush(group);
     }
 
      public void createHistory(GroupHistory groupHistory) {
         groupHistoryRepository.saveAndFlush(groupHistory);
-    }
-
-    public List<Group> searchByKey(String key, String value) {
-        switch (key) {
-            case "title":
-                return groupRepository.findByTitleContaining(value);
-            case "leader":
-                return groupRepository.findByLeaderContaining(value);
-            default :
-                throw new ValidateException("유효하지 않은 key가 요청됨");
-        }
     }
 
     public void createJoin(Group group, User user) {
@@ -76,12 +70,14 @@ public class GroupService {
         groupRepository.saveAndFlush(group);
     }
 
-    public void cancelJoin(Group group, User user) {
-        GroupUser groupUser = groupUserRepository.findByGroupAndUser(group, user);
-        if (groupUser == null) {
+    public void cancelJoin(Long groupId, Long userId) {
+        Optional<GroupUser> findGroupUser = groupUserRepository.findByGroupIdAndUserId(groupId, userId);
+        if (findGroupUser.isEmpty()) {
             throw new NotFoundException("모임 참가자");
         }
 
+        GroupUser groupUser = findGroupUser.get();
+        Group group = findById(groupId);
         if (groupUser.isLeader()) {
             groupRepository.delete(group);
             return;
@@ -92,14 +88,27 @@ public class GroupService {
         groupRepository.saveAndFlush(group);
     }
 
-    public void updateGroup(Group original, Group modified) {
+    public void updateGroupByUser(Group original, Group modified) {
         original.setTitle(modified.getTitle());
         original.setDescription(modified.getDescription());
         original.setFilePath(modified.getFilePath());
         groupRepository.saveAndFlush(original);
     }
 
-    public GroupUser findByGroupIdAndUserId(Long groupId, Long userId) {
-        return groupUserRepository.findByGroupIdAndUserId(groupId, userId);
+    public void updateGroupByAdmin(Group group, Status status, String key) {
+        group.setStatus(status);
+        group.setApproveKey(key);
+        groupRepository.saveAndFlush(group);
+    }
+
+    public List<Group> searchByKey(String key, String value) {
+        switch (key) {
+            case "title":
+                return groupRepository.findByTitleContaining(value);
+            case "leader":
+                return groupRepository.findByLeaderContaining(value);
+            default :
+                throw new ValidateException("유효하지 않은 key가 요청됨");
+        }
     }
 }

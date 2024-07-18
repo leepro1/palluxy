@@ -54,7 +54,7 @@ public class GroupController {
     @PatchMapping("detail/{groupId}")
     public CommonResponse<?> updateGroup(@PathVariable("groupId") Long groupId, @RequestBody Group modified) {
         Group original = groupService.findById(groupId);
-        groupService.updateGroup(original, modified);
+        groupService.updateGroupByUser(original, modified);
 
         return CommonResponse.ok("정상적으로 수정이 반영 되었음");
     }
@@ -71,11 +71,7 @@ public class GroupController {
 
     @DeleteMapping("detail/{groupId}/join")
     public CommonResponse<?> cancelJoin(@PathVariable("groupId") Long groupId, @RequestBody Long userId) {
-        Group findGroup = groupService.findById(groupId);
-        // 유저 로직 수정 필요
-        User user = null;
-        groupService.cancelJoin(findGroup, user);
-
+        groupService.cancelJoin(groupId, userId);
         return CommonResponse.ok("모임 참가 신청 취소 완료");
     }
 }

@@ -2,7 +2,6 @@ package com.palluxy.domain.group.controller;
 
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.Status;
-import com.palluxy.domain.group.exception.NotFoundException;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.global.common.CommonResponse;
@@ -22,27 +21,17 @@ public class AdminController {
 
     @PatchMapping("/group/approve")
     public CommonResponse<?> approveGroup(@RequestBody Long groupId) {
-        try {
-            Group findGroup = groupService.findById(groupId);
-            String key = groupUtil.generateKey();
-
-            findGroup.setStatus(Status.ACCEPT);
-            findGroup.setApproveKey(key);
-        } catch (NotFoundException e) {
-            return CommonResponse.badRequest(e.getMessage());
-        }
+        Group findGroup = groupService.findById(groupId);
+        String key = groupUtil.generateKey();
+        groupService.updateGroupByAdmin(findGroup, Status.ACCEPT, key);
 
         return CommonResponse.ok("그룹이 정상적으로 승인되었음");
     }
 
     @PatchMapping("/group/reject")
     public CommonResponse<?> rejectGroup(@RequestBody Long groupId) {
-        try {
-            Group findGroup = groupService.findById(groupId);
-            findGroup.setStatus(Status.REJECT);
-        } catch (NotFoundException e) {
-            return CommonResponse.badRequest(e.getMessage());
-        }
+        Group findGroup = groupService.findById(groupId);
+        groupService.updateGroupByAdmin(findGroup, Status.REJECT, "");
 
         return CommonResponse.ok("그룹이 정상적으로 승인되었음");
     }
