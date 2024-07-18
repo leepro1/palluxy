@@ -24,4 +24,6 @@ public class Guestbook {
     private User user;
 
     private String content;
+
+    private boolean isDeleted = false;
 }

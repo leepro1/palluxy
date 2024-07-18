@@ -23,48 +23,23 @@ public class ImageController {
   @Autowired
   private FileStorageService fileStorageService;
 
-  private String tempFilePath; // 단일 임시 파일 경로
-
-  // /api/albums/{albumId}/images/temp
-  @PostMapping("/temp")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<String> uploadTempImage(@RequestParam("file") MultipartFile file) {
-    try {
-      String newTempFilePath = fileStorageService.storeTempFile(file);
-
-      // 기존 임시 파일 삭제
-      if (tempFilePath != null) {
-        fileStorageService.deleteTempFile(tempFilePath);
-      }
-
-      tempFilePath = newTempFilePath;
-      return CommonResponse.created("Temp image uploaded successfully");
-    } catch (IOException e) {
-      return CommonResponse.badRequest("Failed to upload temp image");
-    }
-  }
-
-  // 사용자가 저장버튼을 눌렀을때 실행되는 메서드
+  // /api/albums/{albumId}/images
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId) {
+  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("index") int index) {
     try {
-      if (tempFilePath == null) {
-        return CommonResponse.badRequest("No temp image to save");
-      }
-
-      String filePath = fileStorageService.storeFileFromTemp(tempFilePath);
+      String filePath = fileStorageService.storeFile(file);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(filePath);
       imageDto.setAngle(0.0); // angle을 0으로 고정
+      imageDto.setIndex(index); // index 설정
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
-
-      // 임시 파일 경로 초기화
-      tempFilePath = null;
 
       return CommonResponse.created("Image added successfully");
     } catch (IOException e) {
       return CommonResponse.badRequest("Failed to upload image");
+    } catch (IllegalArgumentException e) {
+      return CommonResponse.badRequest(e.getMessage());
     }
   }
 
@@ -86,8 +61,12 @@ public class ImageController {
   @PutMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImage(@PathVariable Long albumId, @PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
-    ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
-    return CommonResponse.ok("Image updated successfully", updatedImage);
+    try {
+      ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+      return CommonResponse.ok("Image updated successfully", updatedImage);
+    } catch (IllegalArgumentException e) {
+      return CommonResponse.badRequest(e.getMessage());
+    }
   }
 
   // 각도에 대한 수정
@@ -119,10 +98,14 @@ public class ImageController {
   @PutMapping("/{imageId}/index")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImageIndex(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
-    ImageDto imageDto = imageService.getImageById(imageId);
-    imageDto.setIndex(index);
-    ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
-    return CommonResponse.ok("Image index updated successfully", updatedImage);
+    try {
+      ImageDto imageDto = imageService.getImageById(imageId);
+      imageDto.setIndex(index);
+      ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+      return CommonResponse.ok("Image index updated successfully", updatedImage);
+    } catch (IllegalArgumentException e) {
+      return CommonResponse.badRequest(e.getMessage());
+    }
   }
 
   @DeleteMapping("/{imageId}")
