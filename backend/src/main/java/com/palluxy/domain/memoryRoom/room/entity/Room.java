@@ -1,6 +1,7 @@
 package com.palluxy.domain.memoryRoom.room.entity;
 
 import com.palluxy.domain.memoryRoom.album.entity.Album;
+import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import javax.net.ssl.SSLSession;
 import lombok.Getter;
@@ -28,10 +29,9 @@ public class Room {
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private Album album;
 
-    // 유저 검증 필요
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id")
-    // private User user;
+     @ManyToOne(fetch = FetchType.LAZY)
+     @JoinColumn(name = "id")
+     private User user;
 
     @PrePersist
     protected void onCreate() {

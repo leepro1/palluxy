@@ -24,10 +24,10 @@ public class RoomController {
         return CommonResponse.created("Room created successfully");
     }
 
-    @GetMapping("/{roomId}")
+    @GetMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<RoomDto> getRoom(@PathVariable Long roomId) {
-        RoomDto room = roomService.getRoomById(roomId);
+    public CommonResponse<RoomDto> getRoomByUserId(@PathVariable Long userId) {
+        RoomDto room = roomService.getRoomByUserId(userId);
         return CommonResponse.ok("Room retrieved successfully", room);
     }
 

@@ -23,14 +23,14 @@ public class ImageController {
   @Autowired
   private FileStorageService fileStorageService;
 
-  // /api/albums/{albumId}/images
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("index") int index) {
     try {
-      String filePath = fileStorageService.storeFile(file);
+      String fileName = fileStorageService.storeFile(file);
+      String fileUrl = fileStorageService.getFileUrl(fileName);
       ImageDto imageDto = new ImageDto();
-      imageDto.setUrl(filePath);
+      imageDto.setUrl(fileUrl);
       imageDto.setAngle(0.0); // angle을 0으로 고정
       imageDto.setIndex(index); // index 설정
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
@@ -57,7 +57,6 @@ public class ImageController {
     return CommonResponse.ok("Images retrieved successfully", images);
   }
 
-  // 전체 수정
   @PutMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImage(@PathVariable Long albumId, @PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
@@ -69,7 +68,6 @@ public class ImageController {
     }
   }
 
-  // 각도에 대한 수정
   @PutMapping("/{imageId}/angle")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImageAngle(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("angle") double angle) {
@@ -79,14 +77,14 @@ public class ImageController {
     return CommonResponse.ok("Image angle updated successfully", updatedImage);
   }
 
-  // 이미지에 대한 수정
   @PutMapping("/{imageId}/url")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImageUrl(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("file") MultipartFile file) {
     try {
-      String filePath = fileStorageService.storeFile(file);
+      String fileName = fileStorageService.storeFile(file);
+      String fileUrl = fileStorageService.getFileUrl(fileName);
       ImageDto imageDto = imageService.getImageById(imageId);
-      imageDto.setUrl(filePath);
+      imageDto.setUrl(fileUrl);
       ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
       return CommonResponse.ok("Image URL updated successfully", updatedImage);
     } catch (IOException e) {
@@ -94,7 +92,6 @@ public class ImageController {
     }
   }
 
-  // 이미지 인덱스 수정
   @PutMapping("/{imageId}/index")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImageIndex(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
@@ -111,6 +108,10 @@ public class ImageController {
   @DeleteMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<Void> deleteImage(@PathVariable Long albumId, @PathVariable Long imageId) {
+    ImageDto imageDto = imageService.getImageById(imageId);
+    String fileUrl = imageDto.getUrl();
+    String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+    fileStorageService.deleteFileFromS3(fileName);
     imageService.deleteImage(imageId);
     return CommonResponse.ok("Image deleted successfully");
   }
