@@ -8,6 +8,7 @@ import com.palluxy.domain.group.exception.NotFoundException;
 import com.palluxy.domain.group.exception.ValidateException;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.domain.group.service.OpenviduService;
+import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.global.common.CommonResponse;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.Session;
@@ -24,6 +25,7 @@ public class SessionController {
 
     private final OpenviduService openviduService;
     private final GroupService groupService;
+    private final GroupUtil groupUtil;
 
     @PostMapping("/api/sessions")
     public CommonResponse<?> createSession(@RequestBody(required = false) Map<String, Object> params, @RequestBody Long userId, @RequestBody Long groupId, @RequestBody String approveKey) {
@@ -31,7 +33,7 @@ public class SessionController {
 
         try {
             Group group = groupService.findById(groupId);
-            groupService.validateApproveKey(group, approveKey);
+            groupUtil.validateApproveKey(group, approveKey);
             session = openviduService.createSession(params);
 
             groupService.createHistory(new GroupHistory(userId, groupId, Action.CREATE));

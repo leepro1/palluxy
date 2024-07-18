@@ -18,26 +18,14 @@ public class GroupDto {
 
     public GroupDto() {}
 
-    public GroupDto(Group group) {
-        this.id = group.getId();
-        this.title = group.getTitle();
-        this.description = group.getDescription();
-        this.filePath = group.getFilePath();
-        this.startTime = group.getStartTime();
-        this.endTime = group.getEndTime();
-        this.maxCapacity = group.getMaxCapacity();
+    public GroupDto(Long id, String title, String description, String filePath, LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainingCapacity) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.filePath = filePath;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.maxCapacity = maxCapacity;
+        this.remainingCapacity = remainingCapacity;
     }
-
-    public Group convertToEntity() {
-        Group group = new Group();
-        group.setId(this.id);
-        group.setTitle(this.title);
-        group.setDescription(this.description);
-        group.setFilePath(this.filePath);
-        group.setStartTime(this.startTime);
-        group.setEndTime(this.endTime);
-        group.setMaxCapacity(this.maxCapacity);
-        return group;
-    }
-
 }

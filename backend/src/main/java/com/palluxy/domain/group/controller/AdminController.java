@@ -4,6 +4,7 @@ import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.exception.NotFoundException;
 import com.palluxy.domain.group.service.GroupService;
+import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final GroupService groupService;
+    private final GroupUtil groupUtil;
 
     @PatchMapping("/group/approve")
     public CommonResponse<?> approveGroup(@RequestBody Long groupId) {
         try {
             Group findGroup = groupService.findById(groupId);
-            String key = groupService.generateKey();
+            String key = groupUtil.generateKey();
 
             findGroup.setStatus(Status.ACCEPT);
             findGroup.setApproveKey(key);

@@ -38,4 +38,15 @@ public class Group {
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<GroupUser> groupUser;
+
+    public Group(Long id, String title, String description, String filePath, LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainingCapacity) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.filePath = filePath;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.maxCapacity = maxCapacity;
+        this.remainingCapacity = remainingCapacity;
+    }
 }
