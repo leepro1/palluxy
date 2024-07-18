@@ -1,41 +1,53 @@
 package com.palluxy.domain.user.controller;
 
-import com.palluxy.domain.user.dto.UserDto;
+import com.palluxy.domain.user.dto.request.UserResetPasswordRequest;
+import com.palluxy.domain.user.dto.request.UserSignupRequest;
+import com.palluxy.domain.user.exception.SignupFormatException;
 import com.palluxy.domain.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.palluxy.global.common.CommonResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommonResponse<?> join(@Valid @RequestBody UserSignupRequest request, BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            throw new SignupFormatException();
+        }
+        userService.signup(request);
+        return CommonResponse.created("회원가입 성공");
     }
 
-    @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Long id) {
-        return userService.getUserById(id);
+    @GetMapping("/check-nickname/{nickname}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> checkNickname(@PathVariable("nickname") String nickname) {
+        userService.duplicateNickname(nickname);
+        return CommonResponse.ok("닉네임 사용 가능");
     }
 
-    @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    @GetMapping("/reset-password")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> resetPassword(@RequestParam("code") String code) {
+        System.out.println("code>>>>>>>>>>>>>>>>>>>>>"+code);
+        userService.verifyResetPasswordCode(code);
+        return CommonResponse.ok("비밀번호 code 인증 성공");
     }
 
-    @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        return userService.updateUser(id, userDto);
+    @PatchMapping("/reset-password")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> resetPassword(@Valid @RequestBody UserResetPasswordRequest request, BindingResult bindingResult) {
+        userService.resetPassword(request);
+        return CommonResponse.ok("비밀번호 변경 성공");
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-    }
 }

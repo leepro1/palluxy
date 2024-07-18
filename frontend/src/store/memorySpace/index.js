@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const useModelPositionStore = create((set) => ({
+export const useModelPositionStore = create((set) => ({
   position: {
     x: 0,
     y: 0,
@@ -11,7 +11,6 @@ const useModelPositionStore = create((set) => ({
     y: 0,
     z: 0,
   },
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
   updatePosition: (payload) =>
     set((state) => ({
       position: {
@@ -27,5 +26,7 @@ const useModelPositionStore = create((set) => ({
       },
     })),
 }));
-
-export default useModelPositionStore;
+export const useFrameStore = create((set) => ({
+  rotation: 0,
+  updateRotation: (payload) => set({ rotation: payload }),
+}));
