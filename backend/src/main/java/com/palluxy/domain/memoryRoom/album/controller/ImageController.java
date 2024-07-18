@@ -35,6 +35,7 @@ public class ImageController {
       imageDto.setIndex(index); // index 설정
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
 
+
       return CommonResponse.created("Image added successfully");
     } catch (IOException e) {
       return CommonResponse.badRequest("Failed to upload image");
