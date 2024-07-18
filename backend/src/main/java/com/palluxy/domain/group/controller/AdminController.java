@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -19,9 +21,9 @@ public class AdminController {
     private final GroupService groupService;
     private final GroupUtil groupUtil;
 
-    @PatchMapping("/group/approve")
-    public CommonResponse<?> approveGroup(@RequestBody Long groupId) {
-        Group findGroup = groupService.findById(groupId);
+    @PatchMapping("/group/accept")
+    public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
+        Group findGroup = groupService.findById(request.get("groupId"));
         String key = groupUtil.generateKey();
         groupService.updateGroupByAdmin(findGroup, Status.ACCEPT, key);
 
@@ -29,10 +31,10 @@ public class AdminController {
     }
 
     @PatchMapping("/group/reject")
-    public CommonResponse<?> rejectGroup(@RequestBody Long groupId) {
-        Group findGroup = groupService.findById(groupId);
+    public CommonResponse<?> rejectGroup(@RequestBody Map<String, Long> request) {
+        Group findGroup = groupService.findById(request.get("groupId"));
         groupService.updateGroupByAdmin(findGroup, Status.REJECT, "");
 
-        return CommonResponse.ok("그룹이 정상적으로 승인되었음");
+        return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
     }
 }

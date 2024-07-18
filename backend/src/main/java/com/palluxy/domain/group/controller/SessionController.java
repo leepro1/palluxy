@@ -27,30 +27,30 @@ public class SessionController {
     private final GroupUtil groupUtil;
 
     @PostMapping("/api/sessions")
-    public CommonResponse<?> createSession(@RequestBody(required = false) Map<String, Object> params, @RequestBody Long userId, @RequestBody Long groupId, @RequestBody String approveKey) {
-        Group group = groupService.findById(groupId);
-        groupUtil.validateApproveKey(group, approveKey);
+    public CommonResponse<?> createSession(@RequestBody Map<String, Object> params) {
+        Group group = groupService.findById((Long) params.get("groupId"));
+        groupUtil.validateApproveKey(group, String.valueOf(params.get("approveKey")));
         Session session = openviduService.createSession(params);
-        groupService.createHistory(new GroupHistory(userId, groupId, Action.CREATE));
+        groupService.createHistory(new GroupHistory((Long) params.get("userId"), (Long) params.get("groupId"), Action.CREATE));
 
         return CommonResponse.ok("Session successfully created and sessionId ready to be used", session.getSessionId());
     }
 
     @PostMapping("/api/sessions/{sessionId}/connections")
-    public CommonResponse<?> createConnection(@PathVariable("sessionId") String sessionId, @RequestBody(required = false) Map<String, Object> params, @RequestBody Long userId, @RequestBody Long groupId) {
-        GroupUser groupUser = groupService.findByGroupIdAndUserId(groupId, userId);
+    public CommonResponse<?> createConnection(@PathVariable("sessionId") String sessionId, @RequestBody Map<String, Object> params) {
+        GroupUser groupUser = groupService.findByGroupIdAndUserId((Long) params.get("groupId"), (Long) params.get("userId"));
         groupUtil.validateUser(groupUser);
 
         Session session = openviduService.getSession(sessionId);
         Connection connection = openviduService.createConnection(session, params);
-        groupService.createHistory(new GroupHistory(userId, groupId, Action.JOIN));
+        groupService.createHistory(new GroupHistory((Long) params.get("userId"), (Long) params.get("groupId"), Action.JOIN));
 
         return CommonResponse.ok("The Connection has been successfully created. If it is of type WEBRTC, its token can now be used to connect a final user. If it is of type IPCAM, every participant will immediately receive the proper events in OpenVidu Browser: connectionCreated identifying the new IP camera Connection and streamCreated so they can subscribe to the IP camera stream.",
                 connection.getToken());
     }
 
     @PostMapping("/api/sessions/{sessionId}")
-    public CommonResponse<?> closeSession(@PathVariable("sessionId") String sessionId, @RequestBody Long groupId, @RequestBody Long userId) {
+    public CommonResponse<?> closeSession(@PathVariable("sessionId") String sessionId) {
         Session session = openviduService.getSession(sessionId);
         openviduService.closeSession(session);
 
@@ -58,12 +58,14 @@ public class SessionController {
     }
 
     @PostMapping("/api/sessions/{sessionId}/connection/{connectionId}")
-    public CommonResponse<?> disconnect(@PathVariable("sessionId") String sessionId, @PathVariable("connectionId") String connectionId,  @RequestBody Long groupId, @RequestBody Long userId, @RequestBody boolean isBanned) {
+    public CommonResponse<?> disconnect(@PathVariable("sessionId") String sessionId, @PathVariable("connectionId") String connectionId, @RequestBody Map<String, Object> params) {
         Session session = openviduService.getSession(sessionId);
         Connection connection = openviduService.getConnection(session, connectionId);
         openviduService.disconnection(session, connection);
 
-        if (isBanned) {
+        Long groupId = (Long) params.get("groupId");
+        Long userId = (Long) params.get("userId");
+        if ((Boolean) params.get("isBanned")) {
             Set<GroupUser> groupUsers = groupService.findById(groupId).getGroupUser();
             for (GroupUser groupUser : groupUsers) {
                 if (Objects.equals(groupUser.getId(), userId)) {
