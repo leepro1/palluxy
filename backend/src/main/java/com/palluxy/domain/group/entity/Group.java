@@ -1,10 +1,12 @@
 package com.palluxy.domain.group.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -23,8 +25,10 @@ public class Group {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     @UpdateTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt;
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -38,4 +42,17 @@ public class Group {
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private Set<GroupUser> groupUser;
+
+    public Group() {}
+
+    public Group(Long id, String title, String description, String filePath, LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainingCapacity) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.filePath = filePath;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.maxCapacity = maxCapacity;
+        this.remainingCapacity = remainingCapacity;
+    }
 }

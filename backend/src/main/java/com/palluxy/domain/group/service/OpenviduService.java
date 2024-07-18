@@ -1,6 +1,7 @@
 package com.palluxy.domain.group.service;
 
 import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.domain.group.exception.OpenviduException;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,15 +24,13 @@ public class OpenviduService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public Session createSession(Map<String, Object> params) {
+    public Session createSession(Map<String, Object> params){
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = null;
-
         try {
             session = openvidu.createSession(properties);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            throw new OpenviduException("Problem with some body parameter");
         }
 
         return session;
@@ -61,33 +60,26 @@ public class OpenviduService {
 
         try {
             connection = session.createConnection(properties);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            throw new OpenviduException("Problem with some body parameter");
         }
 
         return connection;
     }
 
-    public boolean closeSession(Session session) {
+    public void closeSession(Session session) {
         try {
             session.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            throw new NotFoundException("세션");
         }
-
-        return true;
     }
 
-    public boolean disconnection(Session session, Connection connection) {
+    public void disconnection(Session session, Connection connection) {
         try {
             session.forceDisconnect(connection);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            throw new NotFoundException("연결");
         }
-
-        return true;
     }
 }
