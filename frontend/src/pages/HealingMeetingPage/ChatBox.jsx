@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+// 채팅창의 대략적인 기능만 구현해놓았으므로 참고만 하고 후에 수정할 것
+
 const ChatBox = ({ className }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -31,7 +33,7 @@ const ChatBox = ({ className }) => {
       <div className="flex border-t border-gray-300 p-2">
         <input
           type="text"
-          className="w-8/12 flex-grow rounded border border-gray-300 p-1"
+          className="flex-grow rounded border border-gray-300 p-1"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="메시지를 입력하세요..."
@@ -40,7 +42,7 @@ const ChatBox = ({ className }) => {
           onClick={handleSend}
           className="ml-2 rounded bg-blue-500 p-1 text-white"
         >
-          전송
+          Send
         </button>
       </div>
     </div>

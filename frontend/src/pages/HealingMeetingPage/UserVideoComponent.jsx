@@ -4,20 +4,17 @@ import './UserVideo.css';
 
 export default class UserVideoComponent extends Component {
   getNicknameTag() {
-    // Gets the nickName of the user
     return JSON.parse(this.props.streamManager.stream.connection.data)
       .clientData;
   }
 
   render() {
     return (
-      <div>
+      <div className="test flex h-full w-full items-center justify-center">
         {this.props.streamManager !== undefined ? (
-          <div className="streamcomponent">
+          <div className="">
             <OpenViduVideoComponent streamManager={this.props.streamManager} />
-            <div>
-              <p>{this.getNicknameTag()}</p>
-            </div>
+            <p className="absolute bg-white">{this.getNicknameTag()}</p>
           </div>
         ) : null}
       </div>
