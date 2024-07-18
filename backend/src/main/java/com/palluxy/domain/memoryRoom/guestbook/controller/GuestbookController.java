@@ -51,4 +51,11 @@ public class GuestbookController {
         guestbookService.deleteGuestbook(guestbookId, userId);
         return CommonResponse.ok("Guestbook entry deleted successfully");
     }
+
+    @PostMapping("/{guestbookId}/report/user/{reporterId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommonResponse<Void> reportGuestbook(@PathVariable Long guestbookId, @PathVariable Long reporterId, @RequestParam String reportContent) {
+        guestbookService.reportGuestbook(guestbookId, reporterId, reportContent);
+        return CommonResponse.created("Guestbook entry reported successfully");
+    }
 }

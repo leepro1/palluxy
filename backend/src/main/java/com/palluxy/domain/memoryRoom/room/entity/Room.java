@@ -2,6 +2,7 @@ package com.palluxy.domain.memoryRoom.room.entity;
 
 import com.palluxy.domain.memoryRoom.album.entity.Album;
 import jakarta.persistence.*;
+import javax.net.ssl.SSLSession;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,4 +42,6 @@ public class Room {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+
 }
