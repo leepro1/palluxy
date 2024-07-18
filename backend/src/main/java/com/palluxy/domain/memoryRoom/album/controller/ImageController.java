@@ -26,17 +26,20 @@ public class ImageController {
   // /api/albums/{albumId}/images
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file) {
+  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("index") int index) {
     try {
       String filePath = fileStorageService.storeFile(file);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(filePath);
       imageDto.setAngle(0.0); // angle을 0으로 고정
+      imageDto.setIndex(index); // index 설정
       ImageDto createdImage = imageService.createImage(imageDto, albumId);
 
       return CommonResponse.created("Image added successfully");
     } catch (IOException e) {
       return CommonResponse.badRequest("Failed to upload image");
+    } catch (IllegalArgumentException e) {
+      return CommonResponse.badRequest(e.getMessage());
     }
   }
 
@@ -58,8 +61,12 @@ public class ImageController {
   @PutMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImage(@PathVariable Long albumId, @PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
-    ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
-    return CommonResponse.ok("Image updated successfully", updatedImage);
+    try {
+      ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+      return CommonResponse.ok("Image updated successfully", updatedImage);
+    } catch (IllegalArgumentException e) {
+      return CommonResponse.badRequest(e.getMessage());
+    }
   }
 
   // 각도에 대한 수정
@@ -91,10 +98,14 @@ public class ImageController {
   @PutMapping("/{imageId}/index")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<ImageDto> updateImageIndex(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
-    ImageDto imageDto = imageService.getImageById(imageId);
-    imageDto.setIndex(index);
-    ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
-    return CommonResponse.ok("Image index updated successfully", updatedImage);
+    try {
+      ImageDto imageDto = imageService.getImageById(imageId);
+      imageDto.setIndex(index);
+      ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
+      return CommonResponse.ok("Image index updated successfully", updatedImage);
+    } catch (IllegalArgumentException e) {
+      return CommonResponse.badRequest(e.getMessage());
+    }
   }
 
   @DeleteMapping("/{imageId}")
