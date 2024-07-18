@@ -25,7 +25,7 @@ public class RoomDto {
     private int backgroundMusic;
     private int type;
 
-    // private Long userId;
+    private Long userId;
 
     public RoomDto() {}
 
@@ -38,6 +38,6 @@ public class RoomDto {
         this.updatedAt = room.getUpdatedAt();
         this.backgroundMusic = room.getBackgroundMusic();
         this.type = room.getType();
-        // this.userId = room.getUser() != null ? room.getUser().getUserId() : null;
+        this.userId = room.getUser().getId();
     }
 }

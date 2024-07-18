@@ -38,6 +38,7 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.30.0'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {

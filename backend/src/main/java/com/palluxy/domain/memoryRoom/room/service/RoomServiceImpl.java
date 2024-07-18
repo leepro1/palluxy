@@ -1,8 +1,11 @@
-package com.palluxy.domain.memoryRoom.room.service;
+package com.palluxy.domain.memoryRoom.room.service.impl;
 
 import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
+import com.palluxy.domain.memoryRoom.room.service.RoomService;
+import com.palluxy.domain.user.entity.User;
+import com.palluxy.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,25 +18,30 @@ public class RoomServiceImpl implements RoomService {
   @Autowired
   private RoomRepository roomRepository;
 
+  @Autowired
+  private UserRepository userRepository;
+
   @Override
   public RoomDto createRoom(RoomDto roomDto) {
+    User user = userRepository.findById(roomDto.getUserId())
+        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
     Room room = new Room();
     room.setName(roomDto.getName());
     room.setDescription(roomDto.getDescription());
     room.setThumbnailUrl(roomDto.getThumbnailUrl());
-    room.setCreatedAt(roomDto.getCreatedAt());
-    room.setUpdatedAt(roomDto.getUpdatedAt());
     room.setBackgroundMusic(roomDto.getBackgroundMusic());
     room.setType(roomDto.getType());
+    room.setUser(user);
 
-    room = roomRepository.save(room);
-    return new RoomDto(room);
+    Room savedRoom = roomRepository.save(room);
+    return new RoomDto(savedRoom);
   }
 
   @Override
-  public RoomDto getRoomById(Long roomId) {
-    Room room = roomRepository.findById(roomId)
-        .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+  public RoomDto getRoomByUserId(Long userId) {
+    Room room = roomRepository.findByUserId(userId)
+        .orElseThrow(() -> new IllegalArgumentException("Room not found for user id: " + userId));
     return new RoomDto(room);
   }
 
@@ -51,16 +59,17 @@ public class RoomServiceImpl implements RoomService {
     room.setName(roomDto.getName());
     room.setDescription(roomDto.getDescription());
     room.setThumbnailUrl(roomDto.getThumbnailUrl());
-    room.setUpdatedAt(roomDto.getUpdatedAt());
     room.setBackgroundMusic(roomDto.getBackgroundMusic());
     room.setType(roomDto.getType());
 
-    room = roomRepository.save(room);
-    return new RoomDto(room);
+    Room updatedRoom = roomRepository.save(room);
+    return new RoomDto(updatedRoom);
   }
 
   @Override
   public void deleteRoom(Long roomId) {
-    roomRepository.deleteById(roomId);
+    Room room = roomRepository.findById(roomId)
+        .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+    roomRepository.delete(room);
   }
 }
