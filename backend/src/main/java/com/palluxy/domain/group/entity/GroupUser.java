@@ -33,6 +33,8 @@ public class GroupUser {
 
     @Builder
     public GroupUser(Group group, User user) {
+        this.group = group;
+        this.user = user;
     }
 
 }
