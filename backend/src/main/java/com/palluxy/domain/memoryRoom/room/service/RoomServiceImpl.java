@@ -1,4 +1,4 @@
-package com.palluxy.domain.memoryRoom.room.service.impl;
+package com.palluxy.domain.memoryRoom.room.service;
 
 import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import com.palluxy.domain.memoryRoom.room.entity.Room;

@@ -1,4 +1,4 @@
-package com.palluxy.domain.memoryRoom.album.service.impl;
+package com.palluxy.domain.memoryRoom.album.service;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
 import com.palluxy.domain.memoryRoom.album.entity.Album;
