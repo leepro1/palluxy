@@ -50,7 +50,9 @@ public class GuestbookServiceImpl implements GuestbookService {
 
   @Override
   public List<GuestbookDto> getAllGuestbooksByRoomId(Long roomId) {
-    List<Guestbook> guestbooks = guestbookRepository.findByRoom_RoomId(roomId);
+    List<Guestbook> guestbooks = guestbookRepository.findByRoom_RoomId(roomId).stream()
+        .filter(guestbook -> !guestbook.isDeleted())
+        .collect(Collectors.toList());
     return guestbooks.stream().map(GuestbookDto::new).collect(Collectors.toList());
   }
 
@@ -59,7 +61,7 @@ public class GuestbookServiceImpl implements GuestbookService {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
 
-    if (!guestbook.getUser().getUserId().equals(userId)) {
+    if (!guestbook.getUser().getId().equals(userId)) {
       throw new IllegalArgumentException("Only the creator can update the guestbook entry");
     }
 
@@ -72,11 +74,18 @@ public class GuestbookServiceImpl implements GuestbookService {
   public void deleteGuestbook(Long guestbookId, Long userId) {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
-// guestBook
-//    if (!guestbook.getUser().getUserId().equals(userId) && !guestbook.getRoom().getUser().getUserId().equals(userId)) {
+
+    // 작성한 유저와 room 주인만 삭제 가능하도록하게
+//    if (!guestbook.getUser().getId().equals(userId) && !guestbook.getRoom().getUser().getId().equals(userId)) {
 //      throw new IllegalArgumentException("Only the creator or the room owner can delete the guestbook entry");
 //    }
 
-    guestbookRepository.delete(guestbook);
+    guestbook.setDeleted(true);
+    guestbookRepository.save(guestbook);
+  }
+
+  @Override
+  public void reportGuestbook(Long guestbookId, Long reporterId, String reportContent) {
+    // 신고 처리 로직 추가
   }
 }
