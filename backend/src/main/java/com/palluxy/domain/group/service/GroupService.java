@@ -1,6 +1,6 @@
 package com.palluxy.domain.group.service;
 
-import com.palluxy.domain.group.dto.GroupDto;
+import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
@@ -11,6 +11,7 @@ import com.palluxy.domain.group.exception.ValidateException;
 import com.palluxy.domain.group.repository.GroupHistoryRepository;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.group.repository.GroupUserRepository;
+import com.palluxy.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,11 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GroupService {
-    private final GroupRepository groupRepository;
 
+    private final GroupRepository groupRepository;
     private final GroupUserRepository groupUserRepository;
     private final GroupHistoryRepository groupHistoryRepository;
+    private final UserRepository userRepository;
 
     public List<Group> findAllGroups() {
         return groupRepository.findAll();
@@ -51,19 +53,39 @@ public class GroupService {
         return groupUser.get();
     }
 
-    public void createGroup(Group group, User leader) {
-        group.setLeader(leader);
+    public void createGroup(Group group, Long userId) {
+        Optional<User> leader = userRepository.findById(userId);
+        if (leader.isEmpty()) {
+            throw new NotFoundException("유저");
+        }
+
+        group.setLeader(leader.get());
         group.setStatus(Status.WAIT);
-        group.setRemainingCapacity(group.getMaxCapacity() - 1);
+        group.setRemainingCapacity(group.getMaxCapacity());
+        groupRepository.saveAndFlush(group);
+
+        createGroupUser(group, leader.get(), true);
     }
 
      public void createHistory(GroupHistory groupHistory) {
         groupHistoryRepository.saveAndFlush(groupHistory);
     }
 
-    public void createJoin(Group group, User user) {
+    public void createJoin(Long groupId, Long userId) {
+        Group group = findById(groupId);
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new NotFoundException("유저");
+        }
+        createGroupUser(group, user.get(), false);
+
+        group.setRemainingCapacity(group.getRemainingCapacity() - 1);
+        groupRepository.saveAndFlush(group);
+    }
+
+    private void createGroupUser(Group group, User user, boolean isLeader) {
         GroupUser groupUser = new GroupUser(group, user);
-        groupUser.setLeader(false);
+        groupUser.setLeader(isLeader);
         groupUserRepository.saveAndFlush(groupUser);
 
         group.setRemainingCapacity(group.getRemainingCapacity() - 1);
@@ -88,10 +110,10 @@ public class GroupService {
         groupRepository.saveAndFlush(group);
     }
 
-    public void updateGroupByUser(Group original, Group modified) {
-        original.setTitle(modified.getTitle());
-        original.setDescription(modified.getDescription());
-        original.setFilePath(modified.getFilePath());
+    public void updateGroupByUser(Group original, Group request) {
+        original.setTitle(request.getTitle());
+        original.setDescription(request.getDescription());
+        original.setFilePath(request.getFilePath());
         groupRepository.saveAndFlush(original);
     }
 

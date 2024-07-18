@@ -1,12 +1,11 @@
 package com.palluxy.domain.group.dto;
 
-import com.palluxy.domain.group.entity.Group;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class GroupDto {
+public class GroupResponse {
     private Long id;
     private String title;
     private String description;
@@ -16,9 +15,9 @@ public class GroupDto {
     private int maxCapacity;
     private int remainingCapacity;
 
-    public GroupDto() {}
+    public GroupResponse() {}
 
-    public GroupDto(Long id, String title, String description, String filePath, LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainingCapacity) {
+    public GroupResponse(Long id, String title, String description, String filePath, LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainingCapacity) {
         this.id = id;
         this.title = title;
         this.description = description;

@@ -11,17 +11,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class CommonExceptionHandler {
 
     @ExceptionHandler({
-            DuplicateUserException.class,
-            RuntimeException.class,
+            DuplicateUserException.class
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CommonResponse<?> handleDuplicateUserException(Exception e) {return CommonResponse.badRequest(e.getMessage());}
+
+    @ExceptionHandler({
             NotFoundException.class,
             ValidateException.class,
             OpenviduException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public CommonResponse<?> handleDuplicateUserException(String msg) {return CommonResponse.badRequest(msg);}
+    public CommonResponse<?> handleNotFoundException(Exception e) {return CommonResponse.badRequest(e.getMessage());}
+
 }

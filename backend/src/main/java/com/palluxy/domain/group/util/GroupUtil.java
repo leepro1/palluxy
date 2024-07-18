@@ -1,6 +1,6 @@
 package com.palluxy.domain.group.util;
 
-import com.palluxy.domain.group.dto.GroupDto;
+import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupUser;
 import com.palluxy.domain.group.entity.Status;
@@ -22,13 +22,15 @@ public class GroupUtil {
                 return Status.WAIT;
             case "reject":
                 return Status.REJECT;
-            default:
+            case "accept":
                 return Status.ACCEPT;
+            default:
+                throw new ValidateException("유효하지 않은 status 값");
         }
     }
 
-    public List<GroupDto> convertToDtoList(List<Group> groups) {
-        List<GroupDto> result = new ArrayList<>();
+    public List<GroupResponse> convertToDtoList(List<Group> groups) {
+        List<GroupResponse> result = new ArrayList<>();
         for (Group group : groups) {
             result.add(convertToDto(group));
         }
@@ -36,12 +38,12 @@ public class GroupUtil {
         return result;
     }
 
-    public GroupDto convertToDto(Group group) {
-        return new GroupDto(group.getId(), group.getTitle(), group.getDescription(), group.getFilePath(),
+    public GroupResponse convertToDto(Group group) {
+        return new GroupResponse(group.getId(), group.getTitle(), group.getDescription(), group.getFilePath(),
                 group.getStartTime(), group.getEndTime(), group.getMaxCapacity(), group.getRemainingCapacity());
     }
 
-    public Group convertToEntity(GroupDto group) {
+    public Group convertToEntity(GroupResponse group) {
         return new Group(group.getId(), group.getTitle(), group.getDescription(), group.getFilePath(),
                 group.getStartTime(), group.getEndTime(), group.getMaxCapacity(), group.getRemainingCapacity());
     }
