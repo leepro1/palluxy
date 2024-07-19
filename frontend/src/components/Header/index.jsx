@@ -16,12 +16,12 @@ const Header = () => {
         </div>
         {/* nav item */}
         <div className="mx-7 grow">
-          <ul className="font-jamsilMedium flex gap-x-16 text-xl text-white">
+          <ul className="flex gap-x-16 font-jamsilMedium text-xl text-white">
             <li>
               <NavLink to={'/'}>공지사항</NavLink>
             </li>
             <li>
-              <NavLink to={'/'}>치유모임</NavLink>
+              <NavLink to={'/healingmeeting'}>치유모임</NavLink>
             </li>
             <li>
               <NavLink to={'/memoryspace'}>추억공간</NavLink>
@@ -32,7 +32,7 @@ const Header = () => {
           </ul>
         </div>
         {/* 로그인 회원가입 버튼 */}
-        <div className="font-jamsilMedium flex gap-x-16 text-white">
+        <div className="flex gap-x-16 font-jamsilMedium text-white">
           <Button
             className="border-2 border-white"
             size={'sm'}
