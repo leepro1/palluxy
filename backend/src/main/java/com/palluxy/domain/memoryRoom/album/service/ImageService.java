@@ -1,6 +1,7 @@
 package com.palluxy.domain.memoryRoom.album.service;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
+
 import java.util.List;
 
 public interface ImageService {

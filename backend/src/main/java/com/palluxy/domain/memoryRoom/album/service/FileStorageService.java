@@ -1,66 +1,54 @@
 package com.palluxy.domain.memoryRoom.album.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
 public class FileStorageService {
-  private final Path rootLocation = Paths.get("uploads");
-  private final Path tempLocation = Paths.get("tempUploads");
 
-  public FileStorageService() {
-    try {
-      Files.createDirectories(rootLocation);
-      Files.createDirectories(tempLocation);
-    } catch (IOException e) {
-      throw new RuntimeException("Could not create upload directory!");
-    }
-  }
+  @Autowired
+  private AmazonS3 amazonS3;
 
-  public String storeTempFile(MultipartFile file) throws IOException {
-    String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-    Path destinationFile = this.tempLocation.resolve(Paths.get(fileName)).normalize().toAbsolutePath();
+  private final String bucketName = "palluxytest-resdstone"; // S3 버킷 이름
 
-    if (!destinationFile.getParent().equals(this.tempLocation.toAbsolutePath())) {
-      throw new IOException("Cannot store file outside current directory.");
-    }
-
-    try (var inputStream = file.getInputStream()) {
-      Files.copy(inputStream, destinationFile);
-    }
-    return destinationFile.toString();
-  }
-
-  public String storeFileFromTemp(String tempFilePath) throws IOException {
-    Path tempFile = Paths.get(tempFilePath);
-    Path destinationFile = this.rootLocation.resolve(tempFile.getFileName()).normalize().toAbsolutePath();
-
-    Files.move(tempFile, destinationFile);
-    return destinationFile.toString();
-  }
-
-  public void deleteTempFile(String tempFilePath) throws IOException {
-    Files.deleteIfExists(Paths.get(tempFilePath));
-  }
-
+  // S3에 파일 업로드
   public String storeFile(MultipartFile file) throws IOException {
-    Path destinationFile = this.rootLocation.resolve(
-            Paths.get(file.getOriginalFilename()))
-        .normalize().toAbsolutePath();
+    String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
-    if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-      throw new IOException("Cannot store file outside current directory.");
-    }
+    try {
+      ObjectMetadata metadata = new ObjectMetadata();
+      metadata.setContentLength(file.getSize());
+      metadata.setContentType(file.getContentType()); // Content-Type 설정
+      metadata.setContentDisposition("inline"); // Content-Disposition 설정
 
-    try (var inputStream = file.getInputStream()) {
-      Files.copy(inputStream, destinationFile);
+      amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
+      return fileName;
+    } catch (Exception e) {
+      throw new IOException("Failed to upload file to S3", e);
     }
-    return destinationFile.toString();
+  }
+
+  // S3에서 파일 삭제
+  public void deleteFileFromS3(String fileName) {
+    amazonS3.deleteObject(bucketName, fileName);
+  }
+
+  // S3에서 파일 다운로드
+  public S3ObjectInputStream downloadFileFromS3(String fileName) {
+    S3Object s3Object = amazonS3.getObject(bucketName, fileName);
+    return s3Object.getObjectContent();
+  }
+
+  // S3 파일 URL 가져오기
+  public String getFileUrl(String fileName) {
+    return amazonS3.getUrl(bucketName, fileName).toString();
   }
 }

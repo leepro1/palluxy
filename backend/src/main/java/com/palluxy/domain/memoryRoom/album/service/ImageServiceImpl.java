@@ -1,13 +1,16 @@
 package com.palluxy.domain.memoryRoom.album.service;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
-import com.palluxy.domain.memoryRoom.album.entity.Image;
-import com.palluxy.domain.memoryRoom.album.repository.ImageRepository;
 import com.palluxy.domain.memoryRoom.album.entity.Album;
+import com.palluxy.domain.memoryRoom.album.entity.Image;
 import com.palluxy.domain.memoryRoom.album.repository.AlbumRepository;
+import com.palluxy.domain.memoryRoom.album.repository.ImageRepository;
+import com.palluxy.domain.memoryRoom.album.service.FileStorageService;
+import com.palluxy.domain.memoryRoom.album.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,23 +23,22 @@ public class ImageServiceImpl implements ImageService {
   @Autowired
   private AlbumRepository albumRepository;
 
+  @Autowired
+  private FileStorageService fileStorageService;
+
   @Override
   public ImageDto createImage(ImageDto imageDto, Long albumId) {
     Album album = albumRepository.findById(albumId)
         .orElseThrow(() -> new IllegalArgumentException("Album not found"));
 
-    if (album.getImages().size() >= 6) {
-      throw new IllegalArgumentException("Cannot add more than 6 images to an album");
-    }
-
     Image image = new Image();
     image.setUrl(imageDto.getUrl());
-    image.setAngle(0.0); // angle을 0으로 고정
-    image.setImageIndex(album.getImages().size()); // 인덱스 설정
+    image.setAngle(imageDto.getAngle());
+    image.setImageIndex(imageDto.getIndex());
     image.setAlbum(album);
 
-    image = imageRepository.save(image);
-    return new ImageDto(image);
+    Image savedImage = imageRepository.save(image);
+    return new ImageDto(savedImage);
   }
 
   @Override
@@ -56,15 +58,27 @@ public class ImageServiceImpl implements ImageService {
   public ImageDto updateImage(Long imageId, ImageDto imageDto) {
     Image image = imageRepository.findById(imageId)
         .orElseThrow(() -> new IllegalArgumentException("Image not found"));
-    image.setUrl(imageDto.getUrl());
-    image.setAngle(imageDto.getAngle()); // 업데이트 시 angle은 DTO의 값을 사용
 
-    image = imageRepository.save(image);
-    return new ImageDto(image);
+    image.setUrl(imageDto.getUrl());
+    image.setAngle(imageDto.getAngle());
+    image.setImageIndex(imageDto.getIndex());
+
+    Image updatedImage = imageRepository.save(image);
+    return new ImageDto(updatedImage);
   }
 
   @Override
   public void deleteImage(Long imageId) {
-    imageRepository.deleteById(imageId);
+    Image image = imageRepository.findById(imageId)
+        .orElseThrow(() -> new IllegalArgumentException("Image not found"));
+
+    String fileName = image.getUrl().substring(image.getUrl().lastIndexOf("/") + 1);
+    try {
+      fileStorageService.deleteFileFromS3(fileName);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to delete image from S3", e);
+    }
+
+    imageRepository.delete(image);
   }
 }
