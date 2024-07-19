@@ -1,6 +1,6 @@
 import MemorySideBarLayout from '@layout/MemorySideBarLayout';
 import Slider from '@components/Model/Slider';
-import Button from '@components/Button';
+import GlobalBtn from '@components/GlobalBtn';
 
 import { useState } from 'react';
 import FileUploadModal from '@/components/Modal/FileUploadModal';
@@ -51,7 +51,7 @@ const SettingSideBar = () => {
         </div>
         {/* 위치 변경 저장 */}
         <div className="flex w-full justify-end pr-10">
-          <Button
+          <GlobalBtn
             className="bg-white font-jamsilRegular text-sm"
             size={'sm'}
             text={'저장'}
@@ -86,7 +86,7 @@ const SettingSideBar = () => {
         </div>
         {/* 회전 변경 저장 */}
         <div className="flex w-full justify-end pr-10">
-          <Button
+          <GlobalBtn
             className="bg-white font-jamsilRegular text-sm"
             size={'sm'}
             text={'저장'}

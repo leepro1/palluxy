@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import Button from '@components/Button';
+import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
 import { instance } from '@/utils/axios';
 
@@ -85,7 +85,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
                 onChange={handleUploadImage}
               />
             </label>
-            <Button
+            <GlobalBtn
               className="bg-pal-purple text-white"
               onClick={submitUploadImage}
               size={'md'}
