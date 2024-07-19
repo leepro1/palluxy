@@ -16,7 +16,7 @@ const Header = () => {
         </div>
         {/* nav item */}
         <div className="mx-7 grow">
-          <ul className="font-jamsilMedium flex gap-x-16 text-xl text-white">
+          <ul className="flex gap-x-16 font-jamsilMedium text-xl text-white">
             <li>
               <NavLink to={'/'}>공지사항</NavLink>
             </li>
@@ -27,12 +27,12 @@ const Header = () => {
               <NavLink to={'/memoryspace'}>추억공간</NavLink>
             </li>
             <li>
-              <NavLink to={'/'}>추억공간 모아보기</NavLink>
+              <NavLink to={'/meetingoverview'}>치유모임 모아보기</NavLink>
             </li>
           </ul>
         </div>
         {/* 로그인 회원가입 버튼 */}
-        <div className="font-jamsilMedium flex gap-x-16 text-white">
+        <div className="flex gap-x-16 font-jamsilMedium text-white">
           <Button
             className="border-2 border-white"
             size={'sm'}
