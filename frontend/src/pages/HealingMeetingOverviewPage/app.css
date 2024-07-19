@@ -1,0 +1,24 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  list-style: none;
+}
+
+.page-item {
+  margin: 0 5px;
+}
+
+.page-item a {
+  color: #007bff;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.page-item.active a {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
