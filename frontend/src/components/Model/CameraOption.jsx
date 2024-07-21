@@ -7,7 +7,6 @@ const CameraOption = ({ target, position }) => {
   const cameraRef = useRef();
   const { camera } = useThree();
 
-  console.log(cameraRef);
   function cameraAnimate() {
     if (cameraRef.current) {
       gsap.to(camera.position, {

@@ -28,55 +28,6 @@ const MemorySpacePage = () => {
           <div className="w-[310px] rounded-xl bg-pal-purple">
             <MemoerySideBar />
           </div>
-
-          {/* <div className="flex flex-col">
-            <div>
-              <span>position x</span>
-              <Slider
-                type={'position'}
-                coordinate={'x'}
-              />
-            </div>
-            <div>
-              <span>position y</span>
-              <Slider
-                type={'position'}
-                coordinate={'y'}
-              />
-            </div>
-            <div>
-              <span>position z</span>
-              <Slider
-                type={'position'}
-                coordinate={'z'}
-              />
-            </div>
-            <div>
-              <span>rotation x</span>
-              <Slider
-                type={'rotation'}
-                coordinate={'x'}
-              />
-            </div>
-            <div>
-              <span>rotation y</span>
-              <Slider
-                type={'rotation'}
-                coordinate={'y'}
-              />
-            </div>
-            <div>
-              <span>rotation z</span>
-              <Slider
-                type={'rotation'}
-                coordinate={'z'}
-              />
-            </div>
-            <div>
-              <span>rotation Frame1</span>
-              <ImgRotationBtn />
-            </div>
-          </div> */}
         </div>
       </ContentsLayout>
     </div>

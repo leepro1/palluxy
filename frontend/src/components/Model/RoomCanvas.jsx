@@ -1,6 +1,7 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { useState } from 'react';
 import { Environment } from '@react-three/drei';
+import SceneUpdater from '@components/Model/SceneUpadator';
 
 import { Vector3 } from 'three';
 
@@ -47,9 +48,9 @@ const RoomCanvas = () => {
   // frame 4 x: 20, y: 24, z: -20
   // frame 5 x: -5, y: 24, z: -20
   // frame 6 x: -30, y: 24, z: -20
-
   return (
     <div className="h-[617px] w-[1000px]">
+      <button>asdfasdf</button>
       <Canvas flat>
         <CameraOption
           position={position}
@@ -57,6 +58,7 @@ const RoomCanvas = () => {
         />
         <ambientLight intensity={Math.PI / 2} />
         <group onClick={(e) => handleModelClick(e)}>
+          {/* <SceneUpdater /> */}
           <RooomModel />
           <mesh>
             <PalModel />
