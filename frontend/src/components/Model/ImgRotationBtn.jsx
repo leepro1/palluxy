@@ -1,38 +1,30 @@
 import PropTypes from 'prop-types';
-import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { fetchFrameAngle } from '@/api/memorySpace/frameImageApi';
-import { fetchAllFrameImage } from '@api/memorySpace/frameImageApi';
+import React from 'react';
 
-const ImgRotationBtn = ({ index }) => {
+const ImgRotationBtn = React.memo(({ index }) => {
   const queryClient = useQueryClient();
-
-  const { data: frameData, isSuccess } = useQuery({
-    queryKey: ['palFrameImage'],
-    queryFn: fetchAllFrameImage,
-    staleTime: 60000,
-  });
 
   const { mutate } = useMutation({
     mutationFn: fetchFrameAngle,
     onSuccess: () => {
-      // Invalidate and refetch
-      console.log('mutate');
       queryClient.invalidateQueries({
         queryKey: ['palFrameImage'],
       });
     },
   });
-  // Mutations
+
   const handleRotation = () => {
-    if (isSuccess) {
-      const selectFrame = frameData.find((frame) => frame.index === index);
-      if (selectFrame) {
-        const newAngle = (selectFrame.angle + 1.5) % 6;
-        console.log(newAngle);
-        mutate({ angle: newAngle, imageId: selectFrame.imageId });
-      }
+    const frameData = queryClient.getQueryData(['palFrameImage']);
+    const selectData = frameData.find((frame) => frame.index === index);
+    if (selectData) {
+      const newAngle = (selectData.angle + 1.5) % 6;
+      mutate({ angle: newAngle, imageId: selectData.imageId });
     }
   };
+
+  console.log(index, 'ImgRotationBtn');
   return (
     <span
       className="material-symbols-outlined cursor-pointer"
@@ -41,10 +33,11 @@ const ImgRotationBtn = ({ index }) => {
       rotate_90_degrees_ccw
     </span>
   );
-};
+});
 
 ImgRotationBtn.propTypes = {
   index: PropTypes.number.isRequired,
 };
 
+ImgRotationBtn.displayName = 'ImgRotationBtn';
 export default ImgRotationBtn;

@@ -8,10 +8,18 @@ import { Vector3 } from 'three';
 import PalModel from '@components/Model/PalModel';
 import RooomModel from '@components/Model/RoomModel';
 import CameraOption from '@components/Model/CameraOption';
+import { useQuery } from '@tanstack/react-query';
+import { fetchAllFrameImage } from '@api/memorySpace/frameImageApi';
 
 const RoomCanvas = () => {
   const [position, setPosition] = useState(new Vector3(-100, 100, 100));
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
+
+  const { data: frameImages, isSuccess } = useQuery({
+    queryKey: ['palFrameImage'],
+    queryFn: fetchAllFrameImage,
+    staleTime: 60000,
+  });
 
   const handleModelClick = (event) => {
     if (event.object.name.includes('frame')) {
@@ -59,7 +67,7 @@ const RoomCanvas = () => {
         <ambientLight intensity={Math.PI / 2} />
         <group onClick={(e) => handleModelClick(e)}>
           {/* <SceneUpdater /> */}
-          <RooomModel />
+          <RooomModel data={isSuccess && frameImages} />
           <mesh>
             <PalModel />
           </mesh>

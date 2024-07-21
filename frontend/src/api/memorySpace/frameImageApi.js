@@ -13,7 +13,6 @@ const fetchFrameAngle = async (payload) => {
   const data = {
     angle: payload.angle,
   };
-  console.log('fetch angle', payload.angle);
   await instance.put(`/api/albums/1/images/${payload.imageId}/angle`, null, {
     params: data,
   });

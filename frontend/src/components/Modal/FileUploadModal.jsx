@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
-import { instance } from '@/utils/axios';
 import { FRAME_NAME_KOR } from '@/constants/frameIndex';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import {
