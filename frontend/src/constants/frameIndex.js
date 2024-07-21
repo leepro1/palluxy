@@ -14,3 +14,11 @@ export const FRAME_NAME = Object.freeze({
   4: 'frame005',
   5: 'frame006',
 });
+export const FRAME_NAME_KOR = Object.freeze({
+  0: '첫 번째 액자',
+  1: '두 번째 액자',
+  2: '세 번째 액자',
+  3: '네 번째 액자',
+  4: '다섯 번째 액자',
+  5: '여섯 번째 액자',
+});

@@ -14,6 +14,7 @@ const RoomModel = () => {
   });
 
   if (isSuccess) {
+    console.log('실행됨');
     frameImages.forEach((frameData) => {
       const matrialName = FRAME_INDEX[frameData.index];
       const texture = convertTexture(frameData.url);

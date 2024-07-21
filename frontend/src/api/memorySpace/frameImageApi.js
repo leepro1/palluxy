@@ -9,14 +9,34 @@ const fetchAllFrameImage = async () => {
   }
 };
 
-const fetchFrameAngle = (payload) => {
+const fetchFrameAngle = async (payload) => {
   const data = {
     angle: payload.angle,
   };
   console.log('fetch angle', payload.angle);
-  instance.put(`/api/albums/1/images/${payload.imageId}/angle`, null, {
+  await instance.put(`/api/albums/1/images/${payload.imageId}/angle`, null, {
     params: data,
   });
 };
 
-export { fetchAllFrameImage, fetchFrameAngle };
+const fetchFrameImage = async (payload) => {
+  console.log(payload.data);
+  await instance.post(`/api/albums/1/images`, payload.data, {
+    headers: { 'content-type': 'multipart/form-data' },
+  });
+};
+
+const updateFrameImage = async (payload) => {
+  console.log(payload);
+  await instance.put(`/api/albums/1/images/`, null, {
+    params: payload.data,
+    headers: { 'content-type': 'multipart/form-data' },
+  });
+};
+
+export {
+  fetchAllFrameImage,
+  fetchFrameAngle,
+  fetchFrameImage,
+  updateFrameImage,
+};

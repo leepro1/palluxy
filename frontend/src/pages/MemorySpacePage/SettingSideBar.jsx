@@ -106,7 +106,7 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_01');
+                    handleModal(0);
                   }}
                 >
                   upload_file
@@ -120,7 +120,7 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_02');
+                    handleModal(1);
                   }}
                 >
                   upload_file
@@ -134,7 +134,7 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_03');
+                    handleModal(2);
                   }}
                 >
                   upload_file
@@ -148,7 +148,7 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_04');
+                    handleModal(3);
                   }}
                 >
                   upload_file
@@ -162,7 +162,7 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_05');
+                    handleModal(4);
                   }}
                 >
                   upload_file
@@ -176,7 +176,7 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_06');
+                    handleModal(5);
                   }}
                 >
                   upload_file

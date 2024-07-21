@@ -2,10 +2,39 @@ import PropTypes from 'prop-types';
 import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
 import { instance } from '@/utils/axios';
+import { FRAME_NAME_KOR } from '@/constants/frameIndex';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import {
+  fetchFrameImage,
+  updateFrameImage,
+} from '@/api/memorySpace/frameImageApi';
 
 const FileUploadModal = ({ handler, selectFrame }) => {
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
+  const queryClient = useQueryClient();
+
+  const { mutate: fetchMutate } = useMutation({
+    mutationFn: fetchFrameImage,
+    onSuccess: async () => {
+      // Invalidate and refetch
+      console.log('mutate');
+      await queryClient.invalidateQueries({
+        queryKey: ['palFrameImage'],
+      });
+      handler(false);
+    },
+  });
+  const { mutate: updateMutate } = useMutation({
+    mutationFn: updateFrameImage,
+    onSuccess: () => {
+      // Invalidate and refetch
+      console.log('mutate');
+      queryClient.invalidateQueries({
+        queryKey: ['palFrameImage'],
+      });
+    },
+  });
 
   const handleUploadImage = (event) => {
     console.log(event.target.files[0]);
@@ -22,25 +51,21 @@ const FileUploadModal = ({ handler, selectFrame }) => {
   const submitUploadImage = () => {
     if (!uploadImage) {
       console.log('이미지 없음');
-
       return;
     }
     const formData = new FormData();
     formData.append('file', uploadImage);
-    formData.append('filleNmae', uploadImage.name);
-    const config = {
-      headers: {
-        'content-type': 'multipart/form-data',
-      },
-    };
-    instance.post('/asdf', formData, config);
-    handler(false);
-    // .then((res) => {
-    //   console.log(res);
-    // })
-    // .catch((error) => {
-    //   console.log('err');
-    // });
+    formData.append('index', selectFrame);
+
+    const frameData = queryClient.getQueryData(['palFrameImage']);
+    const selectData = frameData.find((frame) => frame.index === selectFrame);
+    console.log(frameData);
+    if (selectData) {
+      // updateMutate({ data: formData });
+      fetchMutate({ data: formData });
+    } else {
+      fetchMutate({ data: formData });
+    }
   };
 
   return (
@@ -52,7 +77,9 @@ const FileUploadModal = ({ handler, selectFrame }) => {
       <div className="absolute left-1/2 top-1/2 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white">
         <div className="flex h-full w-full flex-col">
           <div className="flex p-8">
-            <p className="grow font-jamsilBold">{selectFrame}이미지 업로드</p>
+            <p className="grow font-jamsilBold">
+              {FRAME_NAME_KOR[selectFrame]} 이미지 업로드
+            </p>
             <span
               className="material-symbols-outlined cursor-pointer"
               onClick={() => {
@@ -100,7 +127,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
 
 FileUploadModal.propTypes = {
   handler: PropTypes.func.isRequired,
-  selectFrame: PropTypes.string,
+  selectFrame: PropTypes.number.isRequired,
 };
 
 export default FileUploadModal;
