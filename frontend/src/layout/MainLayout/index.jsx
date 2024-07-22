@@ -7,9 +7,11 @@ const MainLayout = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="fixed left-0 top-0 -z-20 min-h-screen w-screen bg-main-background bg-cover"></div>
-      <div className="grow">
+      <div className="flex grow flex-col">
         <Header />
-        <Outlet />
+        <div className="relative grow">
+          <Outlet />
+        </div>
       </div>
       <Footer />
     </div>
