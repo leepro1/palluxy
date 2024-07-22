@@ -8,6 +8,8 @@ import {
   updateFrameImage,
 } from '@/api/memorySpace/frameImageApi';
 
+import { useNavigate } from 'react-router-dom';
+
 const FileUploadModal = ({ handler, selectFrame }) => {
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
@@ -22,6 +24,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
         queryKey: ['palFrameImage'],
       });
       handler(false);
+      window.location.href = '/memorySpace';
     },
   });
   const { mutate: updateMutate } = useMutation({
@@ -32,6 +35,8 @@ const FileUploadModal = ({ handler, selectFrame }) => {
       queryClient.invalidateQueries({
         queryKey: ['palFrameImage'],
       });
+      handler(false);
+      window.location.href = '/memorySpace';
     },
   });
 
@@ -53,15 +58,14 @@ const FileUploadModal = ({ handler, selectFrame }) => {
       return;
     }
     const formData = new FormData();
-    formData.append('file', uploadImage);
-    formData.append('index', selectFrame);
-
     const frameData = queryClient.getQueryData(['palFrameImage']);
     const selectData = frameData.find((frame) => frame.index === selectFrame);
-    console.log(frameData);
+
+    formData.append('file', uploadImage);
+    console.log(selectData);
     if (selectData) {
-      // updateMutate({ data: formData });
-      fetchMutate({ data: formData });
+      formData.append('index', selectFrame);
+      updateMutate({ data: formData, imageId: selectData.imageId });
     } else {
       fetchMutate({ data: formData });
     }

@@ -58,7 +58,6 @@ const RoomCanvas = () => {
   // frame 6 x: -30, y: 24, z: -20
   return (
     <div className="h-[617px] w-[1000px]">
-      <button>asdfasdf</button>
       <Canvas flat>
         <CameraOption
           position={position}

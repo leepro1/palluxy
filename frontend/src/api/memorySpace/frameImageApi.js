@@ -19,18 +19,19 @@ const fetchFrameAngle = async (payload) => {
 };
 
 const fetchFrameImage = async (payload) => {
-  console.log(payload.data);
   await instance.post(`/api/albums/1/images`, payload.data, {
     headers: { 'content-type': 'multipart/form-data' },
   });
 };
 
 const updateFrameImage = async (payload) => {
-  console.log(payload);
-  await instance.put(`/api/albums/1/images/`, null, {
-    params: payload.data,
-    headers: { 'content-type': 'multipart/form-data' },
-  });
+  await instance.put(
+    `/api/albums/1/images/${payload.imageId}/url`,
+    payload.data,
+    {
+      headers: { 'content-type': 'multipart/form-data' },
+    },
+  );
 };
 
 export {
