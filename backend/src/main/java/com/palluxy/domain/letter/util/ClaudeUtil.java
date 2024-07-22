@@ -2,8 +2,10 @@ package com.palluxy.domain.letter.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.palluxy.domain.letter.dto.ClaudeRequest;
-import com.palluxy.domain.letter.dto.MessageInput;
+import com.palluxy.domain.letter.dto.claude.ClaudeRequest;
+import com.palluxy.domain.letter.dto.claude.ClaudeResponse;
+import com.palluxy.domain.letter.dto.claude.MessageInput;
+import com.palluxy.domain.letter.dto.claude.MessageOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ public class ClaudeUtil {
   @Value("${claude.api.url}")
   private String API_URL;
 
-  public String sendRequest(ClaudeRequest request) {
+  public void sendRequest(ClaudeRequest request) {
     JsonObject object = new JsonObject();
     object.addProperty("model", request.getModel());
     object.addProperty("max_tokens", request.getMaxTokens());
@@ -39,8 +41,10 @@ public class ClaudeUtil {
             .defaultHeader("content-type", "application/json")
             .build();
 
-    String response = webClient.post().bodyValue(json).retrieve().bodyToMono(String.class).block();
-
-    return response;
+    webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
+            response -> {
+               // db에 추가 로직;
+            }
+    );
   }
 }

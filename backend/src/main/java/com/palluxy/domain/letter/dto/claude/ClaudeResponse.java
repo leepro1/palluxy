@@ -1,8 +1,9 @@
-package com.palluxy.domain.letter.dto;
+package com.palluxy.domain.letter.dto.claude;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -10,10 +11,10 @@ public class ClaudeResponse {
 
   private String id;
   private String type;
-  private ClaudeRole role;
+  private String role;
   private String model;
-  private MessageOutput content;
+  private List<MessageOutput> content;
   private String stop_reason;
   private String stop_sequence;
-  private String usage;
+  private Usage usage;
 }

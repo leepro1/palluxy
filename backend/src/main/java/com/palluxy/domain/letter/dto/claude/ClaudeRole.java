@@ -1,4 +1,4 @@
-package com.palluxy.domain.letter.dto;
+package com.palluxy.domain.letter.dto.claude;
 
 public enum ClaudeRole {
   USER {
@@ -13,5 +13,4 @@ public enum ClaudeRole {
       return "assistant";
     }
   }
-
 }
