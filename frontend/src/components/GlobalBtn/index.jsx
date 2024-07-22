@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const Button = ({ size, text, className, onClick }) => {
+const GlobalBtn = ({ size, text, className, onClick }) => {
   const btnSize = {
     sm: 'w-[90px] h-10',
     md: 'w-[130px] h-10',
@@ -17,10 +17,10 @@ const Button = ({ size, text, className, onClick }) => {
   );
 };
 
-Button.propTypes = {
+GlobalBtn.propTypes = {
   size: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   className: PropTypes.string,
   onClick: PropTypes.func,
 };
-export default Button;
+export default GlobalBtn;

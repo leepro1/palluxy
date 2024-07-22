@@ -1,9 +1,10 @@
 import MemorySideBarLayout from '@layout/MemorySideBarLayout';
 import Slider from '@components/Model/Slider';
-import Button from '@components/Button';
+import GlobalBtn from '@components/GlobalBtn';
 
 import { useState } from 'react';
 import FileUploadModal from '@/components/Modal/FileUploadModal';
+import ImgRotationBtn from '../../components/Model/ImgRotationBtn';
 
 const SettingSideBar = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -51,7 +52,7 @@ const SettingSideBar = () => {
         </div>
         {/* 위치 변경 저장 */}
         <div className="flex w-full justify-end pr-10">
-          <Button
+          <GlobalBtn
             className="bg-white font-jamsilRegular text-sm"
             size={'sm'}
             text={'저장'}
@@ -86,7 +87,7 @@ const SettingSideBar = () => {
         </div>
         {/* 회전 변경 저장 */}
         <div className="flex w-full justify-end pr-10">
-          <Button
+          <GlobalBtn
             className="bg-white font-jamsilRegular text-sm"
             size={'sm'}
             text={'저장'}
@@ -105,14 +106,12 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_01');
+                    handleModal(0);
                   }}
                 >
                   upload_file
                 </span>
-                <span className="material-symbols-outlined cursor-pointer">
-                  rotate_90_degrees_ccw
-                </span>
+                <ImgRotationBtn index={0} />
               </div>
             </div>
             <div className="flex gap-x-3">
@@ -121,14 +120,12 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_02');
+                    handleModal(1);
                   }}
                 >
                   upload_file
                 </span>
-                <span className="material-symbols-outlined cursor-pointer">
-                  rotate_90_degrees_ccw
-                </span>
+                <ImgRotationBtn index={1} />
               </div>
             </div>
             <div className="flex gap-x-3">
@@ -137,14 +134,12 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_03');
+                    handleModal(2);
                   }}
                 >
                   upload_file
                 </span>
-                <span className="material-symbols-outlined cursor-pointer">
-                  rotate_90_degrees_ccw
-                </span>
+                <ImgRotationBtn index={2} />
               </div>
             </div>
             <div className="flex gap-x-3">
@@ -153,14 +148,12 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_04');
+                    handleModal(3);
                   }}
                 >
                   upload_file
                 </span>
-                <span className="material-symbols-outlined cursor-pointer">
-                  rotate_90_degrees_ccw
-                </span>
+                <ImgRotationBtn index={3} />
               </div>
             </div>
             <div className="flex gap-x-3">
@@ -169,14 +162,12 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_05');
+                    handleModal(4);
                   }}
                 >
                   upload_file
                 </span>
-                <span className="material-symbols-outlined cursor-pointer">
-                  rotate_90_degrees_ccw
-                </span>
+                <ImgRotationBtn index={4} />
               </div>
             </div>
             <div className="flex gap-x-3">
@@ -185,14 +176,12 @@ const SettingSideBar = () => {
                 <span
                   className="material-symbols-outlined cursor-pointer"
                   onClick={() => {
-                    handleModal('frame_06');
+                    handleModal(5);
                   }}
                 >
                   upload_file
                 </span>
-                <span className="material-symbols-outlined cursor-pointer">
-                  rotate_90_degrees_ccw
-                </span>
+                <ImgRotationBtn index={5} />
               </div>
             </div>
           </div>
