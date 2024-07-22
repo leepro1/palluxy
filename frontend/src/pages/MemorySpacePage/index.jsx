@@ -1,7 +1,6 @@
 import ContentsLayout from '@layout/ContentsLayout';
 
 import RoomCanvas from '@components/Model/RoomCanvas';
-import ImgRotationBtn from '@components/Model/ImgRotationBtn';
 import GlobalBtn from '@components/GlobalBtn';
 import MemoerySideBar from '@pages/MemorySpacePage/MemorySideBar';
 

@@ -5,6 +5,7 @@ import HealingMeetingPage from '@pages/HealingMeetingPage';
 import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
 import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/MailboxSideBar';
+import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
 
 const routerInfo = [
   {
@@ -27,6 +28,10 @@ const routerInfo = [
           {
             path: 'mailbox',
             element: <MailboxSideBar />,
+          },
+          {
+            path: 'guest-box',
+            element: <GuestBoxSideBar />,
           },
         ],
       },

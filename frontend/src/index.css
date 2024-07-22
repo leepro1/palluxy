@@ -8,3 +8,18 @@
 body::-webkit-scrollbar {
   display: none;
 }
+
+#guestBookOverflow::-webkit-scrollbar {
+  width: 8px;
+}
+#guestBookOverflow::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border-radius: 10px;
+}
+#guestBookSubmitOverflow::-webkit-scrollbar {
+  width: 8px;
+}
+#guestBookSubmitOverflow::-webkit-scrollbar-thumb {
+  background: #4b4376;
+  border-radius: 10px;
+}
