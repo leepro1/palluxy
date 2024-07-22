@@ -89,7 +89,7 @@ const MakeSession = ({ removeModal }) => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">
+            <label className="font-semi bold block text-gray-700">
               시작 일시*
             </label>
             <div className="flex w-fit items-center gap-2 text-black">

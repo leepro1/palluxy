@@ -15,7 +15,7 @@ const ChatBox = ({ className }) => {
 
   return (
     <div
-      className={`flex h-full flex-col border-l border-gray-300 bg-white shadow-lg ${className}`}
+      className={`flex h-8 flex-col border-l border-gray-300 bg-white shadow-lg ${className}`}
     >
       <div className="h-8 border-b border-gray-300 bg-gray-100 p-2">
         <p className="text-lg">채팅창</p>
