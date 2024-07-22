@@ -17,7 +17,7 @@ const ChatBox = ({ className }) => {
     <div
       className={`flex h-full flex-col border-l border-gray-300 bg-white shadow-lg ${className}`}
     >
-      <div className="border-b border-gray-300 bg-gray-100 p-2">
+      <div className="h-8 border-b border-gray-300 bg-gray-100 p-2">
         <p className="text-lg">채팅창</p>
       </div>
       <div className="flex-grow overflow-y-auto p-2">
@@ -40,9 +40,9 @@ const ChatBox = ({ className }) => {
         />
         <button
           onClick={handleSend}
-          className="ml-2 rounded bg-blue-500 p-1 text-white"
+          className="ml-2 rounded bg-blue-500 p-1 text-sm text-white"
         >
-          Send
+          전송
         </button>
       </div>
     </div>

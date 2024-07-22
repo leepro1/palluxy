@@ -21,13 +21,13 @@ const Header = () => {
               <NavLink to={'/'}>공지사항</NavLink>
             </li>
             <li>
-              <NavLink to={'/'}>치유모임</NavLink>
+              <NavLink to={'/healingmeeting'}>치유모임</NavLink>
             </li>
             <li>
               <NavLink to={'/memoryspace'}>추억공간</NavLink>
             </li>
             <li>
-              <NavLink to={'/'}>추억공간 모아보기</NavLink>
+              <NavLink to={'/meetingoverview'}>치유모임 모아보기</NavLink>
             </li>
           </ul>
         </div>
