@@ -1,110 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const SignupModal = () => {
-  const [email, setEmail] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [nicknameError, setNicknameError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [isEmailUnique, setIsEmailUnique] = useState(true);
-  const [isNicknameUnique, setIsNicknameUnique] = useState(true);
-  const [termsOfUseAccepted, setTermsOfUseAccepted] = useState(false);
-  const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
-  const [termsOfUseError, setTermsOfUseError] =
-    useState('이용약관에 동의하셔야 합니다.');
-  const [privacyPolicyError, setPrivacyPolicyError] = useState(
-    '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-  );
   const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+    setError,
+  } = useForm({ mode: 'onChange' });
 
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
+    return emailPattern.test(email) || '이메일의 형식이 올바르지 않습니다.';
   };
-
-  useEffect(() => {
-    if (email && !validateEmail(email)) {
-      setEmailError('이메일의 형식이 올바르지 않습니다.');
-    } else {
-      setEmailError('');
-    }
-  }, [email]);
 
   const validatePassword = (password) => {
     const passwordPattern =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{9,16}$/;
-    return passwordPattern.test(password);
+    return (
+      passwordPattern.test(password) ||
+      '9자 이상 16자 이하, 한 개 이상의 숫자/영어/특수문자를 포함해야 합니다.'
+    );
   };
 
-  useEffect(() => {
-    if (password && !validatePassword(password)) {
-      setPasswordError('비밀번호 형식이 올바르지 않습니다.');
-    } else {
-      setPasswordError('');
-    }
-  }, [password]);
-
-  useEffect(() => {
-    if (confirmPassword && password !== confirmPassword) {
-      setConfirmPasswordError('비밀번호가 일치하지 않습니다.');
-    } else {
-      setConfirmPasswordError('');
-    }
-  }, [password, confirmPassword]);
-
-  const checkEmailUnique = async () => {
-    // 이메일 중복 확인 로직-(항상 true)
-    setIsEmailUnique(true);
-    if (!isEmailUnique) {
-      setEmailError('이미 사용 중인 이메일입니다.');
-    }
-  };
-
-  const checkNicknameUnique = async () => {
-    // 닉네임 중복 확인 로직-(항상 true)
-    setIsNicknameUnique(true);
-    if (!isNicknameUnique) {
-      setNicknameError('이미 사용 중인 닉네임입니다.');
-    }
-  };
-
-  const handleSignup = (e) => {
-    e.preventDefault();
-    let hasError = false;
-
-    if (!termsOfUseAccepted) {
-      setTermsOfUseError('이용약관에 동의하셔야 합니다.');
-      hasError = true;
-    } else {
-      setTermsOfUseError('');
+  const onSubmit = (data) => {
+    if (!data.termsOfUseAccepted) {
+      setError('termsOfUseAccepted', {
+        type: 'manual',
+        message: '이용약관에 동의하셔야 합니다.',
+      });
+      return;
     }
 
-    if (!privacyPolicyAccepted) {
-      setPrivacyPolicyError('개인정보 수집 및 이용동의에 동의하셔야 합니다.');
-      hasError = true;
-    } else {
-      setPrivacyPolicyError('');
+    if (!data.privacyPolicyAccepted) {
+      setError('privacyPolicyAccepted', {
+        type: 'manual',
+        message: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
+      });
+      return;
     }
 
-    if (hasError) return;
-
-    console.log({
-      email,
-      nickname,
-      password,
-    });
-    navigate('/');
+    console.log(data);
+    navigate('/signin');
   };
 
   const handleBackgroundClick = (e) => {
     if (e.target === e.currentTarget) {
-      navigate('/');
+      navigate(location.state?.from || '/');
     }
   };
+
+  const password = watch('password', '');
+
+  React.useEffect(() => {
+    setError('termsOfUseAccepted', {
+      type: 'manual',
+      message: '이용약관에 동의하셔야 합니다.',
+    });
+    setError('privacyPolicyAccepted', {
+      type: 'manual',
+      message: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
+    });
+  }, [setError]);
 
   return (
     <div
@@ -121,92 +82,114 @@ const SignupModal = () => {
         <h4 className="mb-4 text-start text-xl font-bold text-black">
           기본정보
         </h4>
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">이메일</label>
-            <div className="flex justify-between">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-3/4 rounded border px-3 py-2 text-black"
-                placeholder="이메일을 입력해주세요."
-                required
-              />
-              <button
-                type="button"
-                className="ml-2 rounded bg-pal-purple px-4 py-2 text-white"
-                onClick={checkEmailUnique}
-              >
-                중복 확인
-              </button>
-            </div>
-            {emailError && <p className="text-red-500">{emailError}</p>}
+            <Controller
+              name="email"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: '이메일을 입력해주세요.',
+                validate: validateEmail,
+              }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="email"
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="이메일을 입력해주세요."
+                />
+              )}
+            />
+            {errors.email && (
+              <p className="text-red-500">{errors.email.message}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">닉네임</label>
-            <div className="flex justify-between">
-              <input
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                className="w-3/4 rounded border px-3 py-2 text-black"
-                placeholder="닉네임을 입력해주세요."
-                required
-              />
-              <button
-                type="button"
-                className="ml-2 rounded bg-pal-purple px-4 py-2 text-white"
-                onClick={checkNicknameUnique}
-              >
-                중복 확인
-              </button>
-            </div>
+            <Controller
+              name="nickname"
+              control={control}
+              defaultValue=""
+              rules={{ required: '닉네임을 입력해주세요.' }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="text"
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="닉네임을 입력해주세요."
+                />
+              )}
+            />
+            {errors.nickname && (
+              <p className="text-red-500">{errors.nickname.message}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">
               비밀번호
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border px-3 py-2 text-black"
-              placeholder="비밀번호를 입력해주세요."
-              required
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: '비밀번호를 입력해주세요.',
+                validate: validatePassword,
+              }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="password"
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="비밀번호를 입력해주세요."
+                />
+              )}
             />
-            {passwordError && <p className="text-red-500">{passwordError}</p>}
+            {errors.password && (
+              <p className="text-red-500">{errors.password.message}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">
               비밀번호 확인
             </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded border px-3 py-2 text-black"
-              placeholder="비밀번호를 다시 입력해주세요."
-              required
+            <Controller
+              name="confirmPassword"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: '비밀번호를 다시 입력해주세요.',
+                validate: (value) =>
+                  value === password || '비밀번호가 일치하지 않습니다.',
+              }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="password"
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="비밀번호를 다시 입력해주세요."
+                />
+              )}
             />
-            {confirmPasswordError && (
-              <p className="text-red-500">{confirmPasswordError}</p>
+            {errors.confirmPassword && (
+              <p className="text-red-500">{errors.confirmPassword.message}</p>
             )}
           </div>
           <div className="flex items-center">
-            <input
-              type="checkbox"
-              checked={termsOfUseAccepted}
-              onChange={(e) => {
-                setTermsOfUseAccepted(e.target.checked);
-                if (e.target.checked) {
-                  setTermsOfUseError('');
-                } else {
-                  setTermsOfUseError('이용약관에 동의하셔야 합니다.');
-                }
-              }}
-              className="mr-2"
-              required
+            <Controller
+              name="termsOfUseAccepted"
+              control={control}
+              defaultValue={false}
+              rules={{ required: '이용약관에 동의하셔야 합니다.' }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="checkbox"
+                  className="mr-2"
+                />
+              )}
             />
             <span>이용약관 동의 (필수)</span>
             <button
@@ -217,23 +200,24 @@ const SignupModal = () => {
               보기
             </button>
           </div>
-          {termsOfUseError && <p className="text-red-500">{termsOfUseError}</p>}
+          {errors.termsOfUseAccepted && (
+            <p className="text-red-500">{errors.termsOfUseAccepted.message}</p>
+          )}
           <div className="mt-4 flex items-center">
-            <input
-              type="checkbox"
-              checked={privacyPolicyAccepted}
-              onChange={(e) => {
-                setPrivacyPolicyAccepted(e.target.checked);
-                if (e.target.checked) {
-                  setPrivacyPolicyError('');
-                } else {
-                  setPrivacyPolicyError(
-                    '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-                  );
-                }
+            <Controller
+              name="privacyPolicyAccepted"
+              control={control}
+              defaultValue={false}
+              rules={{
+                required: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
               }}
-              className="mr-2"
-              required
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="checkbox"
+                  className="mr-2"
+                />
+              )}
             />
             <span>개인정보 수집 및 이용동의 (필수)</span>
             <button
@@ -244,8 +228,10 @@ const SignupModal = () => {
               보기
             </button>
           </div>
-          {privacyPolicyError && (
-            <p className="text-red-500">{privacyPolicyError}</p>
+          {errors.privacyPolicyAccepted && (
+            <p className="text-red-500">
+              {errors.privacyPolicyAccepted.message}
+            </p>
           )}
           <div className="flex justify-center gap-20">
             <button
