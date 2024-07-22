@@ -3,7 +3,7 @@ import MakeSession from './MakeSession';
 import Pagination from './Pagination';
 import './app.css';
 import ContentsLayout from '@layout/ContentsLayout';
-
+import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 // 더미데이터([Item 1, Item 2, Item 3 ...])
 const data = Array.from({ length: 200 }, (_, index) => `Item ${index + 1}`);
 
@@ -69,10 +69,23 @@ const HealingSessionPage = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {currentItems.map((item, index) => (
             <div
-              className="rounded bg-gray-200 p-4 shadow"
+              className="m-3 flex h-96 w-3/4 flex-col items-center rounded-lg bg-pal-lightwhite p-5 text-pal-overlay shadow"
               key={index}
             >
-              {item}
+              <div className="mb-4 flex w-full justify-center">
+                <img
+                  src={defaultImage}
+                  alt="default"
+                  className="w-5/6"
+                />
+              </div>
+              <div className="w-full text-left">
+                <p className="text-xl">제목</p>
+                <p>
+                  {item} 내용예시 내용예시 내용예시 내용예시 내용예시 내용예시
+                  내용예시ㄴㅁㅇㄹㄴㅁㅇㄹㄴㅁㅇㄹ
+                </p>
+              </div>
             </div>
           ))}
         </div>
