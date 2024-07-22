@@ -18,23 +18,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final GroupService groupService;
-    private final GroupUtil groupUtil;
+  private final GroupService groupService;
+  private final GroupUtil groupUtil;
 
-    @PatchMapping("/group/accept")
-    public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
-        Group findGroup = groupService.findById(request.get("groupId"));
-        String key = groupUtil.generateKey();
-        groupService.updateGroupByAdmin(findGroup, Status.ACCEPT, key);
+  @PatchMapping("/group/accept")
+  public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
+    Group findGroup = groupService.findById(request.get("groupId"));
+    String key = groupUtil.generateKey();
+    groupService.updateGroupByAdmin(findGroup, Status.ACCEPT, key);
 
-        return CommonResponse.ok("그룹이 정상적으로 승인되었음");
-    }
+    return CommonResponse.ok("그룹이 정상적으로 승인되었음");
+  }
 
-    @PatchMapping("/group/reject")
-    public CommonResponse<?> rejectGroup(@RequestBody Map<String, Long> request) {
-        Group findGroup = groupService.findById(request.get("groupId"));
-        groupService.updateGroupByAdmin(findGroup, Status.REJECT, "");
+  @PatchMapping("/group/reject")
+  public CommonResponse<?> rejectGroup(@RequestBody Map<String, Long> request) {
+    Group findGroup = groupService.findById(request.get("groupId"));
+    groupService.updateGroupByAdmin(findGroup, Status.REJECT, "");
 
-        return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
-    }
+    return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
+  }
 }
