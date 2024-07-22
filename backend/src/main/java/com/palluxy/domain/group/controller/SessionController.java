@@ -11,6 +11,7 @@ import com.palluxy.global.common.CommonResponse;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.Session;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -28,6 +29,7 @@ SessionController {
   private final GroupUtil groupUtil;
 
   @PostMapping("/api/sessions")
+  @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createSession(@RequestBody Map<String, Object> params) {
     Group group = groupService.findById((Long) params.get("groupId"));
     groupUtil.validateApproveKey(group, String.valueOf(params.get("approveKey")));
@@ -40,6 +42,7 @@ SessionController {
   }
 
   @PostMapping("/api/sessions/{sessionId}/connections")
+  @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createConnection(
       @PathVariable("sessionId") String sessionId, @RequestBody Map<String, Object> params) {
     GroupUser groupUser =
@@ -58,6 +61,7 @@ SessionController {
   }
 
   @PostMapping("/api/sessions/{sessionId}")
+  @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> closeSession(@PathVariable("sessionId") String sessionId) {
     Session session = openviduService.getSession(sessionId);
     openviduService.closeSession(session);
@@ -67,6 +71,7 @@ SessionController {
   }
 
   @PostMapping("/api/sessions/{sessionId}/connection/{connectionId}")
+  @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> disconnect(
       @PathVariable("sessionId") String sessionId,
       @PathVariable("connectionId") String connectionId,
