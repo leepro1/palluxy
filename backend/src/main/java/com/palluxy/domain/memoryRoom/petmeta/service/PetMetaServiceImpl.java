@@ -1,14 +1,29 @@
 package com.palluxy.domain.memoryRoom.petmeta.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import com.palluxy.domain.memoryRoom.petmeta.repository.PetMetaRepository;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +34,17 @@ public class PetMetaServiceImpl implements PetMetaService {
 
   @Autowired
   private RoomRepository roomRepository;
+
+  @Autowired
+  private AmazonS3 amazonS3;
+
+  private final WebClient webClient;
+
+  private final String bucketName = "your-s3-bucket-name";
+
+  public PetMetaServiceImpl(WebClient.Builder webClientBuilder) {
+    this.webClient = webClientBuilder.baseUrl("http://django-server-endpoint").build();
+  }
 
   @Override
   public PetMetaDto createPetMeta(PetMetaDto petMetaDto, Long roomId) {
@@ -88,5 +114,50 @@ public class PetMetaServiceImpl implements PetMetaService {
   @Override
   public void deletePetMeta(Long petMetaId) {
     petMetaRepository.deleteById(petMetaId);
+  }
+
+  @Override
+  public Mono<String> uploadImageAndGetObjUrl(MultipartFile file) {
+    return webClient
+        .post()
+        .uri("/upload/")
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .bodyValue(file)
+        .retrieve()
+        .bodyToMono(String.class)
+        .flatMap(this::downloadObjFile)
+        .flatMap(this::uploadToS3);
+  }
+
+  private Mono<String> downloadObjFile(String filename) {
+    return webClient
+        .get()
+        .uri("/download/" + filename)
+        .accept(MediaType.APPLICATION_OCTET_STREAM)
+        .retrieve()
+        .bodyToFlux(DataBuffer.class)
+        .collectList()
+        .flatMap(dataBuffers -> {
+          Path tempFile = Paths.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".obj");
+          try (FileOutputStream fos = new FileOutputStream(tempFile.toFile())) {
+            for (DataBuffer dataBuffer : dataBuffers) {
+              fos.write(dataBuffer.asByteBuffer().array());
+            }
+          } catch (IOException e) {
+            return Mono.error(new RuntimeException("Failed to save file locally", e));
+          }
+          return Mono.just(tempFile.toFile());
+        })
+        .map(File::getPath);
+  }
+
+  private Mono<String> uploadToS3(String filePath) {
+    File file = new File(filePath);
+    String s3Key = "uploaded/" + file.getName();
+    return Mono.fromCallable(() -> {
+      amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, file)
+          .withCannedAcl(CannedAccessControlList.PublicRead));
+      return amazonS3.getUrl(bucketName, s3Key).toString();
+    });
   }
 }
