@@ -368,48 +368,96 @@ const HealingMeetingPageContents = () => {
               </div>
               {/* 푸터 */}
               <div className="flex h-20 w-full items-center justify-between bg-gray-800 px-4">
-                <div className="flex items-center">
-                  <button
-                    className="focus:shadow-outline mr-2 h-10 w-10 rounded-full bg-gray-500 text-white focus:outline-none"
-                    onClick={() => handleToggle('mike')}
-                  >
-                    {isMike ? (
-                      <span className="material-symbols-outlined">mic</span>
-                    ) : (
-                      <span className="material-symbols-outlined">mic_off</span>
-                    )}
-                  </button>
-                  <button
-                    className="focus:shadow-outline mr-2 h-10 w-10 rounded-full bg-gray-500 text-white focus:outline-none"
-                    onClick={() => handleToggle('camera')}
-                  >
-                    {isCamera ? (
-                      <span className="material-symbols-outlined">
-                        videocam
+                <input
+                  className="focus:shadow-outline rounded bg-gray-800 px-4 py-2 font-bold text-gray-800"
+                  type="button"
+                  id="buttonLeaveSession"
+                  value="다라마"
+                />
+                <div className="flex flex-1 items-center justify-center gap-x-10">
+                  {isCamera === true ? (
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="material-symbols-outlined cursor-pointer text-5xl text-white"
+                        id="buttonToggleCamera"
+                        onClick={() => {
+                          handleToggle('camera');
+                        }}
+                      >
+                        hangout_video
                       </span>
-                    ) : (
-                      <span className="material-symbols-outlined">
-                        videocam_off
+                      <span className="text-sm text-white">비디오 켜짐</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
+                        id="buttonToggleCamera"
+                        onClick={() => {
+                          handleToggle('camera');
+                        }}
+                      >
+                        hangout_video_off
                       </span>
-                    )}
-                  </button>
-                  <button
-                    className="focus:shadow-outline mr-2 h-10 w-10 rounded-full bg-gray-500 text-white focus:outline-none"
-                    onClick={switchCamera}
-                  >
-                    <span className="material-symbols-outlined">
-                      switch_camera
+                      <span className="text-sm text-red-500">비디오 꺼짐</span>
+                    </div>
+                  )}
+                  {isMike === true ? (
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="material-symbols-outlined cursor-pointer text-5xl text-white"
+                        id="buttonToggleMike"
+                        onClick={() => {
+                          handleToggle('mike');
+                        }}
+                      >
+                        mic
+                      </span>
+                      <span className="text-sm text-white">마이크 켜짐</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
+                        id="buttonToggleMike"
+                        onClick={() => {
+                          handleToggle('mike');
+                        }}
+                      >
+                        mic_off
+                      </span>
+                      <span className="text-sm text-red-500">마이크 꺼짐</span>
+                    </div>
+                  )}
+                  <div className="flex flex-col items-center">
+                    <span
+                      className="material-symbols-outlined cursor-pointer text-5xl text-white"
+                      id="buttonSwitchCamera"
+                      onClick={() => {
+                        switchCamera();
+                      }}
+                    >
+                      party_mode
                     </span>
-                  </button>
+                    <span className="text-sm text-white">카메라 바꾸기</span>
+                  </div>
                 </div>
-                <div>
-                  <button
-                    className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
+                <div className="flex flex-col items-center">
+                  <span
                     onClick={leaveSession}
+                    className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
                   >
-                    방 나가기
-                  </button>
+                    door_open
+                  </span>
+                  <span className="text-sm text-red-500">세션 나가기</span>
                 </div>
+                {/* <input
+                  className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
+                  type="button"
+                  id="buttonLeaveSession"
+                  onClick={leaveSession}
+                  value="세션 나가기"
+                /> */}
               </div>
             </div>
             <ChatBox className="h-auto w-2/12" />
