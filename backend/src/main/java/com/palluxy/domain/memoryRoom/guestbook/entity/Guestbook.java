@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -15,15 +18,18 @@ public class Guestbook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long guestbookId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "room_id")
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User owner;  // 방명록 소유자
 
-    private String content;
+    @OneToMany(mappedBy = "guestbook", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
-    private boolean isDeleted = false;
+    public Guestbook() {
+        this.comments = new ArrayList<>();
+    }
 }

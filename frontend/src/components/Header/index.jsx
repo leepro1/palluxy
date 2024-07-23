@@ -1,6 +1,6 @@
 import Logo from '@assets/images/logo/logo.svg';
 import { NavLink } from 'react-router-dom';
-import Button from '@components/Button';
+import GlobalBtn from '@components/GlobalBtn';
 import ContentsLayout from '@layout/ContentsLayout';
 
 const Header = () => {
@@ -16,29 +16,29 @@ const Header = () => {
         </div>
         {/* nav item */}
         <div className="mx-7 grow">
-          <ul className="font-jamsilMedium flex gap-x-16 text-xl text-white">
+          <ul className="flex gap-x-16 font-jamsilMedium text-xl text-white">
             <li>
               <NavLink to={'/'}>공지사항</NavLink>
             </li>
             <li>
-              <NavLink to={'/'}>치유모임</NavLink>
+              <NavLink to={'/healingmeeting'}>치유모임</NavLink>
             </li>
             <li>
               <NavLink to={'/memoryspace'}>추억공간</NavLink>
             </li>
             <li>
-              <NavLink to={'/'}>추억공간 모아보기</NavLink>
+              <NavLink to={'/meetingoverview'}>치유모임 모아보기</NavLink>
             </li>
           </ul>
         </div>
         {/* 로그인 회원가입 버튼 */}
-        <div className="font-jamsilMedium flex gap-x-16 text-white">
-          <Button
+        <div className="flex gap-x-16 font-jamsilMedium text-white">
+          <GlobalBtn
             className="border-2 border-white"
             size={'sm'}
             text={'로그인'}
           />
-          <Button
+          <GlobalBtn
             className="bg-pal-purple"
             size={'sm'}
             text={'회원가입'}

@@ -19,7 +19,6 @@ const PalModel = () => {
   obj.scale.x = 20;
   obj.scale.y = 20;
   obj.scale.z = 20;
-  console.log(obj);
 
   return <primitive object={obj} />;
 };

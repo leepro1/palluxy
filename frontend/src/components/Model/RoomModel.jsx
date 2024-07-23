@@ -1,36 +1,30 @@
 import { useGLTF } from '@react-three/drei';
-import { useLoader } from '@react-three/fiber';
-import { TextureLoader } from 'three';
+import { FRAME_INDEX } from '@/constants/frameIndex';
+import convertTexture from '@/utils/convertTexture';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-const RoomModel = () => {
-  const { nodes, materials, scene } = useGLTF('/models/frameRoom.glb');
-  const texture = useLoader(TextureLoader, '/models/texture_1.jpg');
-  // console.log(nodes);
-  // // console.log(scene);
-  // console.log(materials);
+const RoomModel = React.memo(({ data }) => {
+  const { materials, scene } = useGLTF('/models/frameRoom.glb');
 
-  materials['frameMaterial.001'].map = texture;
-  materials['frameMaterial.002'].map = texture;
-  materials['frameMaterial.003'].map = texture;
-  materials['frameMaterial.004'].map = texture;
-  materials['frameMaterial.005'].map = texture;
-  materials['frameMaterial.006'].map = texture;
-
-  const handleModelClick = (event) => {
-    console.log(event.object);
-    if (event.object.name === 'frame006') {
-      console.log('select 6');
+  console.log('실행됨');
+  data.forEach(async (frameData) => {
+    console.log(frameData.index);
+    const matrialName = FRAME_INDEX[frameData.index];
+    const texture = await convertTexture(frameData.url);
+    if (texture) {
+      materials[matrialName].map = texture;
+      texture.center.set(0.5, 0.5);
+      texture.rotation = frameData.angle;
     }
-  };
+  });
 
-  return (
-    <primitive
-      object={scene}
-      // onClick={(e) => handleModelClick(e)}
-    />
-  );
+  return <primitive object={scene} />;
+});
+
+RoomModel.displayName = 'RoomModel';
+
+RoomModel.propTypes = {
+  data: PropTypes.any.isRequired,
 };
-
-// useGLTF.preload('/models/Room.glb');
-
 export default RoomModel;

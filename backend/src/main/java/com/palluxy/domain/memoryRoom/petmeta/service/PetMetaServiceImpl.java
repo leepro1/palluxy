@@ -1,14 +1,31 @@
 package com.palluxy.domain.memoryRoom.petmeta.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import com.palluxy.domain.memoryRoom.petmeta.repository.PetMetaRepository;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +36,17 @@ public class PetMetaServiceImpl implements PetMetaService {
 
   @Autowired
   private RoomRepository roomRepository;
+
+  @Autowired
+  private AmazonS3 amazonS3;
+
+  private final WebClient webClient;
+
+  private final String bucketName = "palluxytest-resdstone";
+
+  public PetMetaServiceImpl(WebClient.Builder webClientBuilder) {
+    this.webClient = webClientBuilder.baseUrl("http://127.0.0.1:8000").build();
+  }
 
   @Override
   public PetMetaDto createPetMeta(PetMetaDto petMetaDto, Long roomId) {
@@ -88,5 +116,42 @@ public class PetMetaServiceImpl implements PetMetaService {
   @Override
   public void deletePetMeta(Long petMetaId) {
     petMetaRepository.deleteById(petMetaId);
+  }
+
+  @Override
+  public Mono<Void> uploadImageToDjango(Long roomId, MultipartFile file) {
+    return Mono.defer(() -> {
+      MultipartBodyBuilder builder = new MultipartBodyBuilder();
+      builder.part("file", file.getResource());
+      builder.part("roomId", roomId);
+
+      return webClient.post()
+          .uri("/api/v1/run-model/")
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .body(BodyInserters.fromMultipartData(builder.build()))
+          .retrieve()
+          .bodyToMono(Void.class);
+    });
+  }
+
+  @Override
+  public Mono<String> handleObjFileUpload(Long roomId, FilePart filePart) {
+    return filePart.transferTo(Paths.get(System.getProperty("java.io.tmpdir"), filePart.filename()))
+        .thenReturn(filePart.filename())
+        .flatMap(filePath -> {
+          String s3Url = uploadToS3(filePath).block();
+          // roomId를 사용하여 PetMeta를 업데이트하거나 생성하는 로직 추가 가능
+          return Mono.just(s3Url);
+        });
+  }
+
+  private Mono<String> uploadToS3(String filePath) {
+    File file = new File(filePath);
+    String s3Key = "uploaded/" + file.getName();
+    return Mono.fromCallable(() -> {
+      amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, file)
+          .withCannedAcl(CannedAccessControlList.PublicRead));
+      return amazonS3.getUrl(bucketName, s3Key).toString();
+    });
   }
 }
