@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class MessageOutput {
-    private String text;
-    private String type;
+  private String text;
+  private String type;
 }

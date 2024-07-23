@@ -8,7 +8,7 @@ public class MessageInput {
   private ClaudeRole role;
   private String content;
 
-  public MessageInput(){};
+  public MessageInput() {}
 
   public MessageInput(ClaudeRole role, String content) {
     this.role = role;

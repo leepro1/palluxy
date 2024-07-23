@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class Usage {
-    private int input_tokens;
-    private int output_tokens;
+  private int input_tokens;
+  private int output_tokens;
 }

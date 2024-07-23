@@ -22,29 +22,9 @@ public class ClaudeUtil {
   private String API_URL;
 
   public void sendRequest(ClaudeRequest request) {
-    JsonObject object = new JsonObject();
-    object.addProperty("model", request.getModel());
-    object.addProperty("max_tokens", request.getMaxTokens());
 
-    JsonArray messages = new JsonArray();
-    for (MessageInput messageInput : request.getMessageInputs()) {
-      messages.add(messageInput.toJsonObject());
-    }
-    object.add("messages", messages);
+  }
 
-    String json = object.toString();
-    WebClient webClient =
-        WebClient.builder()
-            .baseUrl(API_URL)
-            .defaultHeader("x-api-key", API_KEY)
-            .defaultHeader("anthropic-version", "2023-06-01")
-            .defaultHeader("content-type", "application/json")
-            .build();
-
-    webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
-            response -> {
-               // db에 추가 로직;
-            }
-    );
+  public void sendLetter() {
   }
 }
