@@ -1,10 +1,11 @@
-import ChatBox from '@/pages/HealingMeetingPage/ChatBox';
-import { useEffect, useCallback, useState, useRef } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import axios from 'axios';
-import '@/pages/HealingMeetingPage/HealingMeetingPageContents.css';
-import UserVideoComponent from './UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
+import UserVideoComponent from './UserVideoComponent';
+import ChatBox from '@/pages/HealingMeetingPage/ChatBox';
+import ConfirmModal from './ConfirmModal'; // 모달 컴포넌트 추가
+import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 
 const APPLICATION_SERVER_URL = 'http://localhost:5000/';
 
@@ -18,18 +19,21 @@ const HealingMeetingPageContents = () => {
   const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState(undefined);
-  const OV = useRef(null);
   const [isMike, setIsMike] = useState(true);
   const [isCamera, setIsCamera] = useState(true);
+  const [role, setRole] = useState('SUBSCRIBER');
+  const OV = useRef(null);
+
+  const [showModal, setShowModal] = useState(false); // 모달 상태
+  const [targetSubscriber, setTargetSubscriber] = useState(null); // 강퇴 대상 상태
+
   const handleToggle = (kind) => {
     if (publisher) {
       switch (kind) {
         case 'camera':
-          // setIsCamera(!isCamera);
           setIsCamera((prevState) => {
             const newState = !prevState;
             publisher.publishVideo(newState);
-            console.log(newState);
             return newState;
           });
           break;
@@ -40,12 +44,12 @@ const HealingMeetingPageContents = () => {
             return newState;
           });
           break;
-
         default:
           break;
       }
     }
   };
+
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       leaveSession();
@@ -77,10 +81,37 @@ const HealingMeetingPageContents = () => {
     );
   };
 
+  const changeSession = (sessionId) => {
+    setMySessionId(sessionId);
+  };
+
+  const confirmRemoveUser = (connectionId) => {
+    setTargetSubscriber(connectionId);
+    setShowModal(true); // 모달 표시
+  };
+
+  const handleRemoveUser = () => {
+    if (targetSubscriber && session) {
+      session
+        .forceDisconnect({ connectionId: targetSubscriber })
+        .then(() => {
+          console.log(
+            `User with connectionId ${targetSubscriber} disconnected`,
+          );
+          setShowModal(false); // 모달 숨기기
+        })
+        .catch((error) => console.error('Error disconnecting user:', error));
+    }
+  };
+
+  const cancelRemoveUser = () => {
+    setShowModal(false); // 모달 숨기기
+    setTargetSubscriber(null);
+  };
+
   const joinSession = async () => {
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
-
     setSession(newSession);
 
     newSession.on('streamCreated', (event) => {
@@ -97,7 +128,7 @@ const HealingMeetingPageContents = () => {
     });
 
     try {
-      const token = await getToken();
+      const token = await getToken(role);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,
@@ -185,9 +216,9 @@ const HealingMeetingPageContents = () => {
     }
   }, [session, mainStreamManager, currentVideoDevice]);
 
-  const getToken = async () => {
+  const getToken = async (role) => {
     const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId);
+    return await createToken(sessionId, role);
   };
 
   const createSession = async (sessionId) => {
@@ -198,73 +229,95 @@ const HealingMeetingPageContents = () => {
         headers: { 'Content-Type': 'application/json' },
       },
     );
-    return response.data; // The sessionId
+    return response.data;
   };
 
-  const createToken = async (sessionId) => {
+  const createToken = async (sessionId, role) => {
     const response = await axios.post(
       APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
-      {},
+      { role },
       {
         headers: { 'Content-Type': 'application/json' },
       },
     );
-    return response.data; // The token
+    return response.data;
   };
+
+  const data = Array.from({ length: 4 }, (_, index) => `dummydata${index + 1}`);
+
   return (
     <div className="container mx-auto">
-      {/* 사용자의 세션이 없을때(세션정보를 입력하기 전) */}
       {session === undefined ? (
-        <div>
-          <div
-            id="join-dialog"
-            className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md"
-          >
-            <h1 className="mb-4 text-2xl font-bold">사용자와 세션 정보 입력</h1>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                joinSession(e);
-              }}
-            >
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  사용자id:
-                </label>
-                <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  type="text"
-                  id="userName"
-                  value={myUserName}
-                  onChange={handleChangeUserName}
-                  required
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  세션id:
-                </label>
-                <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  type="text"
-                  id="sessionId"
-                  value={mySessionId}
-                  onChange={handleChangeSessionId}
-                  required
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <input
-                  className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
-                  type="submit"
-                  value="JOIN"
-                />
-              </div>
-            </form>
+        <ContentsLayout>
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-700">
+              사용자id:
+            </label>
+            <input
+              className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+              type="text"
+              id="userName"
+              value={myUserName}
+              onChange={handleChangeUserName}
+              required
+            />
           </div>
-        </div>
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-700">
+              역할 선택:
+            </label>
+            <select
+              className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="SUBSCRIBER">SUBSCRIBER</option>
+              <option value="PUBLISHER">PUBLISHER</option>
+              <option value="MODERATOR">MODERATOR</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {data.map((item, index) => (
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+
+                  joinSession();
+                }}
+                key={index}
+              >
+                <div className="w-9/12 rounded-lg bg-white shadow-lg">
+                  <div className="relative">
+                    <img
+                      src={defaultImage}
+                      alt="이미지"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="mb-2 text-xl font-bold">치유 모임 이름</h3>
+                    <p className="text-gray-700">
+                      모임 설명이 여기에
+                      들어갑니다.asdfssssssssssssssssssssssssss
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      changeSession(item);
+                    }}
+                    className="focus:shadow-outline h-10 w-full rounded bg-pal-purple px-4 py-2 font-bold text-white hover:bg-violet-900 focus:outline-none"
+                    type="submit"
+                  >
+                    모임 입장
+                  </button>
+                </div>
+              </form>
+            ))}
+          </div>
+        </ContentsLayout>
       ) : null}
-      {/* 사용자의 세션이 있을때(join한 후) */}
+
       {session !== undefined ? (
         <ContentsLayout>
           <div className="flex flex-row">
@@ -279,115 +332,98 @@ const HealingMeetingPageContents = () => {
               <div className="flex grow bg-black">
                 <div className="flex grow flex-wrap">
                   {publisher !== undefined ? (
-                    <div
-                      className="relative w-1/2 border-2 border-solid border-gray-900 p-6"
-                      onClick={() => handleMainVideoStream(publisher)}
-                    >
+                    <div className="relative w-1/2 border-2 border-solid border-gray-900 p-8">
                       <UserVideoComponent streamManager={publisher} />
                     </div>
                   ) : null}
                   {subscribers.map((sub, i) => (
                     <div
                       key={sub.id}
-                      className="w-1/2 border-2 border-solid border-gray-900 p-6"
-                      onClick={() => handleMainVideoStream(sub)}
+                      className="group flex w-1/2 flex-col items-center border-2 border-solid border-gray-900 p-8"
                     >
                       <span>{sub.id}</span>
                       <UserVideoComponent streamManager={sub} />
+                      <div className="items-center">
+                        {role === 'MODERATOR' && (
+                          <div className="mt-2 hidden flex-col items-center group-hover:flex">
+                            <span
+                              onClick={() =>
+                                confirmRemoveUser(
+                                  sub.stream.connection.connectionId,
+                                )
+                              }
+                              className="material-symbols-outlined cursor-pointer text-red-500"
+                            >
+                              close
+                            </span>
+                            <span className="text-sm text-red-500">
+                              내보내기
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
-                {/* <ChatBox className="w-2/12" /> */}
               </div>
               {/* 푸터 */}
               <div className="flex h-20 w-full items-center justify-between bg-gray-800 px-4">
-                <input
-                  className="focus:shadow-outline rounded bg-gray-800 px-4 py-2 font-bold text-gray-800"
-                  type="button"
-                  id="buttonLeaveSession"
-                  value="가나 다라마"
-                />
-                <div className="flex flex-1 items-center justify-center gap-x-10">
-                  {isCamera === true ? (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-white"
-                        id="buttonToggleCamera"
-                        onClick={() => {
-                          handleToggle('camera');
-                        }}
-                      >
-                        hangout_video
+                <div className="flex items-center">
+                  <button
+                    className="focus:shadow-outline mr-2 h-10 w-10 rounded-full bg-gray-500 text-white focus:outline-none"
+                    onClick={() => handleToggle('mike')}
+                  >
+                    {isMike ? (
+                      <span className="material-symbols-outlined">mic</span>
+                    ) : (
+                      <span className="material-symbols-outlined">mic_off</span>
+                    )}
+                  </button>
+                  <button
+                    className="focus:shadow-outline mr-2 h-10 w-10 rounded-full bg-gray-500 text-white focus:outline-none"
+                    onClick={() => handleToggle('camera')}
+                  >
+                    {isCamera ? (
+                      <span className="material-symbols-outlined">
+                        videocam
                       </span>
-                      <span className="text-sm text-white">비디오 켜짐</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
-                        id="buttonToggleCamera"
-                        onClick={() => {
-                          handleToggle('camera');
-                        }}
-                      >
-                        hangout_video_off
+                    ) : (
+                      <span className="material-symbols-outlined">
+                        videocam_off
                       </span>
-                      <span className="text-sm text-red-500">비디오 꺼짐</span>
-                    </div>
-                  )}
-                  {isMike === true ? (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-white"
-                        id="buttonToggleMike"
-                        onClick={() => {
-                          handleToggle('mike');
-                        }}
-                      >
-                        mic
-                      </span>
-                      <span className="text-sm text-white">마이크 켜짐</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
-                        id="buttonToggleMike"
-                        onClick={() => {
-                          handleToggle('mike');
-                        }}
-                      >
-                        mic_off
-                      </span>
-                      <span className="text-sm text-red-500">마이크 꺼짐</span>
-                    </div>
-                  )}
-                  <div className="flex flex-col items-center">
-                    <span
-                      className="material-symbols-outlined cursor-pointer text-5xl text-white"
-                      id="buttonSwitchCamera"
-                      onClick={() => {
-                        switchCamera();
-                      }}
-                    >
-                      party_mode
+                    )}
+                  </button>
+                  <button
+                    className="focus:shadow-outline mr-2 h-10 w-10 rounded-full bg-gray-500 text-white focus:outline-none"
+                    onClick={switchCamera}
+                  >
+                    <span className="material-symbols-outlined">
+                      switch_camera
                     </span>
-                    <span className="text-sm text-white">카메라 바꾸기</span>
-                  </div>
+                  </button>
                 </div>
-                <input
-                  className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
-                  type="button"
-                  id="buttonLeaveSession"
-                  onClick={leaveSession}
-                  value="세션 나가기"
-                />
+                <div>
+                  <button
+                    className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
+                    onClick={leaveSession}
+                  >
+                    방 나가기
+                  </button>
+                </div>
               </div>
             </div>
             <ChatBox className="h-auto w-2/12" />
           </div>
         </ContentsLayout>
       ) : null}
+
+      {/* 확인 모달 */}
+      <ConfirmModal
+        show={showModal}
+        message="정말로 내보내시겠습니까?"
+        onConfirm={handleRemoveUser}
+        onCancel={cancelRemoveUser}
+      />
     </div>
   );
 };
