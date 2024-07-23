@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MakeSession from './MakeSession';
 import Pagination from './Pagination';
 import './app.css';
 import ContentsLayout from '@layout/ContentsLayout';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
+
 // 더미데이터([Item 1, Item 2, Item 3 ...])
 const data = Array.from({ length: 200 }, (_, index) => `Item ${index + 1}`);
 
@@ -17,6 +19,8 @@ const HealingSessionPage = () => {
   const [showingPage, setShowingPage] = useState(currentPage);
   const showingPageMin = Math.max(showingPage - 2, 1);
   const showingPageMax = Math.min(showingPage + 2, totalPage);
+
+  const navigate = useNavigate();
 
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -39,6 +43,10 @@ const HealingSessionPage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleImageClick = (index) => {
+    navigate(`/meetingoverview/${index}`);
   };
 
   return (
@@ -69,8 +77,9 @@ const HealingSessionPage = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {currentItems.map((item, index) => (
             <div
-              className="m-3 flex h-96 w-3/4 flex-col items-center rounded-lg bg-pal-lightwhite p-5 text-pal-overlay shadow"
+              className="m-3 flex h-96 w-3/4 cursor-pointer flex-col items-center rounded-lg bg-pal-lightwhite p-5 text-pal-overlay shadow"
               key={index}
+              onClick={() => handleImageClick(index)}
             >
               <div className="mb-4 flex w-full justify-center">
                 <img
