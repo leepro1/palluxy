@@ -17,15 +17,16 @@ import java.util.List;
 @RequestMapping("/api/albums/{albumId}/images")
 public class ImageController {
 
-  @Autowired
-  private ImageService imageService;
+  @Autowired private ImageService imageService;
 
-  @Autowired
-  private FileStorageService fileStorageService;
+  @Autowired private FileStorageService fileStorageService;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("index") int index) {
+  public CommonResponse<ImageDto> createImage(
+      @PathVariable Long albumId,
+      @RequestParam("file") MultipartFile file,
+      @RequestParam("index") int index) {
     try {
       String fileName = fileStorageService.storeFile(file);
       String fileUrl = fileStorageService.getFileUrl(fileName);
@@ -59,7 +60,10 @@ public class ImageController {
 
   @PutMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImage(@PathVariable Long albumId, @PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
+  public CommonResponse<ImageDto> updateImage(
+      @PathVariable Long albumId,
+      @PathVariable Long imageId,
+      @Valid @RequestBody ImageDto imageDto) {
     try {
       ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
       return CommonResponse.ok("Image updated successfully", updatedImage);
@@ -70,7 +74,8 @@ public class ImageController {
 
   @PutMapping("/{imageId}/angle")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImageAngle(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("angle") double angle) {
+  public CommonResponse<ImageDto> updateImageAngle(
+      @PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("angle") double angle) {
     ImageDto imageDto = imageService.getImageById(imageId);
     imageDto.setAngle(angle);
     ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
@@ -79,7 +84,10 @@ public class ImageController {
 
   @PutMapping("/{imageId}/url")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImageUrl(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("file") MultipartFile file) {
+  public CommonResponse<ImageDto> updateImageUrl(
+      @PathVariable Long albumId,
+      @PathVariable Long imageId,
+      @RequestParam("file") MultipartFile file) {
     try {
       String fileName = fileStorageService.storeFile(file);
       String fileUrl = fileStorageService.getFileUrl(fileName);
@@ -94,7 +102,8 @@ public class ImageController {
 
   @PutMapping("/{imageId}/index")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImageIndex(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
+  public CommonResponse<ImageDto> updateImageIndex(
+      @PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
     try {
       ImageDto imageDto = imageService.getImageById(imageId);
       imageDto.setIndex(index);

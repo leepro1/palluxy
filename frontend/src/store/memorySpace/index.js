@@ -26,7 +26,17 @@ export const useModelPositionStore = create((set) => ({
       },
     })),
 }));
+
 export const useFrameStore = create((set) => ({
+  rotation: 0,
+  frame001: 0,
+  frame002: 0,
+  frame003: 0,
+  frame004: 0,
+  updateRotation: (payload) => set({ rotation: payload }),
+}));
+
+export const useRoomStore = create((set) => ({
   rotation: 0,
   updateRotation: (payload) => set({ rotation: payload }),
 }));

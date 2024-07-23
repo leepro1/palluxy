@@ -5,7 +5,7 @@ const HomePage = () => {
     <ContentsLayout>
       <div className="flex flex-col">
         {/* slo */}
-        <div className="font-jamsilBold flex flex-col items-center gap-y-3 py-16 text-5xl text-white">
+        <div className="flex flex-col items-center gap-y-3 py-16 font-jamsilBold text-5xl text-white">
           <h1>반려동물의 상실을 겪은 당신을 위한</h1>
           <h1>PAL:Luxy</h1>
         </div>
@@ -14,7 +14,7 @@ const HomePage = () => {
         <div className="mx-5 my-10">
           <div className="flex justify-between">
             {/* 추억공간 */}
-            <div className="font-jamsilBold flex flex-col gap-y-5 text-white">
+            <div className="flex flex-col gap-y-5 font-jamsilBold text-white">
               <h2 className="text-3xl">반려동물 추억공간</h2>
               <div className="h-[300px] w-[500px] bg-black"></div>
               <h3 className="font-jamsilRegular text-xl">
@@ -22,7 +22,7 @@ const HomePage = () => {
               </h3>
             </div>
             {/* 치유모임 */}
-            <div className="font-jamsilBold flex flex-col gap-y-5 text-white">
+            <div className="flex flex-col gap-y-5 font-jamsilBold text-white">
               <h2 className="text-3xl">치유모임</h2>
               <div className="h-[300px] w-[500px] bg-black"></div>
               <h3 className="font-jamsilRegular text-xl">
