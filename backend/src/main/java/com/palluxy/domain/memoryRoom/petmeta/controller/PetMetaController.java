@@ -6,27 +6,30 @@ import com.palluxy.global.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms/{roomId}/petmeta")
 public class PetMetaController {
 
-  @Autowired
-  private PetMetaService petMetaService;
+  @Autowired private PetMetaService petMetaService;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<PetMetaDto> createPetMeta(@PathVariable Long roomId, @Valid @RequestBody PetMetaDto petMetaDto) {
+  public CommonResponse<PetMetaDto> createPetMeta(
+      @PathVariable Long roomId, @Valid @RequestBody PetMetaDto petMetaDto) {
     PetMetaDto createdPetMeta = petMetaService.createPetMeta(petMetaDto, roomId);
     return CommonResponse.created("PetMeta created successfully");
   }
 
   @GetMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<PetMetaDto> getPetMeta(@PathVariable Long roomId, @PathVariable Long petMetaId) {
+  public CommonResponse<PetMetaDto> getPetMeta(
+      @PathVariable Long roomId, @PathVariable Long petMetaId) {
     PetMetaDto petMeta = petMetaService.getPetMetaById(petMetaId);
     return CommonResponse.ok("PetMeta retrieved successfully", petMeta);
   }
@@ -40,7 +43,10 @@ public class PetMetaController {
 
   @PutMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<PetMetaDto> updatePetMeta(@PathVariable Long roomId, @PathVariable Long petMetaId, @Valid @RequestBody PetMetaDto petMetaDto) {
+  public CommonResponse<PetMetaDto> updatePetMeta(
+      @PathVariable Long roomId,
+      @PathVariable Long petMetaId,
+      @Valid @RequestBody PetMetaDto petMetaDto) {
     PetMetaDto updatedPetMeta = petMetaService.updatePetMeta(petMetaId, petMetaDto);
     return CommonResponse.ok("PetMeta updated successfully", updatedPetMeta);
   }
@@ -56,14 +62,25 @@ public class PetMetaController {
       @RequestParam double rotationX,
       @RequestParam double rotationY,
       @RequestParam double rotationZ) {
-    PetMetaDto updatedPetMeta = petMetaService.updatePetMetaPositionRotation(petMetaId, positionX, positionY, positionZ, rotationX, rotationY, rotationZ);
+    PetMetaDto updatedPetMeta =
+        petMetaService.updatePetMetaPositionRotation(
+            petMetaId, positionX, positionY, positionZ, rotationX, rotationY, rotationZ);
     return CommonResponse.ok("PetMeta position and rotation updated successfully", updatedPetMeta);
   }
 
   @DeleteMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<Void> deletePetMeta(@PathVariable Long roomId, @PathVariable Long petMetaId) {
+  public CommonResponse<Void> deletePetMeta(
+      @PathVariable Long roomId, @PathVariable Long petMetaId) {
     petMetaService.deletePetMeta(petMetaId);
     return CommonResponse.ok("PetMeta deleted successfully");
+  }
+
+  @PostMapping("/upload")
+  public Mono<CommonResponse<String>> uploadImageAndGetObjUrl(
+      @PathVariable Long roomId, @RequestPart("file") MultipartFile file) {
+    return petMetaService
+        .uploadImageAndGetObjUrl(file)
+        .map(url -> CommonResponse.ok("File uploaded and converted successfully", url));
   }
 }

@@ -1,44 +1,43 @@
-import { useFrameStore } from '@store/memorySpace';
+import PropTypes from 'prop-types';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { fetchFrameAngle } from '@/api/memorySpace/frameImageApi';
+import React from 'react';
 
-import { useGLTF } from '@react-three/drei';
-import { useLoader } from '@react-three/fiber';
-import { TextureLoader } from 'three';
+const ImgRotationBtn = React.memo(({ index }) => {
+  const queryClient = useQueryClient();
 
-const ImgRotationBtn = () => {
-  const { materials } = useGLTF('/models/frameRoom.glb');
-  const rotation = useFrameStore((state) => state.rotation);
-  const texture = useLoader(TextureLoader, '/models/texture_1.jpg');
-  const updateRotation = useFrameStore((state) => state.updateRotation);
+  const { mutate } = useMutation({
+    mutationFn: fetchFrameAngle,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['palFrameImage'],
+      });
+    },
+  });
 
-  materials['frameMaterial.001'].map = texture;
-  texture.center.set(0.5, 0.5);
-  // // 왼쪽으로 90도 돌리기
-  texture.rotation = rotation;
-
-  const handleLeftRotation = () => {
-    updateRotation(rotation + 1.5);
+  const handleRotation = () => {
+    const frameData = queryClient.getQueryData(['palFrameImage']);
+    const selectData = frameData.find((frame) => frame.index === index);
+    if (selectData) {
+      const newAngle = (selectData.angle + 1.5) % 6;
+      mutate({ angle: newAngle, imageId: selectData.imageId });
+    }
   };
-  const handleRightRotation = () => {
-    updateRotation(rotation - 1.5);
-  };
 
+  console.log(index, 'ImgRotationBtn');
   return (
-    <div className="flex">
-      <button
-        className="border-2"
-        onClick={() => handleLeftRotation()}
-      >
-        좌로
-      </button>
-      <button
-        className="border-2"
-        onClick={() => handleRightRotation()}
-      >
-        우로
-      </button>
-      {rotation}
-    </div>
+    <span
+      className="material-symbols-outlined cursor-pointer"
+      onClick={() => handleRotation()}
+    >
+      rotate_90_degrees_ccw
+    </span>
   );
+});
+
+ImgRotationBtn.propTypes = {
+  index: PropTypes.number.isRequired,
 };
 
+ImgRotationBtn.displayName = 'ImgRotationBtn';
 export default ImgRotationBtn;

@@ -1,16 +1,25 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { useState } from 'react';
 import { Environment } from '@react-three/drei';
+import SceneUpdater from '@components/Model/SceneUpadator';
 
 import { Vector3 } from 'three';
 
 import PalModel from '@components/Model/PalModel';
 import RooomModel from '@components/Model/RoomModel';
 import CameraOption from '@components/Model/CameraOption';
+import { useQuery } from '@tanstack/react-query';
+import { fetchAllFrameImage } from '@api/memorySpace/frameImageApi';
 
 const RoomCanvas = () => {
   const [position, setPosition] = useState(new Vector3(-100, 100, 100));
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
+
+  const { data: frameImages, isSuccess } = useQuery({
+    queryKey: ['palFrameImage'],
+    queryFn: fetchAllFrameImage,
+    staleTime: 60000,
+  });
 
   const handleModelClick = (event) => {
     if (event.object.name.includes('frame')) {
@@ -47,7 +56,6 @@ const RoomCanvas = () => {
   // frame 4 x: 20, y: 24, z: -20
   // frame 5 x: -5, y: 24, z: -20
   // frame 6 x: -30, y: 24, z: -20
-
   return (
     <div className="h-[617px] w-[1000px]">
       <Canvas flat>
@@ -57,7 +65,8 @@ const RoomCanvas = () => {
         />
         <ambientLight intensity={Math.PI / 2} />
         <group onClick={(e) => handleModelClick(e)}>
-          <RooomModel />
+          {/* <SceneUpdater /> */}
+          <RooomModel data={isSuccess && frameImages} />
           <mesh>
             <PalModel />
           </mesh>

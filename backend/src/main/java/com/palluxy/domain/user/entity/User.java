@@ -16,10 +16,10 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, updatable = false)
+    @Column(unique = true, updatable = false)
     private String email;
 
-    @Column(unique = true, nullable = false, length = 20)
+    @Column(unique = true, length = 30)
     private String nickname;
 
     private String password;

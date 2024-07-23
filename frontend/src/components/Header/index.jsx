@@ -1,6 +1,6 @@
 import Logo from '@assets/images/logo/logo.svg';
 import { NavLink } from 'react-router-dom';
-import Button from '@components/Button';
+import GlobalBtn from '@components/GlobalBtn';
 import ContentsLayout from '@layout/ContentsLayout';
 
 const Header = () => {
@@ -36,14 +36,14 @@ const Header = () => {
         {/* 로그인 회원가입 버튼 */}
         <div className="flex gap-x-16 font-jamsilMedium text-white">
           <NavLink to={'/signin'}>
-            <Button
+            <GlobalBtn
               className="border-2 border-white"
               size={'sm'}
               text={'로그인'}
             />
           </NavLink>
           <NavLink to={'/signup'}>
-            <Button
+            <GlobalBtn
               className="bg-pal-purple"
               size={'sm'}
               text={'회원가입'}
