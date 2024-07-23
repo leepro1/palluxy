@@ -23,16 +23,23 @@ public class Letter {
   private LocalDateTime openedAt;
 
   private Long petId;
-  private Long userId;
 
   public Letter() {}
+
+  public Letter(String title, String content, Writer writer, Long petId) {
+    this.title = title;
+    this.content = content;
+    this.writer = writer;
+    this.petId = petId;
+    this.openedAt = LocalDateTime.now().plusHours(12);
+  }
 
   public Letter of (LetterRequest request) {
     this.title = title;
     this.content = content;
     this.writer = writer;
     this.petId = petId;
-    this.userId = userId;
+    this.openedAt = LocalDateTime.now().plusHours(12);
 
     return this;
   }

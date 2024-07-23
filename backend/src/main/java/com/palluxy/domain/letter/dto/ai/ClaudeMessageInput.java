@@ -1,16 +1,16 @@
-package com.palluxy.domain.letter.dto.claude;
+package com.palluxy.domain.letter.dto.ai;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
 
 @Getter
-public class MessageInput {
+public class ClaudeMessageInput {
   private ClaudeRole role;
   private String content;
 
-  public MessageInput() {}
+  public ClaudeMessageInput() {}
 
-  public MessageInput(ClaudeRole role, String content) {
+  public ClaudeMessageInput(ClaudeRole role, String content) {
     this.role = role;
     this.content = content;
   }

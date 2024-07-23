@@ -1,11 +1,10 @@
-package com.palluxy.domain.letter.dto.claude;
+package com.palluxy.domain.letter.dto.ai;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
-public class MessageOutput {
+public class ClaudeMessageOutput {
   private String text;
   private String type;
 }
