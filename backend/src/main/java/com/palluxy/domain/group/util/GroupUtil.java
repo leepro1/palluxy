@@ -16,61 +16,75 @@ public class GroupUtil {
 
   private final Random random = new Random();
 
-    public Status convertToStatusType(String status) {
-        switch (status) {
-            case "wait":
-                return Status.WAIT;
-            case "reject":
-                return Status.REJECT;
-            case "accept":
-                return Status.ACCEPT;
-            default:
-                throw new ValidateException("유효하지 않은 status 값");
-        }
+  public Status convertToStatusType(String status) {
+    switch (status) {
+      case "wait":
+        return Status.WAIT;
+      case "reject":
+        return Status.REJECT;
+      case "accept":
+        return Status.ACCEPT;
+      default:
+        throw new ValidateException("유효하지 않은 status 값");
+    }
+  }
+
+  public List<GroupResponse> convertToDtoList(List<Group> groups) {
+    List<GroupResponse> result = new ArrayList<>();
+    for (Group group : groups) {
+      result.add(convertToDto(group));
     }
 
-    public List<GroupResponse> convertToDtoList(List<Group> groups) {
-        List<GroupResponse> result = new ArrayList<>();
-        for (Group group : groups) {
-            result.add(convertToDto(group));
-        }
+    return result;
+  }
 
-        return result;
+  public GroupResponse convertToDto(Group group) {
+    return new GroupResponse(
+        group.getId(),
+        group.getTitle(),
+        group.getDescription(),
+        group.getFilePath(),
+        group.getStartTime(),
+        group.getEndTime(),
+        group.getMaxCapacity(),
+        group.getRemainingCapacity());
+  }
+
+  public Group convertToEntity(GroupResponse group) {
+    return new Group(
+        group.getId(),
+        group.getTitle(),
+        group.getDescription(),
+        group.getFilePath(),
+        group.getStartTime(),
+        group.getEndTime(),
+        group.getMaxCapacity(),
+        group.getRemainingCapacity());
+  }
+
+  public String generateKey() {
+    StringBuilder key = new StringBuilder();
+    for (int i = 0; i < 6; i++) {
+      boolean isNumber = random.nextBoolean();
+
+      int origin = isNumber ? '0' : 'A';
+      int bound = (isNumber ? '9' : 'Z') + 1;
+
+      key.append((char) random.nextInt(origin, bound));
     }
 
-    public GroupResponse convertToDto(Group group) {
-        return new GroupResponse(group.getId(), group.getTitle(), group.getDescription(), group.getFilePath(),
-                group.getStartTime(), group.getEndTime(), group.getMaxCapacity(), group.getRemainingCapacity());
+    return key.toString();
+  }
+
+  public void validateApproveKey(Group group, String approveKey) {
+    if (group.getStatus() != Status.ACCEPT || !group.getApproveKey().equals(approveKey)) {
+      throw new ValidateException("인증키가 유효하지 않음");
     }
+  }
 
-    public Group convertToEntity(GroupResponse group) {
-        return new Group(group.getId(), group.getTitle(), group.getDescription(), group.getFilePath(),
-                group.getStartTime(), group.getEndTime(), group.getMaxCapacity(), group.getRemainingCapacity());
+  public void validateUser(GroupUser groupUser) {
+    if (groupUser.isBanned()) {
+      throw new ValidateException("강퇴당한 유저는 재입장 할 수 없음");
     }
-
-    public String generateKey() {
-        StringBuilder key = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            boolean isNumber = random.nextBoolean();
-
-            int origin = isNumber ? '0' : 'A';
-            int bound = (isNumber ? '9' : 'Z') + 1;
-
-            key.append((char) random.nextInt(origin, bound));
-        }
-
-        return key.toString();
-    }
-
-    public void validateApproveKey(Group group, String approveKey) {
-        if (group.getStatus() != Status.ACCEPT || !group.getApproveKey().equals(approveKey)) {
-            throw new ValidateException("인증키가 유효하지 않음");
-        }
-    }
-
-    public void validateUser(GroupUser groupUser) {
-        if (groupUser.isBanned()) {
-            throw new ValidateException("강퇴당한 유저는 재입장 할 수 없음");
-        }
-    }
+  }
 }

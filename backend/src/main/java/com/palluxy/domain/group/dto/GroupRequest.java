@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class GroupRequest {
-    private Group group;
-    private Long userId;
+  private Group group;
+  private Long userId;
 }
