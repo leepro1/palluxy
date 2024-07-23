@@ -11,10 +11,12 @@ import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
@@ -40,10 +42,10 @@ public class PetMetaServiceImpl implements PetMetaService {
 
   private final WebClient webClient;
 
-  private final String bucketName = "your-s3-bucket-name";
+  private final String bucketName = "palluxytest-resdstone";
 
   public PetMetaServiceImpl(WebClient.Builder webClientBuilder) {
-    this.webClient = webClientBuilder.baseUrl("http://django-server-endpoint").build();
+    this.webClient = webClientBuilder.baseUrl("http://127.0.0.1:8000").build();
   }
 
   @Override
@@ -117,38 +119,30 @@ public class PetMetaServiceImpl implements PetMetaService {
   }
 
   @Override
-  public Mono<String> uploadImageAndGetObjUrl(MultipartFile file) {
-    return webClient
-        .post()
-        .uri("/upload/")
-        .contentType(MediaType.MULTIPART_FORM_DATA)
-        .bodyValue(file)
-        .retrieve()
-        .bodyToMono(String.class)
-        .flatMap(this::downloadObjFile)
-        .flatMap(this::uploadToS3);
+  public Mono<Void> uploadImageToDjango(Long roomId, MultipartFile file) {
+    return Mono.defer(() -> {
+      MultipartBodyBuilder builder = new MultipartBodyBuilder();
+      builder.part("file", file.getResource());
+      builder.part("roomId", roomId);
+
+      return webClient.post()
+          .uri("/api/v1/run-model/")
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .body(BodyInserters.fromMultipartData(builder.build()))
+          .retrieve()
+          .bodyToMono(Void.class);
+    });
   }
 
-  private Mono<String> downloadObjFile(String filename) {
-    return webClient
-        .get()
-        .uri("/download/" + filename)
-        .accept(MediaType.APPLICATION_OCTET_STREAM)
-        .retrieve()
-        .bodyToFlux(DataBuffer.class)
-        .collectList()
-        .flatMap(dataBuffers -> {
-          Path tempFile = Paths.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".obj");
-          try (FileOutputStream fos = new FileOutputStream(tempFile.toFile())) {
-            for (DataBuffer dataBuffer : dataBuffers) {
-              fos.write(dataBuffer.asByteBuffer().array());
-            }
-          } catch (IOException e) {
-            return Mono.error(new RuntimeException("Failed to save file locally", e));
-          }
-          return Mono.just(tempFile.toFile());
-        })
-        .map(File::getPath);
+  @Override
+  public Mono<String> handleObjFileUpload(Long roomId, FilePart filePart) {
+    return filePart.transferTo(Paths.get(System.getProperty("java.io.tmpdir"), filePart.filename()))
+        .thenReturn(filePart.filename())
+        .flatMap(filePath -> {
+          String s3Url = uploadToS3(filePath).block();
+          // roomId를 사용하여 PetMeta를 업데이트하거나 생성하는 로직 추가 가능
+          return Mono.just(s3Url);
+        });
   }
 
   private Mono<String> uploadToS3(String filePath) {
