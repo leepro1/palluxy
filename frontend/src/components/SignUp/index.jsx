@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const SignupModal = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
   const {
     handleSubmit,
     control,
@@ -27,6 +31,7 @@ const SignupModal = () => {
     );
   };
 
+  // (data) 앞에 async 추가하기
   const onSubmit = (data) => {
     if (!data.termsOfUseAccepted) {
       setError('termsOfUseAccepted', {
@@ -44,9 +49,34 @@ const SignupModal = () => {
       return;
     }
 
+    // 백엔드 연결 시 아래 2줄 삭제
     console.log(data);
     navigate('/signin');
   };
+
+  //   try {
+  //     const response = await fetch('주소 여기에', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(data),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('회원가입에 실패했습니다. 다시 시도해주세요.');
+  //     }
+
+  //     const responseData = await response.json();
+  //     setSuccessMessage('회원가입에 성공했습니다!');
+  //     navigate('/signin');
+  //   } catch (error) {
+  //     setError('submit', {
+  //       type: 'manual',
+  //       message: error.message,
+  //     });
+  //   }
+  // };
 
   const handleBackgroundClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -54,7 +84,11 @@ const SignupModal = () => {
     }
   };
 
+  const email = watch('email', '');
   const password = watch('password', '');
+
+  const isEmailValid = validateEmail(email) === true;
+  const isPasswordValid = validatePassword(password) === true;
 
   React.useEffect(() => {
     setError('termsOfUseAccepted', {
@@ -73,7 +107,7 @@ const SignupModal = () => {
       onClick={handleBackgroundClick}
     >
       <div
-        className="w-1/2 rounded bg-white p-6"
+        className="w-1/2 rounded bg-white bg-opacity-60 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
@@ -84,44 +118,60 @@ const SignupModal = () => {
         </h4>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">이메일</label>
-            <Controller
-              name="email"
-              control={control}
-              defaultValue=""
-              rules={{
-                required: '이메일을 입력해주세요.',
-                validate: validateEmail,
-              }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="email"
-                  className="w-full rounded border px-3 py-2 text-black"
-                  placeholder="이메일을 입력해주세요."
-                />
-              )}
-            />
+            <label className="font-semibold text-gray-700">이메일</label>
+            <div className="flex w-full justify-between">
+              <Controller
+                name="email"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: '이메일을 입력해주세요.',
+                  validate: validateEmail,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="email"
+                    className="w-5/6 rounded border px-3 py-2 text-black"
+                    placeholder="이메일을 입력해주세요."
+                  />
+                )}
+              />
+              <button
+                type="button"
+                className="ml-2 w-1/6 rounded bg-pal-purple px-4 py-2 text-white"
+              >
+                중복 확인
+              </button>
+            </div>
             {errors.email && (
               <p className="text-red-500">{errors.email.message}</p>
             )}
           </div>
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">닉네임</label>
-            <Controller
-              name="nickname"
-              control={control}
-              defaultValue=""
-              rules={{ required: '닉네임을 입력해주세요.' }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  className="w-full rounded border px-3 py-2 text-black"
-                  placeholder="닉네임을 입력해주세요."
-                />
-              )}
-            />
+            <div className="flex w-full justify-between">
+              <Controller
+                name="nickname"
+                control={control}
+                defaultValue=""
+                rules={{ required: '닉네임을 입력해주세요.' }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="text"
+                    className="w-5/6 rounded border px-3 py-2 text-black"
+                    placeholder="닉네임을 입력해주세요."
+                  />
+                )}
+              />
+              <button
+                type="button"
+                className="ml-2 w-1/6 rounded bg-pal-purple px-4 py-2 text-white"
+              >
+                중복 확인
+              </button>
+            </div>
             {errors.nickname && (
               <p className="text-red-500">{errors.nickname.message}</p>
             )}
@@ -236,7 +286,12 @@ const SignupModal = () => {
           <div className="flex justify-center gap-20">
             <button
               type="submit"
-              className="my-4 rounded bg-pal-purple px-4 py-2 text-white"
+              className={`my-6 w-full rounded p-2 text-white ${
+                isEmailValid && isPasswordValid
+                  ? 'bg-pal-purple'
+                  : 'cursor-not-allowed bg-gray-400'
+              }`}
+              disabled={!isEmailValid || !isPasswordValid}
             >
               회원가입
             </button>

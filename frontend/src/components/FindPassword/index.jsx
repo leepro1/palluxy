@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
 import logo from '../../assets/images/logo/logo.svg';
 
-const ResetPasswordModal = () => {
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+const FindPasswordModal = () => {
   const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({ mode: 'onChange' });
 
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
+    return emailPattern.test(email) || '이메일의 형태를 갖추어야 합니다.';
   };
 
-  useEffect(() => {
-    if (email && !validateEmail(email)) {
-      setEmailError('이메일의 형태를 갖추어야 합니다.');
-    } else {
-      setEmailError('');
-    }
-  }, [email]);
-
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-    console.log({
-      email,
-    });
+  const handleFindPassword = (data) => {
+    console.log(data);
     setSuccessMessage(
       '성공적으로 이메일을 발송했습니다.\n 전송되기까지 시간이 소요될 수 있으니 기다려주세요!',
     );
@@ -43,7 +37,7 @@ const ResetPasswordModal = () => {
       onClick={handleBackgroundClick}
     >
       <div
-        className="w-1/2 rounded bg-white p-6"
+        className="w-1/2 rounded bg-white bg-opacity-60 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex justify-center">
@@ -60,23 +54,30 @@ const ResetPasswordModal = () => {
             {successMessage}
           </p>
         )}
-        <form onSubmit={handleResetPassword}>
+        <form onSubmit={handleSubmit(handleFindPassword)}>
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">이메일*</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded border px-3 py-2 text-black"
-              placeholder="이메일을 입력해주세요."
-              required
+            <Controller
+              name="email"
+              control={control}
+              defaultValue=""
+              rules={{ validate: validateEmail }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="이메일을 입력해주세요."
+                />
+              )}
             />
-            {emailError && <p className="text-red-500">{emailError}</p>}
+            {errors.email && (
+              <p className="text-red-500">{errors.email.message}</p>
+            )}
           </div>
           <div className="flex justify-center gap-20">
             <button
               type="submit"
-              className="rounded bg-pal-purple px-4 py-2 text-white"
+              className="my-6 w-full rounded bg-pal-purple p-3 text-white"
             >
               비밀번호 찾기
             </button>
@@ -87,4 +88,4 @@ const ResetPasswordModal = () => {
   );
 };
 
-export default ResetPasswordModal;
+export default FindPasswordModal;

@@ -267,7 +267,7 @@ const SigninModal = () => {
       onClick={handleBackgroundClick}
     >
       <div
-        className="w-1/2 rounded bg-white p-6"
+        className="w-1/2 rounded bg-white bg-opacity-60 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex justify-center">
@@ -277,58 +277,75 @@ const SigninModal = () => {
           />
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <label className="block font-semibold text-gray-700">이메일</label>
-            <Controller
-              name="email"
-              control={control}
-              defaultValue=""
-              rules={{
-                required: '이메일을 입력해주세요.',
-                validate: validateEmail,
-              }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="email"
-                  className="w-full rounded border px-3 py-2 text-black"
-                  placeholder="이메일을 입력해주세요."
-                />
-              )}
-            />
+          <div className="flex items-center text-center">
+            <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
+              이메일
+            </label>
+            <div className="w-2/3">
+              <Controller
+                name="email"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: '이메일을 입력해주세요.',
+                  validate: validateEmail,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="email"
+                    className="w-full rounded border px-3 py-2 text-black"
+                    placeholder="이메일을 입력해주세요."
+                  />
+                )}
+              />
+            </div>
+          </div>
+          <div className="flex">
+            <div className="w-1/3"></div>
             {errors.email && (
-              <p className="text-red-500">{errors.email.message}</p>
+              <p className="my-2 w-2/3 text-start text-red-500">
+                {errors.email.message}
+              </p>
             )}
           </div>
-          <div className="mb-4">
-            <label className="block font-semibold text-gray-700">
+
+          <div className="mt-5 flex items-center text-center">
+            <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
               비밀번호
             </label>
-            <Controller
-              name="password"
-              control={control}
-              defaultValue=""
-              rules={{
-                required: '비밀번호를 입력해주세요.',
-                validate: validatePassword,
-              }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="password"
-                  className="w-full rounded border px-3 py-2 text-black"
-                  placeholder="비밀번호를 입력해주세요."
-                />
-              )}
-            />
+            <div className="w-2/3">
+              <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: '비밀번호를 입력해주세요.',
+                  validate: validatePassword,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="password"
+                    className="w-full rounded border px-3 py-2 text-black"
+                    placeholder="비밀번호를 입력해주세요."
+                  />
+                )}
+              />
+            </div>
+          </div>
+          <div className="flex">
+            <div className="w-1/3"></div>
             {errors.password && (
-              <p className="text-red-500">{errors.password.message}</p>
+              <p className="my-2 text-start text-red-500">
+                {errors.password.message}
+              </p>
             )}
           </div>
           <div className="flex justify-center gap-20">
             <button
               type="submit"
-              className={`rounded px-4 py-2 text-white ${
+              className={`my-6 w-full rounded p-2 text-white ${
                 isEmailValid && isPasswordValid
                   ? 'bg-pal-purple'
                   : 'cursor-not-allowed bg-gray-400'
@@ -344,7 +361,7 @@ const SigninModal = () => {
           <button
             type="button"
             className="text-pal-purple underline"
-            onClick={() => navigate('/reset')}
+            onClick={() => navigate('/find')}
           >
             여기를 클릭하세요.
           </button>

@@ -7,7 +7,8 @@ import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/MailboxSideBar';
 import SignIn from '@components/SignIn';
 import SignUp from '@components/SignUp';
-import ResetPassword from '../components/ResetPassword.jsx';
+import FindPassword from '@components/FindPassword';
+import ResetPassword from '@components/ResetPassword';
 
 const routerInfo = [
   {
@@ -37,6 +38,7 @@ const routerInfo = [
       //   { path: '/community', element: <CommunityPage /> },
       { path: '/signin', element: <SignIn /> },
       { path: '/signup', element: <SignUp /> },
+      { path: '/find', element: <FindPassword /> },
       { path: '/reset', element: <ResetPassword /> },
     ],
   },
