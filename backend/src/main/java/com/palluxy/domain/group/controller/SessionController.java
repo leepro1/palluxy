@@ -1,5 +1,7 @@
 package com.palluxy.domain.group.controller;
 
+import com.palluxy.domain.group.dto.ConnectionRequest;
+import com.palluxy.domain.group.dto.SessionRequest;
 import com.palluxy.domain.group.entity.Action;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
@@ -30,12 +32,12 @@ SessionController {
 
   @PostMapping("/api/sessions")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> createSession(@RequestBody Map<String, Object> params) {
-    Group group = groupService.findById((Long) params.get("groupId"));
-    groupUtil.validateApproveKey(group, String.valueOf(params.get("approveKey")));
-    Session session = openviduService.createSession(params);
+  public CommonResponse<?> createSession(@RequestBody SessionRequest sessionRequest) {
+    Group group = groupService.findById((Long) sessionRequest.getGroupId());
+    groupUtil.validateApproveKey(group, sessionRequest.getApproveKey());
+    Session session = openviduService.createSession(sessionRequest.getDefaultRecordingProperties());
     groupService.createHistory(
-        new GroupHistory((Long) params.get("userId"), (Long) params.get("groupId"), Action.CREATE));
+        new GroupHistory(sessionRequest.getUserId(), sessionRequest.getGroupId(), Action.CREATE));
 
     return CommonResponse.ok(
         "Session successfully created and sessionId ready to be used", session.getSessionId());
@@ -44,16 +46,16 @@ SessionController {
   @PostMapping("/api/sessions/{sessionId}/connections")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createConnection(
-      @PathVariable("sessionId") String sessionId, @RequestBody Map<String, Object> params) {
+      @PathVariable("sessionId") String sessionId, @RequestBody ConnectionRequest connectionRequest) {
     GroupUser groupUser =
         groupService.findByGroupIdAndUserId(
-            (Long) params.get("groupId"), (Long) params.get("userId"));
+            connectionRequest.getGroupId(), connectionRequest.getUserId());
     groupUtil.validateUser(groupUser);
 
     Session session = openviduService.getSession(sessionId);
-    Connection connection = openviduService.createConnection(session, params);
+    Connection connection = openviduService.createConnection(session, connectionRequest.getKurentoOptions());
     groupService.createHistory(
-        new GroupHistory((Long) params.get("userId"), (Long) params.get("groupId"), Action.JOIN));
+        new GroupHistory(connectionRequest.getUserId(), connectionRequest.getGroupId(), Action.JOIN));
 
     return CommonResponse.ok(
         "The Connection has been successfully created. If it is of type WEBRTC, its token can now be used to connect a final user. If it is of type IPCAM, every participant will immediately receive the proper events in OpenVidu Browser: connectionCreated identifying the new IP camera Connection and streamCreated so they can subscribe to the IP camera stream.",
