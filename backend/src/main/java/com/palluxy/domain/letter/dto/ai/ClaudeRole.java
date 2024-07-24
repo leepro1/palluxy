@@ -1,4 +1,4 @@
-package com.palluxy.domain.letter.dto.claude;
+package com.palluxy.domain.letter.dto.ai;
 
 public enum ClaudeRole {
   USER {

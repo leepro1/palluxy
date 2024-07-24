@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class GroupResponse {
   private Long id;
+  private Long leaderId;
   private String title;
   private String description;
   private String filePath;
@@ -19,6 +20,7 @@ public class GroupResponse {
 
   public GroupResponse(
       Long id,
+      Long leaderId,
       String title,
       String description,
       String filePath,
@@ -27,6 +29,7 @@ public class GroupResponse {
       int maxCapacity,
       int remainingCapacity) {
     this.id = id;
+    this.leaderId = leaderId;
     this.title = title;
     this.description = description;
     this.filePath = filePath;

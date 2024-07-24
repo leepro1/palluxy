@@ -5,6 +5,7 @@ import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupUser;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.exception.ValidateException;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class GroupUtil {
   public GroupResponse convertToDto(Group group) {
     return new GroupResponse(
         group.getId(),
+        group.getLeader().getId(),
         group.getTitle(),
         group.getDescription(),
         group.getFilePath(),
@@ -50,7 +52,7 @@ public class GroupUtil {
         group.getRemainingCapacity());
   }
 
-  public Group convertToEntity(GroupResponse group) {
+  public Group of(GroupResponse group) {
     return new Group(
         group.getId(),
         group.getTitle(),

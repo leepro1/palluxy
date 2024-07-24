@@ -2,12 +2,18 @@ package com.palluxy.domain.group.controller;
 
 import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.dto.GroupRequest;
+import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.CommonResponse;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +27,28 @@ public class GroupController {
   private final GroupService groupService;
   private final GroupUtil groupUtil;
 
-  @GetMapping("/{status}")
+  @GetMapping("/{status}/{page}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> getGroupsByStatus(@PathVariable("status") String status) {
+  public CommonResponse<?> getGroupsByStatus(@PathVariable("status") String status,
+      @PathVariable("page") int page) {
     Status statusEnum = groupUtil.convertToStatusType(status);
-    List<GroupResponse> groupResponseList =
-        groupUtil.convertToDtoList(groupService.findByStatus(statusEnum));
+    Pageable pageable = PageRequest.of(page, 9);
+    Page<Group> groupPage = groupService.findByStatus(statusEnum, pageable);
+    List<GroupResponse> groupList = groupUtil.convertToDtoList(groupPage.getContent());
 
-    return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", groupResponseList);
+    GroupResponses data = new GroupResponses(groupList, groupPage.getTotalElements());
+    return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", data);
+  }
+
+  @GetMapping("/available/{page}")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<?> getAvailableGroups(@PathVariable("page") int page) {
+    Pageable pageable = PageRequest.of(page, 9);
+    Page<Group> groupPage = groupService.findAvailableGroups(pageable);
+    List<GroupResponse> groupList = groupUtil.convertToDtoList(groupPage.getContent());
+
+    GroupResponses data = new GroupResponses(groupList, groupPage.getTotalElements());
+    return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", data);
   }
 
   @GetMapping("/detail/{groupId}")
@@ -40,9 +60,13 @@ public class GroupController {
 
   @GetMapping("/search")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> searchGroup(@RequestParam String key, @RequestParam String value) {
-    List<GroupResponse> groups = groupUtil.convertToDtoList(groupService.searchByKey(key, value));
-    return CommonResponse.ok("정상적으로 검색되었습니다.", groups);
+  public CommonResponse<?> searchGroup(@RequestParam int page, @RequestParam String key,
+      @RequestParam String value) {
+    Pageable pageable = PageRequest.of(page, 9);
+    Page<Group> groupPage = groupService.searchByKey(key, value, pageable);
+    List<GroupResponse> groupList = groupUtil.convertToDtoList(groupPage.getContent());
+    return CommonResponse.ok("정상적으로 검색되었습니다.",
+        new GroupResponses(groupList, groupPage.getTotalElements()));
   }
 
   @PostMapping("")
@@ -52,7 +76,7 @@ public class GroupController {
     return CommonResponse.created("정상적으로 그룹이 생성되었음");
   }
 
-  @PatchMapping("detail/{groupId}")
+  @PatchMapping("/detail/{groupId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> updateGroup(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
@@ -62,7 +86,7 @@ public class GroupController {
     return CommonResponse.ok("정상적으로 수정이 반영 되었음");
   }
 
-  @PostMapping("detail/{groupId}/join")
+  @PostMapping("/detail/{groupId}/join")
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<?> createJoin(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
@@ -70,11 +94,21 @@ public class GroupController {
     return CommonResponse.created("모임 참가 신청 완료");
   }
 
-  @DeleteMapping("detail/{groupId}/join")
+  @DeleteMapping("/detail/{groupId}/join")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> cancelJoin(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
     groupService.cancelJoin(groupId, groupRequest.getUserId());
     return CommonResponse.ok("모임 참가 신청 취소 완료");
+  }
+
+  @GetMapping("/my/{userId}/{page}")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<?> getMyGroups(@PathVariable("userId") Long userId, @PathVariable("page") int page) {
+    Pageable pageable = PageRequest.of(page, 9);
+    Page<Group> groupPage = groupService.findGroupsByUserId(userId, pageable);
+    List<GroupResponse> groupList = groupUtil.convertToDtoList(groupPage.getContent());
+    return CommonResponse.ok("정상적으로 조호;되었습니다.",
+        new GroupResponses(groupList, groupPage.getTotalElements()));
   }
 }
