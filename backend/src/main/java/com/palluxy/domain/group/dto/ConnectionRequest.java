@@ -7,5 +7,5 @@ import lombok.Getter;
 public class ConnectionRequest {
   private Long userId;
   private Long groupId;
-  private Map<String, Object> kurentoOptions;
+  private Map<String, Object> params;
 }

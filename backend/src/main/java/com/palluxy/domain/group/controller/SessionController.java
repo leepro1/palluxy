@@ -33,9 +33,9 @@ SessionController {
   @PostMapping("/api/sessions")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createSession(@RequestBody SessionRequest sessionRequest) {
-    Group group = groupService.findById((Long) sessionRequest.getGroupId());
+    Group group = groupService.findById(sessionRequest.getGroupId());
     groupUtil.validateApproveKey(group, sessionRequest.getApproveKey());
-    Session session = openviduService.createSession(sessionRequest.getDefaultRecordingProperties());
+    Session session = openviduService.createSession(sessionRequest.getParams());
     groupService.createHistory(
         new GroupHistory(sessionRequest.getUserId(), sessionRequest.getGroupId(), Action.CREATE));
 
@@ -53,7 +53,7 @@ SessionController {
     groupUtil.validateUser(groupUser);
 
     Session session = openviduService.getSession(sessionId);
-    Connection connection = openviduService.createConnection(session, connectionRequest.getKurentoOptions());
+    Connection connection = openviduService.createConnection(session, connectionRequest.getParams());
     groupService.createHistory(
         new GroupHistory(connectionRequest.getUserId(), connectionRequest.getGroupId(), Action.JOIN));
 
