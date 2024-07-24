@@ -11,6 +11,7 @@ import com.palluxy.domain.group.repository.GroupHistoryRepository;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.group.repository.GroupUserRepository;
 import com.palluxy.domain.user.repository.UserRepository;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -133,5 +134,13 @@ public class GroupService {
       default:
         throw new ValidateException("유효하지 않은 key가 요청됨");
     }
+  }
+
+  public Page<Group> findAvailableGroups(Pageable pageable) {
+    return groupRepository.findAll(Status.ACCEPT, 0, LocalDateTime.now(), pageable);
+  }
+
+  public Page<Group> findGroupsByUserId(Long userId, Pageable pageable) {
+    return groupRepository.findGroupsByUserId(userId, pageable);
   }
 }
