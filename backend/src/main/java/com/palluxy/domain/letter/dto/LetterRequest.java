@@ -1,10 +1,11 @@
 package com.palluxy.domain.letter.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class LetterRequest {
-  Long petId;
   String title;
   String content;
 }

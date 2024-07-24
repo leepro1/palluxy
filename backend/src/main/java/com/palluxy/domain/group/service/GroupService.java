@@ -1,6 +1,5 @@
 package com.palluxy.domain.group.service;
 
-import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
@@ -13,6 +12,8 @@ import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.group.repository.GroupUserRepository;
 import com.palluxy.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +32,8 @@ public class GroupService {
     return groupRepository.findAll();
   }
 
-  public List<Group> findByStatus(Status status) {
-    return groupRepository.findByStatus(status);
+  public Page<Group> findByStatus(Status status, Pageable pageable) {
+    return groupRepository.findByStatus(status, pageable);
   }
 
   public Group findById(Long groupId) {
@@ -123,12 +124,12 @@ public class GroupService {
     groupRepository.saveAndFlush(group);
   }
 
-  public List<Group> searchByKey(String key, String value) {
+  public Page<Group> searchByKey(String key, String value, Pageable pageable) {
     switch (key) {
       case "title":
-        return groupRepository.findByTitleContaining(value);
+        return groupRepository.findByTitleContaining(value, pageable);
       case "leader":
-        return groupRepository.findByLeaderContaining(value);
+        return groupRepository.findByLeaderContaining(value, pageable);
       default:
         throw new ValidateException("유효하지 않은 key가 요청됨");
     }

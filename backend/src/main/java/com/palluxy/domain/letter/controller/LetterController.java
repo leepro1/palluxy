@@ -5,6 +5,7 @@ import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.service.LetterService;
 import com.palluxy.domain.letter.util.ClaudeUtil;
 import com.palluxy.global.common.CommonResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,11 +31,23 @@ public class LetterController {
     return CommonResponse.ok("정상적으로 편지가 조회되었음", letters);
   }
 
-  @PostMapping("")
+  @PostMapping("/first")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> writeLetter(@RequestBody LetterRequest letterRequest) {
-    letterService.saveLetter(new Letter().of(letterRequest));
-    letterService.sendLetters(letterRequest.getPetId());
+  public CommonResponse<?> writeFirstLetter() {
+    String relation = "누나";
+    String petName = "뽀삐";
+    Long petId = 1L;
+    letterService.saveFirstLetter(relation, petName, petId);
+    return CommonResponse.ok("정상적으로 첫 번째 편지가 저장되었음");
+  }
+
+  @PostMapping("/{petId}")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<?> writeLetter(@PathVariable("petId") Long petId, @RequestBody LetterRequest letterRequest) {
+    Letter letter = new Letter(petId).of(letterRequest);
+    letter.setOpenedAt(LocalDateTime.now());
+    letterService.saveLetter(letter);
+    letterService.sendLetters(petId);
     return CommonResponse.ok("정상적으로 편지가 저장되었음");
   }
 }

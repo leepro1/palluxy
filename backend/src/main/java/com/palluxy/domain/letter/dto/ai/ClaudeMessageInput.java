@@ -2,8 +2,10 @@ package com.palluxy.domain.letter.dto.ai;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class ClaudeMessageInput {
   private ClaudeRole role;
   private String content;

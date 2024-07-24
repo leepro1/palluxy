@@ -24,17 +24,22 @@ public class LetterService {
     letterRepository.saveAndFlush(letter);
   }
 
+  public List<Letter> findByPetId(Long petId) {
+    return letterRepository.findByPetId(petId);
+  }
+
   public List<Letter> findByPetIdAndOpenedAtBefore(Long petId) {
     return letterRepository.findByPetIdAndOpenedAtBefore(petId, LocalDateTime.now());
   }
 
   public void sendLetters(Long petId) {
-    List<Letter> letters = findByPetIdAndOpenedAtBefore(petId);
+    List<Letter> letters = findByPetId(petId);
     aiUtil.sendRequest(aiUtil.getRequest(letters), petId);
   }
 
   public void saveFirstLetter(String relation, String petName, Long petId) {
     Letter letter = makeFirstLetterForm(relation, petName, petId);
+    letter.setOpenedAt(LocalDateTime.now());
     letterRepository.saveAndFlush(letter);
   }
 

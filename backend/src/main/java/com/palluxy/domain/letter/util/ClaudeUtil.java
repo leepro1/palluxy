@@ -11,7 +11,9 @@ import com.palluxy.domain.letter.dto.ai.ClaudeMessageInput;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.repository.LetterRepository;
 import com.palluxy.domain.letter.service.LetterService;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,7 +72,9 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
     webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
         response -> {
           String content = response.getContent().get(0).getText();
-          letterRepository.saveAndFlush(new Letter("편지가 도착했어요.", content, Writer.PET, petId));
+          Letter letter = new Letter("편지가 도착했어요.", content, Writer.PET, petId);
+          letter.setOpenedAt(LocalDateTime.now().plusHours(6L));
+          letterRepository.saveAndFlush(letter);
         }
     );
 
@@ -91,7 +95,46 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
 
       String content = letter.getContent();
       if (i == letters.size() - 1) {
-        String data = "반려동물의 데이터를 가져오는 것으로 수정이 필요함";
+        // 실제 펫 정보로 수정 필
+
+        String data =
+            """
+                  {
+                   "name": "뽀삐",
+                   "type": "개",
+                   "species": "말티즈",
+                   "gender": "여",
+                   "age": 16,
+                   "personality": [
+                     "활발함",
+                     "애교가 많음",
+                     "사교적임"
+                   ],
+                   "appearance": [
+                     "털이 하얗고 보들보들함",
+                     "눈이 동그랗고 크다",
+                     "몸집이 작음"
+                   ],
+                   "favoriteThings": [
+                     "산책",
+                     "간식",
+                     "공놀이"
+                   ],
+                   "medicalHistory": [
+                     "노령으로 인한 관절염"
+                   ],
+                   "specialMemories": [
+                     "주인과 함께 해변에서 산책했던 추억",
+                     "크리스마스 때 산타 옷을 입고 사진 찍은 것"
+                   ],
+                   "nicknames": [
+                     "뽀비",
+                     "뽀뽀"
+                   ],
+                   "relationship": "주인은 직장인 여성 (누나)",
+                   "endOfLife": "병원에서 안락사"
+                  }'
+                """;
         content = String.format(
             "%s \n\n 답장 작성에 참고할 반려동물의 데이터는 다음과 같습니다. 아래의 데이터를 참고해서, 편지만을 작성해서 답변해주세요. \n\n %s",
             content, data);
@@ -99,6 +142,8 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
 
       messageInputs.add(new ClaudeMessageInput(role, content));
     }
+
+    claudeRequest.setMessageInputs(messageInputs);
 
     return claudeRequest;
   }

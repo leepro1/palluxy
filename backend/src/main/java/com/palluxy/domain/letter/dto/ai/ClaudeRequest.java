@@ -1,6 +1,7 @@
 package com.palluxy.domain.letter.dto.ai;
 
 import com.palluxy.domain.letter.dto.AIRequest;
+import java.util.ArrayList;
 import lombok.Getter;
 
 import java.util.List;
