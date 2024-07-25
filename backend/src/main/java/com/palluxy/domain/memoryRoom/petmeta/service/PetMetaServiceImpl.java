@@ -117,7 +117,7 @@ public class PetMetaServiceImpl implements PetMetaService {
   }
 
   @Override
-  public Mono<Void> uploadImageToDjango(Long roomId, MultipartFile file) {
+  public Mono<String> uploadImageToDjangoAndProcess(Long roomId, MultipartFile file) {
     return Mono.defer(() -> {
       MultipartBodyBuilder builder = new MultipartBodyBuilder();
       builder.part("file", file.getResource());
@@ -128,8 +128,13 @@ public class PetMetaServiceImpl implements PetMetaService {
           .contentType(MediaType.MULTIPART_FORM_DATA)
           .body(BodyInserters.fromMultipartData(builder.build()))
           .retrieve()
-          .bodyToMono(Void.class);
+          .bodyToMono(String.class);
     });
+  }
+
+  @Override
+  public Mono<String> processWebhook(Long roomId, FilePart filePart) {
+    return handleObjFileUpload(roomId, filePart);
   }
 
   @Override
@@ -146,12 +151,6 @@ public class PetMetaServiceImpl implements PetMetaService {
           return file;
         })
         .flatMap(this::uploadToS3);
-  }
-
-  @Override
-  public Mono<String> processWebhook(Long roomId, FilePart filePart) {
-    System.out.println("Received webhook for Room ID: " + roomId);
-    return handleObjFileUpload(roomId, filePart);
   }
 
   private Mono<String> uploadToS3(File file) {

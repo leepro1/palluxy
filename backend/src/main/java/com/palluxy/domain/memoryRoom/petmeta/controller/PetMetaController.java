@@ -24,13 +24,13 @@ public class PetMetaController {
   @Autowired
   private PetMetaService petMetaService;
 
-  @Operation(summary = "Create a new PetMeta")
+  @Operation(summary = "새로운 PetMeta 생성")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "201",
-              description = "PetMeta created successfully"),
-          @ApiResponse(responseCode = "400", description = "Invalid input")
+              description = "PetMeta가 성공적으로 생성되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
       })
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -40,13 +40,13 @@ public class PetMetaController {
     return CommonResponse.created("PetMeta created successfully");
   }
 
-  @Operation(summary = "Upload OBJ file")
+  @Operation(summary = "OBJ 파일 업로드")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "201",
-              description = "File uploaded successfully"),
-          @ApiResponse(responseCode = "400", description = "Invalid input")
+              description = "파일이 성공적으로 업로드되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
       })
   @PostMapping(value = "/upload-obj", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
@@ -57,13 +57,13 @@ public class PetMetaController {
         .map(url -> CommonResponse.created("File uploaded successfully"));
   }
 
-  @Operation(summary = "Get a PetMeta by ID")
+  @Operation(summary = "ID로 PetMeta 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "PetMeta retrieved successfully"),
-          @ApiResponse(responseCode = "404", description = "PetMeta not found")
+              description = "PetMeta가 성공적으로 조회되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
       })
   @GetMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
@@ -73,12 +73,12 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta retrieved successfully", petMeta);
   }
 
-  @Operation(summary = "Get all PetMetas by Room ID")
+  @Operation(summary = "Room ID로 모든 PetMeta 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "PetMetas retrieved successfully")
+              description = "PetMeta들이 성공적으로 조회되었습니다.")
       })
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
@@ -87,13 +87,13 @@ public class PetMetaController {
     return CommonResponse.ok("PetMetas retrieved successfully", petMetas);
   }
 
-  @Operation(summary = "Update a PetMeta")
+  @Operation(summary = "PetMeta 업데이트")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "PetMeta updated successfully"),
-          @ApiResponse(responseCode = "404", description = "PetMeta not found")
+              description = "PetMeta가 성공적으로 업데이트되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
       })
   @PutMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
@@ -105,13 +105,13 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta updated successfully", updatedPetMeta);
   }
 
-  @Operation(summary = "Update PetMeta position and rotation")
+  @Operation(summary = "PetMeta 위치와 회전 업데이트")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "PetMeta position and rotation updated successfully"),
-          @ApiResponse(responseCode = "404", description = "PetMeta not found")
+              description = "PetMeta의 위치와 회전이 성공적으로 업데이트되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
       })
   @PutMapping("/{petMetaId}/position-rotation")
   @ResponseStatus(HttpStatus.OK)
@@ -130,13 +130,13 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta position and rotation updated successfully", updatedPetMeta);
   }
 
-  @Operation(summary = "Delete a PetMeta by ID")
+  @Operation(summary = "ID로 PetMeta 삭제")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "200",
-              description = "PetMeta deleted successfully"),
-          @ApiResponse(responseCode = "404", description = "PetMeta not found")
+              description = "PetMeta가 성공적으로 삭제되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
       })
   @DeleteMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
@@ -146,35 +146,35 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta deleted successfully");
   }
 
-  @Operation(summary = "Upload image to Django")
+  @Operation(summary = "Django로 이미지 업로드")
   @ApiResponses(
       value = {
           @ApiResponse(
               responseCode = "201",
-              description = "Image uploaded successfully"),
-          @ApiResponse(responseCode = "400", description = "Invalid input")
+              description = "이미지가 성공적으로 업로드되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
       })
   @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public Mono<CommonResponse<Void>> uploadImageToDjango(
+  public Mono<CommonResponse<String>> uploadImageToDjango(
       @PathVariable Long roomId, @RequestPart("file") MultipartFile file) {
     return petMetaService
-        .uploadImageToDjango(roomId, file)
-        .then(Mono.just(CommonResponse.created("Image uploaded successfully")));
+        .uploadImageToDjangoAndProcess(roomId, file)
+        .map(url -> CommonResponse.created("Image uploaded successfully"));
   }
 
-  @Operation(summary = "Receive Django Webhook")
+  @Operation(summary = "Django 웹훅 수신")
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "200", description = "Webhook received successfully"),
-          @ApiResponse(responseCode = "400", description = "Invalid input")
+          @ApiResponse(responseCode = "200", description = "웹훅이 성공적으로 수신되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
       })
   @PostMapping(value = "/webhook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.OK)
   public Mono<CommonResponse<String>> handleWebhook(
       @RequestPart("file") FilePart filePart,
-      @RequestParam("roomId") Long roomId) {
+      @RequestPart("roomId") Long roomId) {
     return petMetaService.processWebhook(roomId, filePart)
-        .map(response -> CommonResponse.ok("Webhook received successfully"));
+        .map(url -> CommonResponse.ok("Webhook received successfully", url));
   }
 }
