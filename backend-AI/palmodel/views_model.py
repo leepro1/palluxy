@@ -17,7 +17,7 @@ class RunModelAPIView(APIView):
         else:
             return Response({"message": "request false",}, status=status.HTTP_400_BAD_REQUEST)
 
-        image = request.FILES.get('image')
+        image = request.FILES.get('file')
         
 
         if not image:
