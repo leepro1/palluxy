@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const GlobalBtn = ({ size, text, className, onClick }) => {
+const GlobalBtn = ({ size, text, className, ...rest }) => {
   const btnSize = {
     sm: 'w-[90px] h-10',
     md: 'w-[130px] h-10',
@@ -8,9 +8,8 @@ const GlobalBtn = ({ size, text, className, onClick }) => {
   };
   return (
     <button
-      onClick={onClick && onClick}
       className={`rounded-md ${btnSize[size]} ${className}`}
-      type="button"
+      {...rest}
     >
       {text}
     </button>
