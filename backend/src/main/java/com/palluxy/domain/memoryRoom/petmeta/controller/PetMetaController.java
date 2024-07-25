@@ -4,11 +4,9 @@ import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.service.PetMetaService;
 import com.palluxy.global.common.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,8 +14,6 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
-import jakarta.validation.Valid;
-
 
 import java.util.List;
 
@@ -25,20 +21,16 @@ import java.util.List;
 @RequestMapping("/api/rooms/{roomId}/petmeta")
 public class PetMetaController {
 
-  @Autowired private PetMetaService petMetaService;
+  @Autowired
+  private PetMetaService petMetaService;
 
   @Operation(summary = "Create a new PetMeta")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "PetMeta created successfully",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = PetMetaDto.class))
-            }),
-        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+          @ApiResponse(
+              responseCode = "201",
+              description = "PetMeta created successfully"),
+          @ApiResponse(responseCode = "400", description = "Invalid input")
       })
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -51,11 +43,10 @@ public class PetMetaController {
   @Operation(summary = "Upload OBJ file")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "File uploaded successfully",
-            content = {@Content(mediaType = "application/json")}),
-        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+          @ApiResponse(
+              responseCode = "201",
+              description = "File uploaded successfully"),
+          @ApiResponse(responseCode = "400", description = "Invalid input")
       })
   @PostMapping(value = "/upload-obj", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
@@ -69,15 +60,10 @@ public class PetMetaController {
   @Operation(summary = "Get a PetMeta by ID")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "PetMeta retrieved successfully",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = PetMetaDto.class))
-            }),
-        @ApiResponse(responseCode = "404", description = "PetMeta not found", content = @Content)
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta retrieved successfully"),
+          @ApiResponse(responseCode = "404", description = "PetMeta not found")
       })
   @GetMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
@@ -90,14 +76,9 @@ public class PetMetaController {
   @Operation(summary = "Get all PetMetas by Room ID")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "PetMetas retrieved successfully",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = PetMetaDto.class))
-            })
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMetas retrieved successfully")
       })
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
@@ -109,15 +90,10 @@ public class PetMetaController {
   @Operation(summary = "Update a PetMeta")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "PetMeta updated successfully",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = PetMetaDto.class))
-            }),
-        @ApiResponse(responseCode = "404", description = "PetMeta not found", content = @Content)
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta updated successfully"),
+          @ApiResponse(responseCode = "404", description = "PetMeta not found")
       })
   @PutMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
@@ -132,15 +108,10 @@ public class PetMetaController {
   @Operation(summary = "Update PetMeta position and rotation")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "PetMeta position and rotation updated successfully",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = PetMetaDto.class))
-            }),
-        @ApiResponse(responseCode = "404", description = "PetMeta not found", content = @Content)
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta position and rotation updated successfully"),
+          @ApiResponse(responseCode = "404", description = "PetMeta not found")
       })
   @PutMapping("/{petMetaId}/position-rotation")
   @ResponseStatus(HttpStatus.OK)
@@ -162,11 +133,10 @@ public class PetMetaController {
   @Operation(summary = "Delete a PetMeta by ID")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "PetMeta deleted successfully",
-            content = @Content),
-        @ApiResponse(responseCode = "404", description = "PetMeta not found", content = @Content)
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta deleted successfully"),
+          @ApiResponse(responseCode = "404", description = "PetMeta not found")
       })
   @DeleteMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
@@ -179,11 +149,10 @@ public class PetMetaController {
   @Operation(summary = "Upload image to Django")
   @ApiResponses(
       value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "Image uploaded successfully",
-            content = @Content),
-        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
+          @ApiResponse(
+              responseCode = "201",
+              description = "Image uploaded successfully"),
+          @ApiResponse(responseCode = "400", description = "Invalid input")
       })
   @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
@@ -192,5 +161,20 @@ public class PetMetaController {
     return petMetaService
         .uploadImageToDjango(roomId, file)
         .then(Mono.just(CommonResponse.created("Image uploaded successfully")));
+  }
+
+  @Operation(summary = "Receive Django Webhook")
+  @ApiResponses(
+      value = {
+          @ApiResponse(responseCode = "200", description = "Webhook received successfully"),
+          @ApiResponse(responseCode = "400", description = "Invalid input")
+      })
+  @PostMapping(value = "/webhook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public Mono<CommonResponse<String>> handleWebhook(
+      @RequestPart("file") FilePart filePart,
+      @RequestParam("roomId") Long roomId) {
+    return petMetaService.processWebhook(roomId, filePart)
+        .map(response -> CommonResponse.ok("Webhook received successfully"));
   }
 }
