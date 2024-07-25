@@ -29,20 +29,72 @@ const SigninModal = () => {
     );
   };
 
+  // 쿠키 설정 days는 1일이었나 , 7일이었나
+  const setCookie = (name, value, days) => {
+    let expires = '';
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = '; expires=' + date.toISOString();
+    }
+    document.cookie =
+      name +
+      '=' +
+      (value || '') +
+      expires +
+      '; path=/; secure; samesite=strict';
+  };
+
+  const getCookie = (name) => {
+    const nameEQ = name + '=';
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  };
+
+  // axios 요청 제외 테스트용 코드
+  const onSubmit = (data) => {
+    console.log(data);
+
+    const accessToken = '싸피';
+    const refreshToken = '리프레시테스트';
+
+    sessionStorage.setItem('accessToken', accessToken);
+    setCookie('refreshToken', refreshToken, 1);
+
+    console.log('accessToken:', sessionStorage.getItem('accessToken'));
+    console.log('refreshToken:', getCookie('refreshToken'));
+  };
+
   // // react-query 추가
   const loginMutation = useMutation(
     // 로그인 API
-    // mutationFn: (data) => axios.post('http://localhost:8080/api/users', data),
     {
+      // mutationFn: (data) => axios.post('http://localhost:8080/', data),
+
       onSuccess: async (response) => {
         // 백에서 발급한 토큰을 받아옴
-        const { token } = response.data;
-        localStorage.setItem('token', token);
+        const { accessToken, refreshToken } = response.data;
 
-        // 정보 받아오기, API: 로그인한 회원정보를 받아오는 api
+        // access 토큰 저장
+        sessionStorage.setItem('accessToken', accessToken);
+        // sessionStorage.setItem('access', 'session');
+
+        // refresh 토큰 저장 (일단 1일)
+        setCookie('refreshToken', refreshToken, 1);
+        // setCookie('test', 'cookie', 1);
+
+        console.log('accessToken:', sessionStorage.getItem('accessToken'));
+        console.log('refresh:', getCookie('refreshToken'));
+
+        // user 정보 받아오기, API: 로그인한 회원정보를 받아오는 api
         const { data: userData } = await axios.get('/api/user', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
@@ -58,11 +110,11 @@ const SigninModal = () => {
     },
   );
 
-  const onSubmit = (data) => {
-    console.log(data);
-    navigate('/');
-    loginMutation.mutate(data);
-  };
+  // const onSubmit = (data) => {
+  //   console.log(data);
+  //   loginMutation.mutate(data);
+  //   navigate('/');
+  // };
 
   const handleBackgroundClick = (e) => {
     if (e.target === e.currentTarget) {
