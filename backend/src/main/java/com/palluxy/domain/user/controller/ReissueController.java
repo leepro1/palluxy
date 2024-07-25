@@ -1,5 +1,7 @@
 package com.palluxy.domain.user.controller;
 
+import static io.openvidu.java.client.ConnectionProperties.DefaultValues.role;
+
 import com.palluxy.domain.user.entity.Refresh;
 import com.palluxy.domain.user.repository.RefreshRepository;
 import com.palluxy.global.util.CookieUtil;
@@ -30,6 +32,7 @@ public class ReissueController {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("refresh")) {
                 refresh = cookie.getValue();
+                break;
             }
         }
 
@@ -54,10 +57,10 @@ public class ReissueController {
         }
 
         String email = jwtUtil.getEmail(refresh);
-        String role = jwtUtil.getRole(refresh);
+        boolean isAdmin = jwtUtil.isAdmin(refresh);
 
-        String newAccess = jwtUtil.createJwt("access", email, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", email, isAdmin, 600000L);
+        String newRefresh = jwtUtil.createJwt("refresh", email, isAdmin, 86400000L);
 
         refreshRepository.deleteByRefresh(refresh);
         addRefreshEntity(email, newRefresh, 86400000L);

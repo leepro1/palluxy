@@ -64,12 +64,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = authentication.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        boolean isAdmin = authorities.stream()
+            .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-        String access = jwtUtil.createJwt("access", email, role, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
+        String access = jwtUtil.createJwt("access", email, isAdmin, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", email, isAdmin, 86400000L);
 
         addRefreshEntity(email, refresh, 86400000L);
 

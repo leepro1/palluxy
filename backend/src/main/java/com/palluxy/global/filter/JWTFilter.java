@@ -10,9 +10,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -55,18 +57,18 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String email = jwtUtil.getEmail(accessToken);
-        String role = jwtUtil.getRole(accessToken);
+        boolean isAdmin = jwtUtil.isAdmin(accessToken);
 
-        boolean isAdmin = "ROLE_ADMIN".equals(role);
-
-        User user = User.builder()
-            .email(email)
-            .isAdmin(isAdmin)
-            .build();
+        User user = new User(email, isAdmin);
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
-            customUserDetails.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(
+            customUserDetails,
+            null,
+            isAdmin ?
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")) :
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);
