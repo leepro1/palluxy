@@ -10,31 +10,31 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class GroupUser {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private boolean isLeader;
-    private boolean isBanned;
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+  private boolean isLeader;
+  private boolean isBanned;
+  @CreationTimestamp private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "group_id")
+  private Group group;
 
-    public GroupUser() {}
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @Builder
-    public GroupUser(Group group, User user) {
-        this.group = group;
-        this.user = user;
-    }
+  public GroupUser() {}
 
+  @Builder
+  public GroupUser(Group group, User user) {
+    this.group = group;
+    this.user = user;
+  }
 }

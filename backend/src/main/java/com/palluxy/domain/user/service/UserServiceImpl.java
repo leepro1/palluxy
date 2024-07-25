@@ -10,6 +10,7 @@ import com.palluxy.domain.user.exception.UserNotFoundException;
 import com.palluxy.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +21,20 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public void signup(UserSignupRequest request) {
         duplicateEmail(request.email());
+        duplicateNickname(request.nickname());
 
-        User user = new User(request.email(), request.nickname(), request.password(), request.acceptedTerms());
+        User user = User.builder()
+            .email(request.email())
+            .nickname(request.nickname())
+            .password(bCryptPasswordEncoder.encode(request.password()))
+            .acceptedTerms(request.acceptedTerms())
+            .build();
+
         userRepository.save(user);
     }
 
@@ -48,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetPassword(UserResetPasswordRequest request) {
         String email = redisTemplate.opsForValue().get(request.UUID());
-        userRepository.updatePasswordByEmail(email, request.password());
+        userRepository.updatePasswordByEmail(email, bCryptPasswordEncoder.encode(request.password()));
     }
 
     @Override

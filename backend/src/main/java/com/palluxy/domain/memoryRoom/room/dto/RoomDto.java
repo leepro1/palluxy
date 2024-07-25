@@ -24,6 +24,7 @@ public class RoomDto {
     private LocalDateTime updatedAt;
     private int backgroundMusic;
     private int type;
+    private int likeCount; // 좋아요 수 필드 추가
 
     private Long userId;
 
@@ -38,6 +39,7 @@ public class RoomDto {
         this.updatedAt = room.getUpdatedAt();
         this.backgroundMusic = room.getBackgroundMusic();
         this.type = room.getType();
+        this.likeCount = room.getLikeCount();
         this.userId = room.getUser().getId();
     }
 }

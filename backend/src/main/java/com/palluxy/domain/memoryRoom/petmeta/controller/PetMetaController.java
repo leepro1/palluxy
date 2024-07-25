@@ -3,11 +3,16 @@ package com.palluxy.domain.memoryRoom.petmeta.controller;
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.service.PetMetaService;
 import com.palluxy.global.common.CommonResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -16,16 +21,50 @@ import java.util.List;
 @RequestMapping("/api/rooms/{roomId}/petmeta")
 public class PetMetaController {
 
-  @Autowired private PetMetaService petMetaService;
+  @Autowired
+  private PetMetaService petMetaService;
 
+  @Operation(summary = "새로운 PetMeta 생성")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "201",
+              description = "PetMeta가 성공적으로 생성되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
+      })
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<PetMetaDto> createPetMeta(
-      @PathVariable Long roomId, @Valid @RequestBody PetMetaDto petMetaDto) {
+      @PathVariable Long roomId, @RequestBody @Valid PetMetaDto petMetaDto) {
     PetMetaDto createdPetMeta = petMetaService.createPetMeta(petMetaDto, roomId);
     return CommonResponse.created("PetMeta created successfully");
   }
 
+  @Operation(summary = "OBJ 파일 업로드")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "201",
+              description = "파일이 성공적으로 업로드되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
+      })
+  @PostMapping(value = "/upload-obj", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseStatus(HttpStatus.CREATED)
+  public Mono<CommonResponse<String>> handleObjFileUpload(
+      @PathVariable Long roomId, @RequestPart("file") FilePart filePart) {
+    return petMetaService
+        .handleObjFileUpload(roomId, filePart)
+        .map(url -> CommonResponse.created("File uploaded successfully"));
+  }
+
+  @Operation(summary = "ID로 PetMeta 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta가 성공적으로 조회되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
+      })
   @GetMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<PetMetaDto> getPetMeta(
@@ -34,6 +73,13 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta retrieved successfully", petMeta);
   }
 
+  @Operation(summary = "Room ID로 모든 PetMeta 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta들이 성공적으로 조회되었습니다.")
+      })
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<List<PetMetaDto>> getPetMetaByRoomId(@PathVariable Long roomId) {
@@ -41,16 +87,32 @@ public class PetMetaController {
     return CommonResponse.ok("PetMetas retrieved successfully", petMetas);
   }
 
+  @Operation(summary = "PetMeta 업데이트")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta가 성공적으로 업데이트되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
+      })
   @PutMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<PetMetaDto> updatePetMeta(
       @PathVariable Long roomId,
       @PathVariable Long petMetaId,
-      @Valid @RequestBody PetMetaDto petMetaDto) {
+      @RequestBody @Valid PetMetaDto petMetaDto) {
     PetMetaDto updatedPetMeta = petMetaService.updatePetMeta(petMetaId, petMetaDto);
     return CommonResponse.ok("PetMeta updated successfully", updatedPetMeta);
   }
 
+  @Operation(summary = "PetMeta 위치와 회전 업데이트")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta의 위치와 회전이 성공적으로 업데이트되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
+      })
   @PutMapping("/{petMetaId}/position-rotation")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<PetMetaDto> updatePetMetaPositionRotation(
@@ -68,6 +130,14 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta position and rotation updated successfully", updatedPetMeta);
   }
 
+  @Operation(summary = "ID로 PetMeta 삭제")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta가 성공적으로 삭제되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
+      })
   @DeleteMapping("/{petMetaId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<Void> deletePetMeta(
@@ -76,11 +146,35 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta deleted successfully");
   }
 
-  @PostMapping("/upload")
-  public Mono<CommonResponse<String>> uploadImageAndGetObjUrl(
+  @Operation(summary = "Django로 이미지 업로드")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "201",
+              description = "이미지가 성공적으로 업로드되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
+      })
+  @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseStatus(HttpStatus.CREATED)
+  public Mono<CommonResponse<String>> uploadImageToDjango(
       @PathVariable Long roomId, @RequestPart("file") MultipartFile file) {
     return petMetaService
-        .uploadImageAndGetObjUrl(file)
-        .map(url -> CommonResponse.ok("File uploaded and converted successfully", url));
+        .uploadImageToDjangoAndProcess(roomId, file)
+        .map(url -> CommonResponse.created("Image uploaded successfully"));
+  }
+
+  @Operation(summary = "Django 웹훅 수신")
+  @ApiResponses(
+      value = {
+          @ApiResponse(responseCode = "200", description = "웹훅이 성공적으로 수신되었습니다."),
+          @ApiResponse(responseCode = "400", description = "잘못된 입력")
+      })
+  @PostMapping(value = "/webhook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseStatus(HttpStatus.OK)
+  public Mono<CommonResponse<String>> handleWebhook(
+      @RequestPart("file") FilePart filePart,
+      @RequestPart("roomId") Long roomId) {
+    return petMetaService.processWebhook(roomId, filePart)
+        .map(url -> CommonResponse.ok("Webhook received successfully", url));
   }
 }

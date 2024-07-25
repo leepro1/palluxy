@@ -6,7 +6,8 @@ import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
 import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/MailboxSideBar';
 import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
-
+import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
+import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
 const routerInfo = [
   {
     path: '/',
@@ -14,8 +15,24 @@ const routerInfo = [
     children: [
       { index: true, element: <HomePage /> },
       { path: '/healingmeeting', element: <HealingMeetingPage /> },
-      { path: '/meetingoverview', element: <HealingMeetingOverviewPage /> },
+      {
+        path: '/meetingoverview',
+        children: [
+          {
+            path: ':pageIndex',
+            element: <HealingMeetingOverviewPage />,
+          },
+          {
+            path: 'detail/:meetingId',
+            element: <MeetingDetail />,
+          },
+        ],
+      },
       //   { path: '/signin', element: <SigninPage /> },
+      {
+        path: '/memoryspacecreate',
+        element: <MemorySpaceCreatePage />,
+      },
       {
         path: '/memoryspace',
         element: <MemorySpacePage />,
