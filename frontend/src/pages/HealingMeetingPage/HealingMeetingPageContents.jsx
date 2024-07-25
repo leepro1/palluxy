@@ -113,7 +113,6 @@ const HealingMeetingPageContents = () => {
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
     setSession(newSession);
-
     newSession.on('streamCreated', (event) => {
       const subscriber = newSession.subscribe(event.stream, undefined);
       setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
@@ -277,40 +276,45 @@ const HealingMeetingPageContents = () => {
               <option value="MODERATOR">MODERATOR</option>
             </select>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+
+          <div className="m-5 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {data.map((item, index) => (
               <form
-                className="space-y-4"
+                className="m-3 flex w-3/4 flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
+                key={index}
                 onSubmit={(e) => {
                   e.preventDefault();
-
                   joinSession();
                 }}
-                key={index}
               >
-                <div className="w-9/12 rounded-lg bg-white shadow-lg">
-                  <div className="relative">
+                <div className="relative w-full rounded-md">
+                  <div className="mb-1 flex w-full justify-center">
                     <img
                       src={defaultImage}
-                      alt="이미지"
+                      alt="default"
+                      className="rounded-md"
                     />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                      <button
+                        onClick={(e) => {
+                          changeSession(item);
+                        }}
+                        type="submit"
+                        className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite"
+                      >
+                        모임 입장
+                      </button>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <h3 className="mb-2 text-xl font-bold">치유 모임 이름</h3>
-                    <p className="text-gray-700">
-                      모임 설명이 여기에
-                      들어갑니다.asdfssssssssssssssssssssssssss
-                    </p>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      changeSession(item);
-                    }}
-                    className="focus:shadow-outline h-10 w-full rounded bg-pal-purple px-4 py-2 font-bold text-white hover:bg-violet-900 focus:outline-none"
-                    type="submit"
-                  >
-                    모임 입장
-                  </button>
+                </div>
+                <div className="w-full p-4 text-left">
+                  <p className="mb-2 text-2xl font-semibold text-gray-900">
+                    제목제목제목제목제목
+                  </p>
+                  <p className="text-gray-700">
+                    {item} 내용예시 내용예시 내용예시 내용예시 내용예시 내용예시
+                    내용예시ㄴㅁㅇㄹㄴㅁㅇㄹㄴㅁㅇㄹ
+                  </p>
                 </div>
               </form>
             ))}

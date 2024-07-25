@@ -17,11 +17,11 @@ const routerInfo = [
         path: '/meetingoverview',
         children: [
           {
-            path: '',
+            path: ':pageIndex',
             element: <HealingMeetingOverviewPage />,
           },
           {
-            path: ':meetingId',
+            path: 'detail/:meetingId',
             element: <MeetingDetail />,
           },
         ],
