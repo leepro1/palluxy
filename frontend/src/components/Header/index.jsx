@@ -8,7 +8,7 @@ const Header = () => {
     <ContentsLayout>
       <div className="flex h-[120px] items-center">
         {/* 로고 */}
-        <div>
+        <div className="flex-shrink-0">
           <img
             src={Logo}
             alt="logo_image"
@@ -32,7 +32,7 @@ const Header = () => {
           </ul>
         </div>
         {/* 로그인 회원가입 버튼 */}
-        <div className="flex gap-x-16 font-jamsilMedium text-white">
+        <div className="hidden lg:flex lg:gap-x-16 lg:font-jamsilMedium lg:text-white">
           <GlobalBtn
             className="border-2 border-white"
             size={'sm'}

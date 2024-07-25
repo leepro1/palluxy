@@ -8,8 +8,6 @@ import {
   updateFrameImage,
 } from '@/api/memorySpace/frameImageApi';
 
-import { useNavigate } from 'react-router-dom';
-
 const FileUploadModal = ({ handler, selectFrame }) => {
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
