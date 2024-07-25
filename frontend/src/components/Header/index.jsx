@@ -27,7 +27,7 @@ const Header = () => {
               <NavLink to={'/memoryspace'}>추억공간</NavLink>
             </li>
             <li>
-              <NavLink to={'/meetingoverview'}>치유모임 모아보기</NavLink>
+              <NavLink to={'/meetingoverview/1'}>치유모임 모아보기</NavLink>
             </li>
           </ul>
         </div>

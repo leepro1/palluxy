@@ -6,25 +6,36 @@ import java.time.LocalDateTime;
 
 @Data
 public class GroupResponse {
-    private Long id;
-    private String title;
-    private String description;
-    private String filePath;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private int maxCapacity;
-    private int remainingCapacity;
+  private Long id;
+  private Long leaderId;
+  private String title;
+  private String description;
+  private String filePath;
+  private LocalDateTime startTime;
+  private LocalDateTime endTime;
+  private int maxCapacity;
+  private int remainingCapacity;
 
-    public GroupResponse() {}
+  public GroupResponse() {}
 
-    public GroupResponse(Long id, String title, String description, String filePath, LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainingCapacity) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.filePath = filePath;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.maxCapacity = maxCapacity;
-        this.remainingCapacity = remainingCapacity;
-    }
+  public GroupResponse(
+      Long id,
+      Long leaderId,
+      String title,
+      String description,
+      String filePath,
+      LocalDateTime startTime,
+      LocalDateTime endTime,
+      int maxCapacity,
+      int remainingCapacity) {
+    this.id = id;
+    this.leaderId = leaderId;
+    this.title = title;
+    this.description = description;
+    this.filePath = filePath;
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.maxCapacity = maxCapacity;
+    this.remainingCapacity = remainingCapacity;
+  }
 }
