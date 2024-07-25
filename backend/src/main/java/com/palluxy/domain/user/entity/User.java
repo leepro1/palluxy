@@ -33,17 +33,13 @@ public class User extends BaseEntity {
     private LocalDateTime acceptedTermsAt;
 
     @Builder
-    public User(String email, String nickname, String password, boolean acceptedTerms) {
+    public User(String email, String nickname, String password, boolean isAdmin, boolean acceptedTerms) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+        this.isAdmin = isAdmin;
         this.acceptedTerms = acceptedTerms;
         this.acceptedTermsAt = LocalDateTime.now();
     }
 
-    //임시 메서드
-  public Object getUserId() {
-
-    return null;
-  }
 }
