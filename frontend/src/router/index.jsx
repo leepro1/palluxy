@@ -5,6 +5,7 @@ import HealingMeetingPage from '@pages/HealingMeetingPage';
 import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
 import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/MailboxSideBar';
+import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
 import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
 import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
 const routerInfo = [
@@ -44,6 +45,10 @@ const routerInfo = [
           {
             path: 'mailbox',
             element: <MailboxSideBar />,
+          },
+          {
+            path: 'guest-box',
+            element: <GuestBoxSideBar />,
           },
         ],
       },
