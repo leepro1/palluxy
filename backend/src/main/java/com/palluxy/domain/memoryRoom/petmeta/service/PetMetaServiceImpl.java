@@ -1,8 +1,8 @@
 package com.palluxy.domain.memoryRoom.petmeta.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import com.palluxy.domain.memoryRoom.petmeta.repository.PetMetaRepository;
@@ -22,10 +22,8 @@ import reactor.core.publisher.Mono;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -136,17 +134,27 @@ public class PetMetaServiceImpl implements PetMetaService {
 
   @Override
   public Mono<String> handleObjFileUpload(Long roomId, FilePart filePart) {
-    return filePart.transferTo(Paths.get(System.getProperty("java.io.tmpdir"), filePart.filename()))
-        .thenReturn(filePart.filename())
-        .flatMap(filePath -> {
-          String s3Url = uploadToS3(filePath).block();
-          // roomId를 사용하여 PetMeta를 업데이트하거나 생성하는 로직 추가 가능
-          return Mono.just(s3Url);
-        });
+    return filePart.content()
+        .reduce(DataBuffer::write)
+        .map(dataBuffer -> {
+          File file = new File(System.getProperty("java.io.tmpdir") + "/" + filePart.filename());
+          try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(dataBuffer.asByteBuffer().array());
+          } catch (IOException e) {
+            throw new RuntimeException("Error writing file", e);
+          }
+          return file;
+        })
+        .flatMap(this::uploadToS3);
   }
 
-  private Mono<String> uploadToS3(String filePath) {
-    File file = new File(filePath);
+  @Override
+  public Mono<String> processWebhook(Long roomId, FilePart filePart) {
+    System.out.println("Received webhook for Room ID: " + roomId);
+    return handleObjFileUpload(roomId, filePart);
+  }
+
+  private Mono<String> uploadToS3(File file) {
     String s3Key = "uploaded/" + file.getName();
     return Mono.fromCallable(() -> {
       amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, file)
