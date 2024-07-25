@@ -14,7 +14,7 @@ public interface PetMetaService {
   PetMetaDto updatePetMeta(Long petMetaId, PetMetaDto petMetaDto);
   PetMetaDto updatePetMetaPositionRotation(Long petMetaId, double positionX, double positionY, double positionZ, double rotationX, double rotationY, double rotationZ);
   void deletePetMeta(Long petMetaId);
-  Mono<Void> uploadImageToDjango(Long roomId, MultipartFile file);
-  Mono<String> handleObjFileUpload(Long roomId, FilePart filePart);
+  Mono<String> uploadImageToDjangoAndProcess(Long roomId, MultipartFile file);
   Mono<String> processWebhook(Long roomId, FilePart filePart);
+  Mono<String> handleObjFileUpload(Long roomId, FilePart filePart);
 }
