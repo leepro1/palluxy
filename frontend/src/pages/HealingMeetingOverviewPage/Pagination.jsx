@@ -6,19 +6,18 @@ const Pagination = ({
   paginate,
   paginatePrev,
   paginateNext,
-  currentPage,
   showingPage,
   showingPageMax,
   showingPageMin,
+  pageIndexInt,
 }) => {
   const pageNumbers = [];
 
   for (let i = showingPageMin; i <= showingPageMax; i++) {
     pageNumbers.push(i);
   }
-
   const handleClick = (number, e) => {
-    e.preventDefault(); // 기본 동작 방지
+    // 기본 동작 방지
     paginate(number);
   };
   const handleClickPrev = (number, e) => {
@@ -45,9 +44,9 @@ const Pagination = ({
             keyboard_double_arrow_left
           </span>
         )}
-        {currentPage !== 1 ? (
+        {pageIndexInt !== 1 ? (
           <span
-            onClick={(e) => handleClick(currentPage - 1, e)}
+            onClick={(e) => handleClick(pageIndexInt - 1, e)}
             className="material-symbols-outlined mt-2.5 cursor-pointer"
           >
             keyboard_arrow_left
@@ -63,7 +62,7 @@ const Pagination = ({
             key={number}
             onClick={(e) => handleClick(number, e)}
             className={`font-sans relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle text-xs font-medium uppercase transition-all ${
-              currentPage === number
+              pageIndexInt === number
                 ? 'hover:shadow-pal-purple-900 bg-pal-purple text-pal-lightwhite shadow-sm shadow-gray-900/10 hover:shadow-lg'
                 : 'text-pal-lightwhite hover:bg-gray-900/10 active:bg-gray-900/20'
             } disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none`}
@@ -74,9 +73,9 @@ const Pagination = ({
             </span>
           </button>
         ))}
-        {currentPage !== totalPage ? (
+        {pageIndexInt !== totalPage ? (
           <span
-            onClick={(e) => handleClick(currentPage + 1, e)}
+            onClick={(e) => handleClick(pageIndexInt + 1, e)}
             className="material-symbols-outlined mt-2.5 cursor-pointer"
           >
             keyboard_arrow_right
