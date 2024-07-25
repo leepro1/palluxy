@@ -41,9 +41,9 @@ public class User extends BaseEntity {
         this.acceptedTermsAt = LocalDateTime.now();
     }
 
-    //임시 메서드
-  public Object getUserId() {
+    public User(String email, boolean isAdmin) {
+        this.email = email;
+        this.isAdmin = isAdmin;
+    }
 
-    return null;
-  }
 }
