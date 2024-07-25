@@ -8,5 +8,5 @@ public class SessionRequest {
   private Long userId;
   private Long groupId;
   private String approveKey;
-  private Map<String, Object> defaultRecordingProperties;
+  private Map<String, Object> params;
 }

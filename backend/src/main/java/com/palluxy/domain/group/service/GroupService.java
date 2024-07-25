@@ -137,7 +137,7 @@ public class GroupService {
   }
 
   public Page<Group> findAvailableGroups(Pageable pageable) {
-    return groupRepository.findAll(Status.ACCEPT, 0, LocalDateTime.now(), pageable);
+    return groupRepository.findAvailableGroup(Status.ACCEPT, 0, LocalDateTime.now(), pageable);
   }
 
   public Page<Group> findGroupsByUserId(Long userId, Pageable pageable) {
