@@ -44,8 +44,7 @@ public class LetterController {
   @PostMapping("/{petId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> writeLetter(@PathVariable("petId") Long petId, @RequestBody LetterRequest letterRequest) {
-    Letter letter = new Letter(petId).of(letterRequest);
-    letter.setOpenedAt(LocalDateTime.now());
+    Letter letter = Letter.of(letterRequest, petId);
     letterService.saveLetter(letter);
     letterService.sendLetters(petId);
     return CommonResponse.ok("정상적으로 편지가 저장되었음");

@@ -1,5 +1,6 @@
 package com.palluxy.domain.group.service;
 
+import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
@@ -92,6 +93,10 @@ public class GroupService {
 
     group.setRemainingCapacity(group.getRemainingCapacity() - 1);
     groupRepository.saveAndFlush(group);
+  }
+
+  public void saveAndFlushGroupUser(GroupUser groupUser) {
+    groupUserRepository.saveAndFlush(groupUser);
   }
 
   public void cancelJoin(Long groupId, Long userId) {

@@ -52,18 +52,6 @@ public class GroupUtil {
         group.getRemainingCapacity());
   }
 
-  public Group of(GroupResponse group) {
-    return new Group(
-        group.getId(),
-        group.getTitle(),
-        group.getDescription(),
-        group.getFilePath(),
-        group.getStartTime(),
-        group.getEndTime(),
-        group.getMaxCapacity(),
-        group.getRemainingCapacity());
-  }
-
   public String generateKey() {
     StringBuilder key = new StringBuilder();
     for (int i = 0; i < 6; i++) {
