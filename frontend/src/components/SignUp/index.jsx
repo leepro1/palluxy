@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import { instance } from '@/utils/axios';
-
 const SignupModal = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,10 +21,11 @@ const SignupModal = () => {
     setError,
   } = useForm({ mode: 'onChange' });
 
+  // 이메일 인증 타이머
   useEffect(() => {
     let timerInterval;
     if (verificationCodeSent && !isEmailVerified) {
-      setTimer(10);
+      setTimer(600);
       timerInterval = setInterval(() => {
         setTimer((prevTimer) => {
           if (prevTimer <= 1) {
@@ -42,11 +41,13 @@ const SignupModal = () => {
     return () => clearInterval(timerInterval);
   }, [verificationCodeSent, isEmailVerified, setError]);
 
+  // 이메일 유효성 검사
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email) || '이메일의 형식이 올바르지 않습니다.';
   };
 
+  // 비밀번호 유효성 검사
   const validatePassword = (password) => {
     const passwordPattern =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{9,16}$/;
@@ -56,6 +57,7 @@ const SignupModal = () => {
     );
   };
 
+  // 폼 제출 시
   const onSubmit = async (data) => {
     const isFormValid = validateForm(data);
     if (!isFormValid) return;
@@ -86,7 +88,7 @@ const SignupModal = () => {
     }
   };
 
-  // 폼 작성이 정상적인지 확인
+  // 폼 작성이 정상적인지 확인 ,
   const validateForm = (data) => {
     let isValid = true;
     if (!data.termsOfUseAccepted) {
@@ -228,6 +230,7 @@ const SignupModal = () => {
     }
   };
 
+  // 닉네임 중복 확인
   const checkNicknameDuplicate = async (nickname) => {
     try {
       const response = await fetch(
@@ -280,6 +283,7 @@ const SignupModal = () => {
     watch('termsOfUseAccepted') &&
     watch('privacyPolicyAccepted');
 
+  // 이용약관 비동의 시 메시지(현재 버튼 비활성화로 의미 없음)
   React.useEffect(() => {
     setError('termsOfUseAccepted', {
       type: 'manual',
@@ -505,6 +509,7 @@ const SignupModal = () => {
               </p>
             )}
           </div>
+          {/* 이용약관 동의 */}
           <div className="ml-5 mt-10 flex items-center">
             <label className="flex items-center">
               <Controller
@@ -567,6 +572,7 @@ const SignupModal = () => {
               {errors.privacyPolicyAccepted.message}
             </p>
           )}
+          {/* 회원가입 버튼 */}
           <div className="flex justify-center gap-20">
             <button
               type="submit"
@@ -579,6 +585,7 @@ const SignupModal = () => {
             </button>
           </div>
         </form>
+        {/*회원 여부 확인 */}
         <div className="mt-4 text-center">
           이미 회원이신가요?{' '}
           <button
@@ -589,7 +596,7 @@ const SignupModal = () => {
             로그인
           </button>
         </div>
-        {/* 아래는 성공 모달  */}
+        {/* 성공 모달  */}
         {showSuccessModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="rounded bg-white p-6">
@@ -613,557 +620,17 @@ const SignupModal = () => {
 
 export default SignupModal;
 
-// import React from 'react';
-// import { useForm, Controller } from 'react-hook-form';
-// import { useNavigate, useLocation } from 'react-router-dom';
-// import { useMutation, useQueryClient } from '@tanstack/react-query';
-// import useSignupStore from './signupStore';
-// import {
-//   checkEmailDuplicate,
-//   sendVerificationCode,
-//   verifyEmailCode,
-//   checkNicknameDuplicate,
-//   registerUser,
-// } from './signupAPI';
+/*
+이메일 입력하기  - 중복 확인
+(중복이 아닌 경우) -> 이메일 보내기 -> 10분 안에 인증
+인증 완료시: 이메일 수정 불가, 중복 확인 버튼 사라짐
 
-// const SignupModal = () => {
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const queryClient = useQueryClient();
+닉네임 중복 확인 
 
-//   const {
-//     isEmailChecked,
-//     isNicknameChecked,
-//     isEmailVerified,
-//     verificationCodeSent,
-//     successMessage,
-//     showSuccessModal,
-//     setIsEmailChecked,
-//     setIsNicknameChecked,
-//     setIsEmailVerified,
-//     setVerificationCodeSent,
-//     setSuccessMessage,
-//     setShowSuccessModal,
-//   } = useSignupStore();
+비밀번호 유효성 확인
+비밀번호 일치/불일치 확인
 
-//   const {
-//     handleSubmit,
-//     control,
-//     watch,
-//     formState: { errors },
-//     setError,
-//   } = useForm({ mode: 'onChange' });
+이용약관 2개 동의
 
-//   React.useEffect(() => {
-//     setIsEmailChecked(false);
-//     setIsNicknameChecked(false);
-//     setIsEmailVerified(false);
-//     setVerificationCodeSent(false);
-
-//     setError('termsOfUseAccepted', {
-//       type: 'manual',
-//       message: '이용약관에 동의하셔야 합니다.',
-//     });
-//     setError('privacyPolicyAccepted', {
-//       type: 'manual',
-//       message: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-//     });
-//   }, [
-//     setIsEmailChecked,
-//     setIsNicknameChecked,
-//     setIsEmailVerified,
-//     setVerificationCodeSent,
-//     setError,
-//   ]);
-
-//   const validateEmail = (email) => {
-//     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     return emailPattern.test(email) || '이메일의 형식이 올바르지 않습니다.';
-//   };
-
-//   const validatePassword = (password) => {
-//     const passwordPattern =
-//       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{9,16}$/;
-//     return (
-//       passwordPattern.test(password) ||
-//       '9자 이상 16자 이하, 한 개 이상의 숫자/영어/특수문자를 포함해야 합니다.'
-//     );
-//   };
-
-//   const emailCheckMutation = useMutation({
-//     mutationFn: checkEmailDuplicate,
-//     onSuccess: (response) => {
-//       if (response.data.message === '사용 가능한 이메일입니다.') {
-//         setIsEmailChecked(true);
-//         setSuccessMessage('사용 가능한 이메일입니다.');
-//         setError('email', {
-//           type: 'manual',
-//           message: '사용 가능한 이메일입니다.',
-//         });
-//         setVerificationCodeSent(false);
-//       }
-//     },
-//     onError: (error) => {
-//       setError('email', {
-//         type: 'manual',
-//         message: error.response?.data?.message || '이메일 확인에 실패했습니다.',
-//       });
-//     },
-//   });
-
-//   const sendVerificationMutation = useMutation({
-//     mutationFn: sendVerificationCode,
-//     onSuccess: () => {
-//       setVerificationCodeSent(true);
-//       alert('인증코드가 이메일로 전송되었습니다.');
-//     },
-//     onError: (error) => {
-//       setError('email', {
-//         type: 'manual',
-//         message: error.response?.data?.message || '이메일 전송에 실패했습니다.',
-//       });
-//     },
-//   });
-
-//   const verifyEmailMutation = useMutation({
-//     mutationFn: verifyEmailCode,
-//     onSuccess: () => {
-//       setIsEmailVerified(true);
-//       alert('이메일 인증에 성공했습니다.');
-//     },
-//     onError: (error) => {
-//       setError('emailVerification', {
-//         type: 'manual',
-//         message:
-//           error.response?.data?.message || '인증코드가 올바르지 않습니다.',
-//       });
-//     },
-//   });
-
-//   const nicknameCheckMutation = useMutation({
-//     mutationFn: checkNicknameDuplicate,
-//     onSuccess: (response) => {
-//       if (response.data.message === '사용 가능한 닉네임입니다.') {
-//         setIsNicknameChecked(true);
-//         setSuccessMessage('사용 가능한 닉네임입니다.');
-//         setError('nickname', {
-//           type: 'manual',
-//           message: '사용 가능한 닉네임입니다.',
-//         });
-//       }
-//     },
-//     onError: (error) => {
-//       setError('nickname', {
-//         type: 'manual',
-//         message: error.response?.data?.message || '닉네임 확인에 실패했습니다.',
-//       });
-//     },
-//   });
-
-//   const registerMutation = useMutation({
-//     mutationFn: registerUser,
-//     onSuccess: () => {
-//       setSuccessMessage('회원가입에 성공했습니다!');
-//       setShowSuccessModal(true);
-//     },
-//     onError: (error) => {
-//       setError('submit', {
-//         type: 'manual',
-//         message: error.response?.data?.message || '회원가입에 실패했습니다.',
-//       });
-//     },
-//   });
-
-//   const onSubmit = async (data) => {
-//     console.log('폼 제출 버튼을 눌렀음', data);
-
-//     const isFormValid = validateForm(data);
-//     if (!isFormValid) return;
-
-//     console.log('폼이 정상적으로 작성됨', data);
-//     registerMutation.mutate(data);
-//   };
-
-//   const validateForm = (data) => {
-//     let isValid = true;
-//     if (!data.termsOfUseAccepted) {
-//       setError('termsOfUseAccepted', {
-//         type: 'manual',
-//         message: '이용약관에 동의하셔야 합니다.',
-//       });
-//       isValid = false;
-//     }
-
-//     if (!data.privacyPolicyAccepted) {
-//       setError('privacyPolicyAccepted', {
-//         type: 'manual',
-//         message: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-//       });
-//       isValid = false;
-//     }
-
-//     if (!isEmailChecked || !isEmailVerified) {
-//       setError('email', {
-//         type: 'manual',
-//         message: '이메일 인증을 완료해주세요.',
-//       });
-//       isValid = false;
-//     }
-
-//     if (!isNicknameChecked) {
-//       setError('nickname', {
-//         type: 'manual',
-//         message: '닉네임 중복 검사를 완료해주세요.',
-//       });
-//       isValid = false;
-//     }
-
-//     return isValid;
-//   };
-
-//   const handleBackgroundClick = (e) => {
-//     if (e.target === e.currentTarget) {
-//       navigate(location.state?.from || '/');
-//     }
-//   };
-
-//   const handleEmailCheck = (email) => {
-//     emailCheckMutation.mutate(email);
-//   };
-
-//   const handleSendVerification = (email) => {
-//     sendVerificationMutation.mutate(email);
-//   };
-
-//   const handleVerifyEmail = (email, code) => {
-//     verifyEmailMutation.mutate({ email, code });
-//   };
-
-//   const handleNicknameCheck = (nickname) => {
-//     nicknameCheckMutation.mutate(nickname);
-//   };
-
-//   const email = watch('email', '');
-//   const verificationCode = watch('verificationCode', '');
-//   const nickname = watch('nickname', '');
-//   const password = watch('password', '');
-
-//   const isEmailValid = validateEmail(email) === true;
-//   const isPasswordValid = validatePassword(password) === true;
-
-//   const isFormValid =
-//     isEmailValid &&
-//     isPasswordValid &&
-//     isEmailChecked &&
-//     isEmailVerified &&
-//     isNicknameChecked &&
-//     watch('termsOfUseAccepted') &&
-//     watch('privacyPolicyAccepted');
-
-//   return (
-//     <div
-//       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-//       onClick={handleBackgroundClick}
-//     >
-//       <div
-//         className="w-1/2 rounded bg-white bg-opacity-60 p-6"
-//         onClick={(e) => e.stopPropagation()}
-//       >
-//         <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
-//           회원가입
-//         </h2>
-//         <h4 className="mb-4 text-start text-xl font-bold text-black">
-//           기본정보
-//         </h4>
-//         <form onSubmit={handleSubmit(onSubmit)}>
-//           {/* 이메일 입력 필드 */}
-//           <div className="mb-4">
-//             <label className="font-semibold text-gray-700">이메일</label>
-//             <div className="flex w-full justify-between">
-//               <Controller
-//                 name="email"
-//                 control={control}
-//                 defaultValue=""
-//                 rules={{
-//                   required: '이메일을 입력해주세요.',
-//                   validate: validateEmail,
-//                 }}
-//                 render={({ field }) => (
-//                   <input
-//                     {...field}
-//                     type="email"
-//                     className={`w-5/6 rounded border px-3 py-2 text-black ${isEmailChecked ? 'bg-gray-200' : ''}`}
-//                     placeholder="이메일을 입력해주세요."
-//                     readOnly={isEmailChecked && isEmailVerified}
-//                   />
-//                 )}
-//               />
-//               {!verificationCodeSent && (
-//                 <button
-//                   type="button"
-//                   className={`ml-2 w-1/6 rounded bg-pal-purple px-4 py-2 text-white ${isEmailChecked ? 'bg-gray-500' : 'bg-pal-purple'}`}
-//                   onClick={() => handleEmailCheck(email)}
-//                   disabled={isEmailChecked}
-//                 >
-//                   중복 확인
-//                 </button>
-//               )}
-//             </div>
-//             {errors.email && (
-//               <p
-//                 className={`text-${errors.email.type === 'manual' && errors.email.message === '사용 가능한 이메일입니다.' ? 'green-500' : 'red-500'}`}
-//               >
-//                 {errors.email.message}
-//               </p>
-//             )}
-//             {isEmailChecked && !verificationCodeSent && (
-//               <button
-//                 type="button"
-//                 className="mt-2 w-full rounded bg-pal-purple px-4 py-2 text-white"
-//                 onClick={() => handleSendVerification(email)}
-//               >
-//                 이메일 전송
-//               </button>
-//             )}
-//             {verificationCodeSent && !isEmailVerified && (
-//               <div className="mt-4">
-//                 <Controller
-//                   name="verificationCode"
-//                   control={control}
-//                   defaultValue=""
-//                   rules={{ required: '인증코드를 입력해주세요.' }}
-//                   render={({ field }) => (
-//                     <input
-//                       {...field}
-//                       type="text"
-//                       className="w-5/6 rounded border px-3 py-2 text-black"
-//                       placeholder="인증코드를 입력해주세요."
-//                     />
-//                   )}
-//                 />
-//                 <button
-//                   type="button"
-//                   className="ml-2 w-1/6 rounded bg-pal-purple px-4 py-2 text-white"
-//                   onClick={() => handleVerifyEmail(email, verificationCode)}
-//                 >
-//                   인증 확인
-//                 </button>
-//                 {errors.emailVerification && (
-//                   <p className="text-red-500">
-//                     {errors.emailVerification.message}
-//                   </p>
-//                 )}
-//               </div>
-//             )}
-//             {isEmailChecked && successMessage && (
-//               <p className="text-green-500">{successMessage}</p>
-//             )}
-//           </div>
-
-//           {/* 닉네임 입력 필드 */}
-//           <div className="mb-4">
-//             <label className="block font-semibold text-gray-700">닉네임</label>
-//             <div className="flex w-full justify-between">
-//               <Controller
-//                 name="nickname"
-//                 control={control}
-//                 defaultValue=""
-//                 rules={{ required: '닉네임을 입력해주세요.' }}
-//                 render={({ field }) => (
-//                   <input
-//                     {...field}
-//                     type="nickname"
-//                     className="w-5/6 rounded border px-3 py-2 text-black"
-//                     placeholder="닉네임을 입력해주세요."
-//                     autoComplete="off"
-//                   />
-//                 )}
-//               />
-//               <button
-//                 type="button"
-//                 className="ml-2 w-1/6 rounded bg-pal-purple px-4 py-2 text-white"
-//                 onClick={() => handleNicknameCheck(nickname)}
-//               >
-//                 중복 확인
-//               </button>
-//             </div>
-//             {errors.nickname && (
-//               <p
-//                 className={`text-${errors.nickname.type === 'manual' && errors.nickname.message === '사용 가능한 닉네임입니다.' ? 'green-500' : 'red-500'}`}
-//               >
-//                 {errors.nickname.message}
-//               </p>
-//             )}
-//             {isNicknameChecked && successMessage && (
-//               <p className="text-green-500">{successMessage}</p>
-//             )}
-//           </div>
-
-//           {/* 비밀번호 입력 필드 */}
-//           <div className="mb-4">
-//             <label className="block font-semibold text-gray-700">
-//               비밀번호
-//             </label>
-//             <Controller
-//               name="password"
-//               control={control}
-//               defaultValue=""
-//               rules={{
-//                 required: '비밀번호를 입력해주세요.',
-//                 validate: validatePassword,
-//               }}
-//               render={({ field }) => (
-//                 <input
-//                   {...field}
-//                   type="password"
-//                   className="w-full rounded border px-3 py-2 text-black"
-//                   placeholder="비밀번호를 입력해주세요."
-//                 />
-//               )}
-//             />
-//             {errors.password && (
-//               <p className="text-red-500">{errors.password.message}</p>
-//             )}
-//           </div>
-
-//           {/* 비밀번호 확인 필드 */}
-//           <div className="mb-4">
-//             <label className="block font-semibold text-gray-700">
-//               비밀번호 확인
-//             </label>
-//             <Controller
-//               name="confirmPassword"
-//               control={control}
-//               defaultValue=""
-//               rules={{
-//                 required: '비밀번호를 다시 입력해주세요.',
-//                 validate: (value) =>
-//                   value === password || '비밀번호가 일치하지 않습니다.',
-//               }}
-//               render={({ field }) => (
-//                 <input
-//                   {...field}
-//                   type="password"
-//                   className="w-full rounded border px-3 py-2 text-black"
-//                   placeholder="비밀번호를 다시 입력해주세요."
-//                 />
-//               )}
-//             />
-//             {errors.confirmPassword && (
-//               <p className="text-red-500">{errors.confirmPassword.message}</p>
-//             )}
-//           </div>
-
-//           {/* 이용약관 동의 */}
-//           <div className="flex items-center">
-//             <label className="flex items-center">
-//               <Controller
-//                 name="termsOfUseAccepted"
-//                 control={control}
-//                 defaultValue={false}
-//                 rules={{ required: '이용약관에 동의하셔야 합니다.' }}
-//                 render={({ field }) => (
-//                   <input
-//                     {...field}
-//                     type="checkbox"
-//                     className="mr-2"
-//                   />
-//                 )}
-//               />
-//               <span>이용약관 동의 (필수)</span>
-//             </label>
-//             <button
-//               type="button"
-//               className="ml-2 text-pal-purple underline"
-//               onClick={() => alert('이용약관 내용')}
-//             >
-//               보기
-//             </button>
-//           </div>
-//           {errors.termsOfUseAccepted && (
-//             <p className="text-red-500">{errors.termsOfUseAccepted.message}</p>
-//           )}
-
-//           {/* 개인정보 수집 및 이용동의 */}
-//           <div className="mt-4 flex items-center">
-//             <label className="flex items-center">
-//               <Controller
-//                 name="privacyPolicyAccepted"
-//                 control={control}
-//                 defaultValue={false}
-//                 rules={{
-//                   required: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-//                 }}
-//                 render={({ field }) => (
-//                   <input
-//                     {...field}
-//                     type="checkbox"
-//                     className="mr-2"
-//                   />
-//                 )}
-//               />
-//               <span>개인정보 수집 및 이용동의 (필수)</span>
-//             </label>
-//             <button
-//               type="button"
-//               className="ml-2 text-pal-purple underline"
-//               onClick={() => alert('개인정보 수집 및 이용동의 내용')}
-//             >
-//               보기
-//             </button>
-//           </div>
-//           {errors.privacyPolicyAccepted && (
-//             <p className="text-red-500">
-//               {errors.privacyPolicyAccepted.message}
-//             </p>
-//           )}
-
-//           {/* 회원가입 버튼 */}
-//           <div className="flex justify-center gap-20">
-//             <button
-//               type="submit"
-//               className={`my-6 w-full rounded p-2 text-white ${
-//                 isFormValid ? 'bg-pal-purple' : 'cursor-not-allowed bg-gray-400'
-//               }`}
-//               disabled={!isFormValid}
-//             >
-//               회원가입
-//             </button>
-//           </div>
-//         </form>
-
-//         {/* 로그인 링크 */}
-//         <div className="mt-4 text-center">
-//           이미 회원이신가요?{' '}
-//           <button
-//             type="button"
-//             className="text-pal-purple underline"
-//             onClick={() => navigate('/signin')}
-//           >
-//             로그인
-//           </button>
-//         </div>
-
-//         {/* 성공 모달 */}
-//         {showSuccessModal && (
-//           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-//             <div className="rounded bg-white p-6">
-//               <h3 className="mb-4 text-xl font-bold">{successMessage}</h3>
-//               <button
-//                 onClick={() => {
-//                   setShowSuccessModal(false);
-//                   navigate('/signin');
-//                 }}
-//                 className="mt-4 rounded bg-pal-purple px-4 py-2 text-white"
-//               >
-//                 확인
-//               </button>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SignupModal;
+-> 모든 조건 만족 시 회원가입 버튼 활성화 , 성공 모달 출력, 로그인 화면으로 이동
+*/

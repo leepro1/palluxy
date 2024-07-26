@@ -14,22 +14,23 @@ import java.time.LocalDateTime;
 @Setter
 public class GroupHistory {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Enumerated(EnumType.STRING)
-    private Action action;
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+  @Enumerated(EnumType.STRING)
+  private Action action;
 
-    @Builder
-    public GroupHistory(Long userId, Long groupId, Action action) {
-    }
+  @CreationTimestamp private LocalDateTime createdAt;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @ManyToOne
+  @JoinColumn(name = "group_id")
+  private Group group;
+
+  @Builder
+  public GroupHistory(Long userId, Long groupId, Action action) {}
 }

@@ -1,8 +1,8 @@
 package com.palluxy.domain.memoryRoom.petmeta.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import com.palluxy.domain.memoryRoom.petmeta.repository.PetMetaRepository;
@@ -11,19 +11,19 @@ import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,10 +40,10 @@ public class PetMetaServiceImpl implements PetMetaService {
 
   private final WebClient webClient;
 
-  private final String bucketName = "your-s3-bucket-name";
+  private final String bucketName = "palluxytest-resdstone";
 
   public PetMetaServiceImpl(WebClient.Builder webClientBuilder) {
-    this.webClient = webClientBuilder.baseUrl("http://django-server-endpoint").build();
+    this.webClient = webClientBuilder.baseUrl("http://127.0.0.1:8000").build();
   }
 
   @Override
@@ -117,42 +117,43 @@ public class PetMetaServiceImpl implements PetMetaService {
   }
 
   @Override
-  public Mono<String> uploadImageAndGetObjUrl(MultipartFile file) {
-    return webClient
-        .post()
-        .uri("/upload/")
-        .contentType(MediaType.MULTIPART_FORM_DATA)
-        .bodyValue(file)
-        .retrieve()
-        .bodyToMono(String.class)
-        .flatMap(this::downloadObjFile)
+  public Mono<String> uploadImageToDjangoAndProcess(Long roomId, MultipartFile file) {
+    return Mono.defer(() -> {
+      MultipartBodyBuilder builder = new MultipartBodyBuilder();
+      builder.part("file", file.getResource());
+      builder.part("roomId", roomId);
+
+      return webClient.post()
+          .uri("/api/v1/run-model/")
+          .contentType(MediaType.MULTIPART_FORM_DATA)
+          .body(BodyInserters.fromMultipartData(builder.build()))
+          .retrieve()
+          .bodyToMono(String.class);
+    });
+  }
+
+  @Override
+  public Mono<String> processWebhook(Long roomId, FilePart filePart) {
+    return handleObjFileUpload(roomId, filePart);
+  }
+
+  @Override
+  public Mono<String> handleObjFileUpload(Long roomId, FilePart filePart) {
+    return filePart.content()
+        .reduce(DataBuffer::write)
+        .map(dataBuffer -> {
+          File file = new File(System.getProperty("java.io.tmpdir") + "/" + filePart.filename());
+          try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(dataBuffer.asByteBuffer().array());
+          } catch (IOException e) {
+            throw new RuntimeException("Error writing file", e);
+          }
+          return file;
+        })
         .flatMap(this::uploadToS3);
   }
 
-  private Mono<String> downloadObjFile(String filename) {
-    return webClient
-        .get()
-        .uri("/download/" + filename)
-        .accept(MediaType.APPLICATION_OCTET_STREAM)
-        .retrieve()
-        .bodyToFlux(DataBuffer.class)
-        .collectList()
-        .flatMap(dataBuffers -> {
-          Path tempFile = Paths.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".obj");
-          try (FileOutputStream fos = new FileOutputStream(tempFile.toFile())) {
-            for (DataBuffer dataBuffer : dataBuffers) {
-              fos.write(dataBuffer.asByteBuffer().array());
-            }
-          } catch (IOException e) {
-            return Mono.error(new RuntimeException("Failed to save file locally", e));
-          }
-          return Mono.just(tempFile.toFile());
-        })
-        .map(File::getPath);
-  }
-
-  private Mono<String> uploadToS3(String filePath) {
-    File file = new File(filePath);
+  private Mono<String> uploadToS3(File file) {
     String s3Key = "uploaded/" + file.getName();
     return Mono.fromCallable(() -> {
       amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, file)

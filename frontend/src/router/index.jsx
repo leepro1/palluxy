@@ -9,7 +9,9 @@ import SignIn from '@components/SignIn';
 import SignUp from '@components/SignUp';
 import FindPassword from '@components/FindPassword';
 import ResetPassword from '@components/ResetPassword';
-
+import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
+import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
+import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
 const routerInfo = [
   {
     path: '/',
@@ -17,8 +19,24 @@ const routerInfo = [
     children: [
       { index: true, element: <HomePage /> },
       { path: '/healingmeeting', element: <HealingMeetingPage /> },
-      { path: '/meetingoverview', element: <HealingMeetingOverviewPage /> },
+      {
+        path: '/meetingoverview',
+        children: [
+          {
+            path: ':pageIndex',
+            element: <HealingMeetingOverviewPage />,
+          },
+          {
+            path: 'detail/:meetingId',
+            element: <MeetingDetail />,
+          },
+        ],
+      },
       //   { path: '/signin', element: <SigninPage /> },
+      {
+        path: '/memoryspacecreate',
+        element: <MemorySpaceCreatePage />,
+      },
       {
         path: '/memoryspace',
         element: <MemorySpacePage />,
@@ -31,6 +49,10 @@ const routerInfo = [
           {
             path: 'mailbox',
             element: <MailboxSideBar />,
+          },
+          {
+            path: 'guest-box',
+            element: <GuestBoxSideBar />,
           },
         ],
       },

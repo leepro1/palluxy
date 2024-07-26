@@ -1,7 +1,6 @@
 package com.palluxy.domain.memoryRoom.album.dto;
 
 import com.palluxy.domain.memoryRoom.album.entity.Album;
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,7 +12,7 @@ public class AlbumDto {
 
     private Long albumId;
 
-    @Nullable
+    @NotNull
     private Long roomId;
 
     private List<ImageDto> images;

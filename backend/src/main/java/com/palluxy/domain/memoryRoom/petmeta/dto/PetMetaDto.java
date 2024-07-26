@@ -4,6 +4,8 @@ import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class PetMetaDto {
 
@@ -19,6 +21,9 @@ public class PetMetaDto {
   private double rotationY;
   private double rotationZ;
   private Long roomId;
+
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
   public PetMetaDto() {}
 
