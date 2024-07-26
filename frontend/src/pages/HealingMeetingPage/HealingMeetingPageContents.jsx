@@ -309,12 +309,18 @@ const HealingMeetingPageContents = () => {
                 </div>
                 <div className="w-full p-4 text-left">
                   <p className="mb-2 text-2xl font-semibold text-gray-900">
-                    제목제목제목제목제목
+                    여기가 제목
                   </p>
-                  <p className="text-gray-700">
-                    {item} 내용예시 내용예시 내용예시 내용예시 내용예시 내용예시
-                    내용예시ㄴㅁㅇㄹㄴㅁㅇㄹㄴㅁㅇㄹ
-                  </p>
+                  <div className="flex flex-row gap-x-2 text-pal-purple">
+                    <span className="material-symbols-outlined">
+                      calendar_month
+                    </span>
+                    <p>2024.07.26 14:30~15:00</p>
+                  </div>
+                  <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
+                    <span className="material-symbols-outlined">groups</span>
+                    <p>2/4</p>
+                  </div>
                 </div>
               </form>
             ))}
