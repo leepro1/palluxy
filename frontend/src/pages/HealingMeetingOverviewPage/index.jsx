@@ -56,10 +56,10 @@ const HealingSessionPage = () => {
       <ScrollRestoration />
       <div className="text-white">
         <div className="flex flex-row justify-between">
-          <div className="flex w-6/12 flex-row">
+          <div className="flex w-6/12 flex-row items-center">
             <select
               id="categories"
-              className="block w-2/12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              className="block h-10 w-2/12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             >
               <option value="leader">방장</option>
               <option value="meetingName">모임 이름</option>
@@ -93,13 +93,13 @@ const HealingSessionPage = () => {
                 <input
                   type="search"
                   id="default-search"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  className="block h-10 w-full rounded-lg border border-gray-300 bg-gray-50 p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                   placeholder="방장 혹은 모임 이름을 검색해보세요"
                   required
                 />
                 <button
                   type="submit"
-                  className="absolute bottom-2.5 end-2.5 rounded-lg bg-pal-purple px-4 py-2 text-sm font-medium text-white hover:bg-purple-950 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="absolute bottom-0.5 end-0.5 rounded-lg bg-pal-purple px-4 py-2 text-sm font-medium text-white hover:bg-purple-950 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   검색
                 </button>
@@ -173,12 +173,18 @@ const HealingSessionPage = () => {
               </div>
               <div className="w-full p-4 text-left">
                 <p className="mb-2 text-2xl font-semibold text-gray-900">
-                  제목제목제목제목제목
+                  여기가 제목
                 </p>
-                <p className="text-gray-700">
-                  {item} 내용예시 내용예시 내용예시 내용예시 내용예시 내용예시
-                  내용예시ㄴㅁㅇasdaasdasdsdsa
-                </p>
+                <div className="flex flex-row gap-x-2 text-pal-purple">
+                  <span className="material-symbols-outlined">
+                    calendar_month
+                  </span>
+                  <p>2024.07.26 14:30~15:00</p>
+                </div>
+                <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
+                  <span className="material-symbols-outlined">groups</span>
+                  <p>2/4</p>
+                </div>
               </div>
             </div>
           ))}
