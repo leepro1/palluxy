@@ -1,9 +1,12 @@
 package com.palluxy.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.palluxy.domain.user.dto.CustomUserDetails;
 import com.palluxy.domain.user.dto.request.LoginRequest;
+import com.palluxy.domain.user.dto.response.LoginUserResponse;
 import com.palluxy.domain.user.entity.Refresh;
 import com.palluxy.domain.user.repository.RefreshRepository;
+import com.palluxy.global.common.CommonResponse;
 import com.palluxy.global.util.CookieUtil;
 import com.palluxy.global.util.JWTUtil;
 import jakarta.servlet.FilterChain;
@@ -14,7 +17,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,42 +45,67 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
             loginRequest = objectMapper.readValue(messageBody, LoginRequest.class);
-
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            try {
+                handleException(response, e, "Failed to parse login request");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return null;
         }
 
-        String email = loginRequest.email();
-        String password = loginRequest.password();
+        try {
+            String email = loginRequest.email();
+            String password = loginRequest.password();
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            email, password, null);
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                email, password, null);
 
-        return authenticationManager.authenticate(authToken);
+            return authenticationManager.authenticate(authToken);
+        } catch (AuthenticationException e) {
+            try {
+                handleException(response, e, "Authentication failed");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return null;
+        }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authentication) {
+        HttpServletResponse response, FilterChain chain, Authentication authentication)
+        throws IOException {
 
-        String email = authentication.getName();
+        try {
+            String email = authentication.getName();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        boolean isAdmin = authorities.stream()
-            .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            boolean isAdmin = authorities.stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-        String access = jwtUtil.createJwt("access", email, isAdmin, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", email, isAdmin, 86400000L);
+            String access = jwtUtil.createJwt("access", email, isAdmin, 600000L);
+            String refresh = jwtUtil.createJwt("refresh", email, isAdmin, 86400000L);
 
-        addRefreshEntity(email, refresh, 86400000L);
+            addRefreshEntity(email, refresh, 86400000L);
 
-        response.setHeader("access", access);
-        response.addCookie(CookieUtil.createCookie("refresh", refresh));
-        response.setStatus(HttpStatus.OK.value());
+            response.setHeader("access", access);
+            response.addCookie(CookieUtil.createCookie("refresh", refresh));
+            response.setStatus(HttpStatus.OK.value());
+
+            LoginUserResponse loginUserResponse = LoginUserResponse.of(userDetails);
+            CommonResponse<LoginUserResponse> responseBody = CommonResponse.ok("Authentication successful", loginUserResponse);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+        } catch (Exception e) {
+            handleException(response, e, "An error occurred during authentication");
+        }
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         Refresh refreshEntity = Refresh.builder()
@@ -92,8 +119,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, AuthenticationException failed) {
+        HttpServletResponse response, AuthenticationException failed) throws IOException {
 
-        response.setStatus(401);
+        CommonResponse<String> errorResponse = CommonResponse.unauthorized("Authentication failed", null);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+    }
+
+    private void handleException(HttpServletResponse response, Exception e, String message) throws IOException {
+        CommonResponse<String> errorResponse = CommonResponse.badRequest(message + ": " + e.getMessage());
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
     }
 }

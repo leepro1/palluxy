@@ -1,7 +1,6 @@
 package com.palluxy.domain.user.dto;
 
 import com.palluxy.domain.user.entity.User;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +28,14 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getEmail();
+    }
+
+    public String getNickname() {
+        return user.getNickname();
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     @Override

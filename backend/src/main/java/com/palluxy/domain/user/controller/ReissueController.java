@@ -1,8 +1,9 @@
 package com.palluxy.domain.user.controller;
 
-import static io.openvidu.java.client.ConnectionProperties.DefaultValues.role;
-
 import com.palluxy.domain.user.entity.Refresh;
+import com.palluxy.domain.user.exception.RefreshTokenNullException;
+import com.palluxy.domain.user.exception.RefreshTokenExpiredException;
+import com.palluxy.domain.user.exception.InvalidRefreshTokenException;
 import com.palluxy.domain.user.repository.RefreshRepository;
 import com.palluxy.global.util.CookieUtil;
 import com.palluxy.global.util.JWTUtil;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,6 +27,7 @@ public class ReissueController {
     private final RefreshRepository refreshRepository;
 
     @PostMapping("/api/reissue")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
@@ -37,23 +40,23 @@ public class ReissueController {
         }
 
         if (refresh == null) {
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            throw new RefreshTokenNullException("refresh token이 존재하지 않습니다.");
         }
 
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-            return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            throw new RefreshTokenExpiredException("refresh token가 만료되었습니다.");
         }
 
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            throw new InvalidRefreshTokenException("refresh token이 아닙니다.");
         }
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            throw new InvalidRefreshTokenException("refresh token이 DB에 존재하지 않습니다.");
         }
 
         String email = jwtUtil.getEmail(refresh);
@@ -68,12 +71,10 @@ public class ReissueController {
         response.setHeader("access", newAccess);
         response.addCookie(CookieUtil.createCookie("refresh", refresh));
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
-
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         Refresh refreshEntity = Refresh.builder()

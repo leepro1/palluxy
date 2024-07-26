@@ -1,6 +1,9 @@
 package com.palluxy.global.config;
 
 import com.palluxy.domain.user.repository.RefreshRepository;
+import com.palluxy.global.error.CustomAuthenticationEntryPoint;
+import com.palluxy.global.error.CustomAccessDeniedHandler;
+import com.palluxy.global.filter.CustomLogoutFilter;
 import com.palluxy.global.filter.JWTFilter;
 import com.palluxy.global.filter.LoginFilter;
 import com.palluxy.global.util.JWTUtil;
@@ -28,6 +31,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
@@ -46,21 +51,16 @@ public class SecurityConfig {
         http
             .cors((cors) -> cors
                 .configurationSource(new CorsConfigurationSource() {
-
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
                         CorsConfiguration configuration = new CorsConfiguration();
-
                         configuration.setAllowedOrigins(
                             Collections.singletonList("http://localhost:5173"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
-
                         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
                         return configuration;
                     }
                 })
@@ -70,8 +70,8 @@ public class SecurityConfig {
                 .disable()
             )
 
-            .formLogin((loginForm) -> loginForm
-                .disable()
+            .formLogin((loginForm) -> loginForm.
+                disable()
             )
 
             .httpBasic((basic) -> basic
@@ -79,15 +79,13 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests((auth) -> auth
-//                    .requestMatchers("/", "/api/signup").permitAll()
-                    .requestMatchers(
-                        "/api/reissue",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/html",
-                        "/swagger-ui/**").permitAll()
-                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                    .anyRequest().permitAll()
-//                .anyRequest().authenticated()
+                .requestMatchers(
+                    "/api/reissue",
+                    "/v3/api-docs/**",
+                    "/swagger-ui/html",
+                    "/swagger-ui/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .anyRequest().permitAll()
             )
 
             .addFilterAt(
@@ -100,8 +98,17 @@ public class SecurityConfig {
                 new JWTFilter(jwtUtil), LoginFilter.class
             )
 
+            .addFilterBefore(
+                new CustomLogoutFilter(jwtUtil, refreshRepository), JWTFilter.class
+            )
+
             .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+
+            .exceptionHandling((exceptions) -> exceptions
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
             );
 
         return http.build();

@@ -29,4 +29,13 @@ public record CommonResponse<T>(
     public static <T> CommonResponse<T> created(String message) {
         return new CommonResponse<>(HttpStatus.CREATED.value(), message, null);
     }
+
+    public static <T> CommonResponse<T> unauthorized(String message, T result) {
+        return new CommonResponse<>(HttpStatus.UNAUTHORIZED.value(), message, null);
+    }
+
+    public static <T> CommonResponse<T> forbidden(String message, T result) {
+        return new CommonResponse<>(HttpStatus.FORBIDDEN.value(), message, null);
+    }
+
 }
