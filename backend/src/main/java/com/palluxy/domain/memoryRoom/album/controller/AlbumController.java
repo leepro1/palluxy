@@ -15,9 +15,10 @@ public class AlbumController {
     @Autowired
     private AlbumService albumService;
 
-    @PostMapping
+    @PostMapping("/{roomId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<AlbumDto> createAlbum(@Valid @RequestBody AlbumDto albumDto) {
+    public CommonResponse<AlbumDto> createAlbum(@PathVariable Long roomId, @Valid @RequestBody AlbumDto albumDto) {
+        albumDto.setRoomId(roomId);  // Set the roomId from the path variable to the DTO
         AlbumDto createdAlbum = albumService.createAlbum(albumDto);
         return CommonResponse.created("Album created successfully");
     }
