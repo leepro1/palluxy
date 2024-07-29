@@ -33,7 +33,7 @@ const MemorySpaceCreatePage = () => {
       character: [],
       separationDate: '',
       pet_name: '',
-      // pet_gender: '',
+      pet_gender: '',
       relation: '',
     },
   });
@@ -52,6 +52,54 @@ const MemorySpaceCreatePage = () => {
     );
   }
 
+  const memorySpaceCreateSubmit = (formValues) => {
+    console.log('asdfs');
+    // resetField('name');
+    // resetField('password');
+    console.log(formValues);
+    // {
+    //   "roomId": 0,
+    //   "name": "string",
+    //   "description": "string",
+    //   "thumbnailUrl": "string",
+    //   "createdAt": "2024-07-27T05:43:02.915Z",
+    //   "updatedAt": "2024-07-27T05:43:02.915Z",
+    //   "backgroundMusic": 0,
+    //   "type": 0,
+    //   "likeCount": 0,
+    //   "userId": 0
+    // }
+    const roomPayload = {
+      name: formValues.name,
+      description: formValues.description,
+      // name: formValues.name,
+    };
+
+    // {
+    //   "name": "string",
+    //   "species": "string",
+    //   "relation": "string",
+    //   "personalities": [
+    //     {
+    //       "id": 0,
+    //       "type": "string"
+    //     }
+    //   ],
+    //   "firstAt": "2024-07-27",
+    //   "lastAt": "2024-07-27"
+    // }
+    const petPayload = {
+      name: formValues.pet_name,
+      relation: formValues.relation,
+      // 성격은 추후 가공 필요
+      personalities: formValues.character,
+      firstAt: formValues.first_at,
+      lastAt: formValues.last_at,
+    };
+
+    console.log(petPayload);
+  };
+
   const validatePersonality = (value) => {
     if (value.length < 1 || value.length > 3) {
       return '성격을 1개 이상, 3개 이하로 선택해야 합니다.';
@@ -68,13 +116,6 @@ const MemorySpaceCreatePage = () => {
       return '날짜는 현재 날짜를 넘어설 수 없습니다.';
     }
     return true;
-  };
-
-  const memorySpaceCreateSubmit = (formValues) => {
-    console.log('asdfs');
-    resetField('name');
-    // resetField('password');
-    console.log(formValues);
   };
 
   const roomNameRegister = register('name', {
@@ -106,12 +147,12 @@ const MemorySpaceCreatePage = () => {
     },
   });
 
-  // const petgenderRegister = register('pet_gender', {
-  //   required: {
-  //     value: true,
-  //     message: '해당 칸이 빈칸입니다.',
-  //   },
-  // });
+  const petgenderRegister = register('pet_gender', {
+    required: {
+      value: true,
+      message: '해당 칸이 빈칸입니다.',
+    },
+  });
 
   const relationRegister = register('relation', {
     required: {
@@ -257,6 +298,53 @@ const MemorySpaceCreatePage = () => {
                   </div>
                 </div>
 
+                {/* 반려동물 성별 */}
+                <div className="flex flex-col gap-y-1">
+                  <span>성별</span>
+                  <div className="relative flex gap-x-4">
+                    <div className="flex items-center gap-x-1">
+                      <input
+                        id="petMale"
+                        name="petGender"
+                        className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
+                        type="radio"
+                        value="petMale"
+                        {...petgenderRegister}
+                      />
+                      <label
+                        htmlFor="petMale"
+                        className="shrink-0"
+                      >
+                        수컷
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-x-1">
+                      <input
+                        id="petFemale"
+                        name="petGender"
+                        className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
+                        type="radio"
+                        value="petFemale"
+                        {...petgenderRegister}
+                      />
+                      <label
+                        htmlFor="petFemale"
+                        className="shrink-0"
+                      >
+                        암컷
+                      </label>
+                    </div>
+                    <ErrorMessage
+                      errors={errors}
+                      name="pet_gender"
+                      render={({ message }) => (
+                        <span className="absolute -bottom-5 text-sm text-pal-error">
+                          {message}
+                        </span>
+                      )}
+                    />
+                  </div>
+                </div>
                 {/* 반려동물 성격 */}
                 <div className="flex flex-col gap-y-1">
                   <span>성격</span>
@@ -283,6 +371,7 @@ const MemorySpaceCreatePage = () => {
                     />
                   </div>
                 </div>
+
                 {/* 반려동물 처음만난날 */}
                 <div className="flex flex-col gap-y-1">
                   <span>처음만난 날</span>
