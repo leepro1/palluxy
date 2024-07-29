@@ -3,9 +3,11 @@ package com.palluxy.domain.user.controller;
 import com.palluxy.domain.user.dto.request.UserResetPasswordRequest;
 import com.palluxy.domain.user.dto.request.UserSignupRequest;
 import com.palluxy.domain.user.dto.response.UserResponse;
+import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.exception.SignupFormatException;
 import com.palluxy.domain.user.service.UserService;
 import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.util.JWTUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JWTUtil jwtUtil;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,6 +32,13 @@ public class UserController {
         }
         userService.signup(request);
         return CommonResponse.created("회원가입 성공");
+    }
+
+    @GetMapping("/user-info")
+    public CommonResponse<?> getUserInfo(@RequestHeader("access") String token) {
+        String email = jwtUtil.getEmail(token);
+        UserResponse user = userService.getUserByEmail(email);
+        return CommonResponse.ok("토큰으로 user 정보 조회", user);
     }
 
     @GetMapping("/check-email/{email}")
