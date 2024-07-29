@@ -35,16 +35,20 @@ const Header = () => {
         </div>
         {/* 로그인 회원가입 버튼 */}
         <div className="flex gap-x-16 font-jamsilMedium text-white">
-          <GlobalBtn
-            className="border-2 border-white"
-            size={'sm'}
-            text={'로그인'}
-          />
-          <GlobalBtn
-            className="bg-pal-purple"
-            size={'sm'}
-            text={'회원가입'}
-          />
+          <NavLink to={'/signin'}>
+            <GlobalBtn
+              className="border-2 border-white"
+              size={'sm'}
+              text={'로그인'}
+            />
+          </NavLink>
+          <NavLink to={'/signup'}>
+            <GlobalBtn
+              className="bg-pal-purple"
+              size={'sm'}
+              text={'회원가입'}
+            />
+          </NavLink>
         </div>
       </div>
     </ContentsLayout>
