@@ -1,9 +1,14 @@
 package com.palluxy.domain.group.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,8 +16,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "`group`")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group {
 
   @Id
@@ -47,8 +54,7 @@ public class Group {
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
   private Set<GroupUser> groupUser;
 
-  public Group() {}
-
+  @Builder
   public Group(
       Long id,
       String title,
@@ -66,5 +72,18 @@ public class Group {
     this.endTime = endTime;
     this.maxCapacity = maxCapacity;
     this.remainingCapacity = remainingCapacity;
+  }
+
+  public Group of(GroupResponse groupResponse) {
+    return Group.builder()
+        .id(groupResponse.getId())
+        .title(groupResponse.getTitle())
+        .description(groupResponse.getDescription())
+        .filePath(groupResponse.getFilePath())
+        .startTime(groupResponse.getStartTime())
+        .endTime(groupResponse.getEndTime())
+        .maxCapacity(groupResponse.getMaxCapacity())
+        .remainingCapacity(groupResponse.getRemainingCapacity())
+        .build();
   }
 }

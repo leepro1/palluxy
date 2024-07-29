@@ -72,8 +72,13 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
     webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
         response -> {
           String content = response.getContent().get(0).getText();
-          Letter letter = new Letter("편지가 도착했어요.", content, Writer.PET, petId);
-          letter.setOpenedAt(LocalDateTime.now().plusHours(6L));
+          Letter letter = Letter.builder()
+              .title("편지가 도착했어요")
+              .content(content)
+              .writer(Writer.PET)
+              .petId(petId)
+              .openedAt(LocalDateTime.now().plusHours(6L))
+              .build();
           letterRepository.saveAndFlush(letter);
         }
     );

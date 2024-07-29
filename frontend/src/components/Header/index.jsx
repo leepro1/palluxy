@@ -9,10 +9,12 @@ const Header = () => {
       <div className="flex h-[120px] items-center">
         {/* 로고 */}
         <div className="flex-shrink-0">
-          <img
-            src={Logo}
-            alt="logo_image"
-          />
+          <NavLink to={'/'}>
+            <img
+              src={Logo}
+              alt="logo_image"
+            />
+          </NavLink>
         </div>
         {/* nav item */}
         <div className="mx-7 grow">
@@ -32,17 +34,21 @@ const Header = () => {
           </ul>
         </div>
         {/* 로그인 회원가입 버튼 */}
-        <div className="hidden lg:flex lg:gap-x-16 lg:font-jamsilMedium lg:text-white">
-          <GlobalBtn
-            className="border-2 border-white"
-            size={'sm'}
-            text={'로그인'}
-          />
-          <GlobalBtn
-            className="bg-pal-purple"
-            size={'sm'}
-            text={'회원가입'}
-          />
+        <div className="flex gap-x-16 font-jamsilMedium text-white">
+          <NavLink to={'/signin'}>
+            <GlobalBtn
+              className="border-2 border-white"
+              size={'sm'}
+              text={'로그인'}
+            />
+          </NavLink>
+          <NavLink to={'/signup'}>
+            <GlobalBtn
+              className="bg-pal-purple"
+              size={'sm'}
+              text={'회원가입'}
+            />
+          </NavLink>
         </div>
       </div>
     </ContentsLayout>

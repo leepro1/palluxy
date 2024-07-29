@@ -39,7 +39,6 @@ public class LetterService {
 
   public void saveFirstLetter(String relation, String petName, Long petId) {
     Letter letter = makeFirstLetterForm(relation, petName, petId);
-    letter.setOpenedAt(LocalDateTime.now());
     letterRepository.saveAndFlush(letter);
   }
 
@@ -66,7 +65,7 @@ public class LetterService {
     String title = petName + "의 첫번째 편지";
     String content = MessageFormat.format(template, relation, petName);
 
-    Letter letter = new Letter(title, content, Writer.PET, petId);
+    Letter letter = new Letter(title, content, Writer.PET, petId, LocalDateTime.now());
 
     return letter;
   }
