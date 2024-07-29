@@ -1,12 +1,13 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
 import logo from '../../assets/images/logo/logo.svg';
 
 const SigninModal = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const {
     handleSubmit,
@@ -60,6 +61,10 @@ const SigninModal = () => {
     onSuccess: async (data) => {
       console.log('return mutate data', data);
       queryClient.setQueryData(['userInfo'], data);
+      // const cachedData = queryClient.getQueryData(['userInfo']);
+      // console.log('Cached userInfo after login:', cachedData);
+      const redirectTo = location.state?.from?.pathname || '/';
+      navigate(redirectTo, { replace: true });
     },
   });
 
@@ -71,11 +76,11 @@ const SigninModal = () => {
     }
   };
 
-  const handleBackgroundClick = (e) => {
-    if (e.target === e.currentTarget) {
-      navigate('/');
-    }
-  };
+  // const handleBackgroundClick = (e) => {
+  //   if (e.target === e.currentTarget) {
+  //     navigate('/');
+  //   }
+  // };
 
   const email = watch('email', '');
   const password = watch('password', '');
@@ -86,12 +91,21 @@ const SigninModal = () => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={handleBackgroundClick}
+      // onClick={handleBackgroundClick}
     >
       <div
         className="w-1/2 rounded bg-white bg-opacity-60 p-6"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="rounded-full border border-black p-1"
+            onClick={() => navigate(-1)}
+          >
+            ✖️
+          </button>
+        </div>
         <div className="mb-4 flex justify-center">
           <img
             src={logo}

@@ -137,11 +137,11 @@ const SignupModal = () => {
     return await response.json();
   };
 
-  const handleBackgroundClick = (e) => {
-    if (e.target === e.currentTarget) {
-      navigate(location.state?.from || '/');
-    }
-  };
+  // const handleBackgroundClick = (e) => {
+  //   if (e.target === e.currentTarget) {
+  //     navigate(location.state?.from || '/');
+  //   }
+  // };
 
   const checkEmailDuplicate = async (email) => {
     try {
@@ -298,12 +298,21 @@ const SignupModal = () => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={handleBackgroundClick}
+      // onClick={handleBackgroundClick}
     >
       <div
         className="w-1/2 rounded bg-white bg-opacity-60 p-6"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="rounded-full border border-black p-1"
+            onClick={() => navigate(-1)}
+          >
+            ✖️
+          </button>
+        </div>
         <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
           회원가입
         </h2>
