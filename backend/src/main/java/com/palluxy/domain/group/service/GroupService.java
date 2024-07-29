@@ -56,15 +56,14 @@ public class GroupService {
     return groupUser.get();
   }
 
-  public void createGroup(Group group, Long userId) {
-    Optional<User> leader = userRepository.findById(userId);
+  public void createGroup(Group group) {
+    Optional<User> leader = userRepository.findById(group.getLeader().getId());
     if (leader.isEmpty()) {
       throw new NotFoundException("유저");
     }
 
-    group.setLeader(leader.get());
     group.setStatus(Status.WAIT);
-    group.setRemainingCapacity(group.getMaxCapacity());
+    group.setRemainingCapacity(group.getMaxCapacity() - 1);
     groupRepository.saveAndFlush(group);
 
     createGroupUser(group, leader.get(), true);
@@ -117,10 +116,9 @@ public class GroupService {
     groupRepository.saveAndFlush(group);
   }
 
-  public void updateGroupByUser(Group original, Group request) {
-    original.setTitle(request.getTitle());
-    original.setDescription(request.getDescription());
-    original.setFilePath(request.getFilePath());
+  public void updateGroupByUser(Long groupId, Group request) {
+    Group group = findById(groupId);
+    group.updateInfo(request);
     groupRepository.saveAndFlush(original);
   }
 
