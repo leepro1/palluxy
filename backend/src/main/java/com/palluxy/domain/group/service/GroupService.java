@@ -119,7 +119,7 @@ public class GroupService {
   public void updateGroupByUser(Long groupId, Group request) {
     Group group = findById(groupId);
     group.updateInfo(request);
-    groupRepository.saveAndFlush(original);
+    groupRepository.saveAndFlush(group);
   }
 
   public Page<Group> searchByKey(String key, String value, Pageable pageable) {

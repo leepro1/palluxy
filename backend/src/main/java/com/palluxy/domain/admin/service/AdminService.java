@@ -1,10 +1,11 @@
 package com.palluxy.domain.admin.service;
 
-import com.palluxy.domain.notice.repository.repository.NoticeRepository;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.exception.NotFoundException;
 import com.palluxy.domain.group.repository.GroupRepository;
+import com.palluxy.domain.user.entity.User;
+import com.palluxy.domain.user.repository.UserRepository;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,8 @@ import org.springframework.stereotype.Service;
 public class AdminService {
 
   private final GroupRepository groupRepository;
-  private final NoticeRepository noticeRepository;
   private final Random random = new Random();
+  private final UserRepository userRepository;
 
   public void approveGroup(Long groupId, String key) {
     Group group = getGroup(groupId);
@@ -57,5 +58,14 @@ public class AdminService {
     }
 
     return group.get();
+  }
+
+  public String getUserEmail(Long userId) {
+    Optional<User> user = userRepository.findById(userId);
+    if (!user.isPresent()) {
+      throw new NotFoundException("User");
+    }
+
+    return user.get().getEmail();
   }
 }

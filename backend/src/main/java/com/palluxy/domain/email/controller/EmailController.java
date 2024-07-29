@@ -34,7 +34,7 @@ public class EmailController {
             throw new IllegalArgumentException("Invalid request type");
         }
 
-        emailService.sendVerificationCode(request.type(), request.email(), code);
+        emailService.sendVerificationCode(request.type(), request.email(), code, null);
         return CommonResponse.ok("이메일 전송 성공");
     }
 
