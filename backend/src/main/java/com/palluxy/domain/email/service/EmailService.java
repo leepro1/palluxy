@@ -89,6 +89,9 @@ public class EmailService {
             code = "http://localhost:8080/api/users/reset-password?code=" + token;
 
             redisTemplate.opsForValue().set(token, to, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
+        } else if (type.equals("group")) {
+            subject = "PAL:LUXY 치유모임 승인코드입니다.";
+            code = generateVerificationCode();
         }
 
         String htmlMsg = generateHtmlMessage(subject, code);

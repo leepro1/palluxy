@@ -124,12 +124,6 @@ public class GroupService {
     groupRepository.saveAndFlush(original);
   }
 
-  public void updateGroupByAdmin(Group group, Status status, String key) {
-    group.setStatus(status);
-    group.setApproveKey(key);
-    groupRepository.saveAndFlush(group);
-  }
-
   public Page<Group> searchByKey(String key, String value, Pageable pageable) {
     switch (key) {
       case "title":

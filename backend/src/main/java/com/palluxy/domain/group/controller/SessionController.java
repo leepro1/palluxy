@@ -18,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
-
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +27,6 @@ SessionController {
   private final OpenviduService openviduService;
   private final GroupService groupService;
   private final GroupUtil groupUtil;
-  private final UserService userService;
 
   @PostMapping("/api/sessions")
   @ResponseStatus(HttpStatus.OK)

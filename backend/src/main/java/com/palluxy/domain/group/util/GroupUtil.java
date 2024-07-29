@@ -15,8 +15,6 @@ import java.util.Random;
 @Component
 public class GroupUtil {
 
-  private final Random random = new Random();
-
   public Status convertToStatusType(String status) {
     switch (status) {
       case "wait":
@@ -50,20 +48,6 @@ public class GroupUtil {
         group.getEndTime(),
         group.getMaxCapacity(),
         group.getRemainingCapacity());
-  }
-
-  public String generateKey() {
-    StringBuilder key = new StringBuilder();
-    for (int i = 0; i < 6; i++) {
-      boolean isNumber = random.nextBoolean();
-
-      int origin = isNumber ? '0' : 'A';
-      int bound = (isNumber ? '9' : 'Z') + 1;
-
-      key.append((char) random.nextInt(origin, bound));
-    }
-
-    return key.toString();
   }
 
   public void validateApproveKey(Group group, String approveKey) {
