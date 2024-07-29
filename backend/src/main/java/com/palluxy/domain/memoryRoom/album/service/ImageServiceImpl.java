@@ -5,10 +5,10 @@ import com.palluxy.domain.memoryRoom.album.entity.Album;
 import com.palluxy.domain.memoryRoom.album.entity.Image;
 import com.palluxy.domain.memoryRoom.album.repository.AlbumRepository;
 import com.palluxy.domain.memoryRoom.album.repository.ImageRepository;
-import com.palluxy.domain.memoryRoom.album.service.FileStorageService;
-import com.palluxy.domain.memoryRoom.album.service.ImageService;
+import com.palluxy.global.config.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -80,5 +80,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
     imageRepository.delete(image);
+  }
+
+  @Override
+  public String storeFileInFolder(MultipartFile file, String folderName) throws IOException {
+    return fileStorageService.storeFile(file, folderName);
   }
 }
