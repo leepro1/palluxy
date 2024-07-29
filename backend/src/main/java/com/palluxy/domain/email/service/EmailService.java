@@ -32,66 +32,62 @@ public class EmailService {
 
     private String generateHtmlMessage(String subject, String code) {
         return "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <style>\n" +
-                "        .email-container {\n" +
-                "            font-family: Arial, sans-serif;\n" +
-                "            padding: 20px;\n" +
-                "            border: 1px solid #dddddd;\n" +
-                "            border-radius: 5px;\n" +
-                "            width: 500px;\n" +
-                "            margin: auto;\n" +
-                "        }\n" +
-                "        .header {\n" +
-                "            background-color: #4B4376;\n" +
-                "            padding: 10px;\n" +
-                "            color: white;\n" +
-                "            text-align: center;\n" +
-                "            font-size: 24px;\n" +
-                "            font-weight: bold;\n" +
-                "            border-bottom: 1px solid #dddddd;\n" +
-                "        }\n" +
-                "        .content {\n" +
-                "            padding: 20px;\n" +
-                "            text-align: center;\n" +
-                "        }\n" +
-                "        .code {\n" +
-                "            font-size: 20px;\n" +
-                "            font-weight: bold;\n" +
-                "            color: #333333;\n" +
-                "        }\n" +
-                "    </style>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    <div class=\"email-container\">\n" +
-                "        <div class=\"header\">" + subject + "</div>\n" +
-                "        <div class=\"content\">\n" +
-                "            <p>Your PAL:LUXY code is:</p>\n" +
-                "            <p class=\"code\">" + code + "</p>\n" +
-                "        </div>\n" +
-                "    </div>\n" +
-                "</body>\n" +
-                "</html>";
+            "<html>\n" +
+            "<head>\n" +
+            "    <style>\n" +
+            "        .email-container {\n" +
+            "            font-family: Arial, sans-serif;\n" +
+            "            padding: 20px;\n" +
+            "            border: 1px solid #dddddd;\n" +
+            "            border-radius: 5px;\n" +
+            "            width: 500px;\n" +
+            "            margin: auto;\n" +
+            "        }\n" +
+            "        .header {\n" +
+            "            background-color: #4B4376;\n" +
+            "            padding: 10px;\n" +
+            "            color: white;\n" +
+            "            text-align: center;\n" +
+            "            font-size: 24px;\n" +
+            "            font-weight: bold;\n" +
+            "            border-bottom: 1px solid #dddddd;\n" +
+            "        }\n" +
+            "        .content {\n" +
+            "            padding: 20px;\n" +
+            "            text-align: center;\n" +
+            "        }\n" +
+            "        .code {\n" +
+            "            font-size: 20px;\n" +
+            "            font-weight: bold;\n" +
+            "            color: #333333;\n" +
+            "        }\n" +
+            "    </style>\n" +
+            "</head>\n" +
+            "<body>\n" +
+            "    <div class=\"email-container\">\n" +
+            "        <div class=\"header\">" + subject + "</div>\n" +
+            "        <div class=\"content\">\n" +
+            "            <p>Your PAL:LUXY code is:</p>\n" +
+            "            <p class=\"code\">" + code + "</p>\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "</body>\n" +
+            "</html>";
     }
 
-    public void sendVerificationCode(String type, String to) {
+    public void sendVerificationCode(String type, String to, String code, String additionalInfo) {
         String subject = null;
-        String code = null;
 
         if (type.equals("signup")) {
             subject = "PAL:LUXY 인증코드입니다.";
-            code = generateVerificationCode();
-            redisTemplate.opsForValue().set(to, code, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
         } else if (type.equals("password")) {
             subject = "PAL:LUXY 비밀번호 변경 링크입니다.";
-            String token = generateResetPasswordCode();
-            code = "http://localhost:8080/api/users/reset-password?code=" + token;
+            String token = code;
+            String resetLink = "http://localhost:8080/api/users/reset-password?code=" + token;
 
-            redisTemplate.opsForValue().set(token, to, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
-        } else if (type.equals("group")) {
-            subject = "PAL:LUXY 치유모임 승인코드입니다.";
-            code = generateVerificationCode();
+            code = resetLink;
+        } else if (type.equals("group")){
+            subject = "PAL:LUXY 방 생성 코드입니다. (" + additionalInfo + ")";
         }
 
         String htmlMsg = generateHtmlMessage(subject, code);
@@ -100,7 +96,6 @@ public class EmailService {
         } catch (MessagingException e) {
             throw new EmailBadMessagingException();
         }
-
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlMsg) throws MessagingException {
@@ -120,4 +115,15 @@ public class EmailService {
         }
     }
 
+    public String generateVerificationCodeForSignup(String email) {
+        String code = generateVerificationCode();
+        redisTemplate.opsForValue().set(email, code, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
+        return code;
+    }
+
+    public String generateResetPasswordToken(String email) {
+        String token = generateResetPasswordCode();
+        redisTemplate.opsForValue().set(token, email, VERIFICATION_CODE_EXPIRATION, TimeUnit.MINUTES);
+        return token;
+    }
 }
