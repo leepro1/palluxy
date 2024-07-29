@@ -36,15 +36,18 @@ public class Pet extends BaseEntity {
 
     private LocalDate lastAt;
 
+    private Long userId;
+
     @Builder
     public Pet(String name, String species, String relation, List<Personality> personalities,
-        LocalDate firstAt, LocalDate lastAt) {
+        LocalDate firstAt, LocalDate lastAt, Long userId) {
         this.name = name;
         this.species = species;
         this.relation = relation;
         this.personalities = personalities;
         this.firstAt = firstAt;
         this.lastAt = lastAt;
+        this.userId = userId;
     }
 
     public void updateInfo(PetRegisterRequest request, List<Personality> personalities) {
