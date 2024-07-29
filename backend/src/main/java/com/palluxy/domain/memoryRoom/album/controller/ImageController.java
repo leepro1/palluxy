@@ -1,8 +1,8 @@
 package com.palluxy.domain.memoryRoom.album.controller;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
-import com.palluxy.domain.memoryRoom.album.service.FileStorageService;
 import com.palluxy.domain.memoryRoom.album.service.ImageService;
+import com.palluxy.global.config.FileStorageService;
 import com.palluxy.global.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,8 @@ public class ImageController {
       @RequestParam("file") MultipartFile file,
       @RequestParam("index") int index) {
     try {
-      String fileName = fileStorageService.storeFile(file);
+      String folderName = "albums/" + albumId; // albumId 포함하여 해당 유저 저장소 매핑
+      String fileName = imageService.storeFileInFolder(file, folderName);
       String fileUrl = fileStorageService.getFileUrl(fileName);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(fileUrl);
@@ -89,7 +90,8 @@ public class ImageController {
       @PathVariable Long imageId,
       @RequestParam("file") MultipartFile file) {
     try {
-      String fileName = fileStorageService.storeFile(file);
+      String folderName = "albums/" + albumId;
+      String fileName = imageService.storeFileInFolder(file, folderName);
       String fileUrl = fileStorageService.getFileUrl(fileName);
       ImageDto imageDto = imageService.getImageById(imageId);
       imageDto.setUrl(fileUrl);
