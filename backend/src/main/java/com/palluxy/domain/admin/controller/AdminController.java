@@ -26,7 +26,9 @@ public class AdminController {
   public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
     String key = adminService.generateKey();
     adminService.approveGroup(request.get("groupId"), key);
-    //이메일 전송 => 승인키를 파라미터로 전달할 수 있어야할듯?
+
+    String to = adminService.getUserEmail(request.get("userId"));
+//    emailService.sendVerificationCode("group", to, key);
     return CommonResponse.ok("그룹이 정상적으로 승인되었음");
   }
 
