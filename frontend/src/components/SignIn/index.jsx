@@ -47,7 +47,7 @@ const SigninModal = () => {
       const accessToken = res.headers['access'];
 
       if (accessToken) {
-        sessionStorage.setItem('accessToken', accessToken);
+        sessionStorage.setItem('access', accessToken);
       }
       return res.data.result;
     } catch (error) {
