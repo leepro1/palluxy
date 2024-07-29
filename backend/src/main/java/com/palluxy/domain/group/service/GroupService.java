@@ -1,5 +1,6 @@
 package com.palluxy.domain.group.service;
 
+import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
@@ -94,6 +95,10 @@ public class GroupService {
     groupRepository.saveAndFlush(group);
   }
 
+  public void saveAndFlushGroupUser(GroupUser groupUser) {
+    groupUserRepository.saveAndFlush(groupUser);
+  }
+
   public void cancelJoin(Long groupId, Long userId) {
     Optional<GroupUser> findGroupUser = groupUserRepository.findByGroupIdAndUserId(groupId, userId);
     if (findGroupUser.isEmpty()) {
@@ -117,12 +122,6 @@ public class GroupService {
     original.setDescription(request.getDescription());
     original.setFilePath(request.getFilePath());
     groupRepository.saveAndFlush(original);
-  }
-
-  public void updateGroupByAdmin(Group group, Status status, String key) {
-    group.setStatus(status);
-    group.setApproveKey(key);
-    groupRepository.saveAndFlush(group);
   }
 
   public Page<Group> searchByKey(String key, String value, Pageable pageable) {

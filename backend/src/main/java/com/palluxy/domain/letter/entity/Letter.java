@@ -9,13 +9,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
-@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Letter {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,30 +35,23 @@ public class Letter {
 
   private Long petId;
 
-  public Letter() {}
-
-  public Letter(Long petId) {
-    this.petId = petId;
-  }
-
-  public Letter(String title, String content, Writer writer, Long petId) {
+  @Builder
+  public Letter(String title, String content, Writer writer, Long petId, LocalDateTime openedAt) {
     this.title = title;
     this.content = content;
     this.writer = writer;
     this.petId = petId;
-  }
-
-  public void setOpenedAt(LocalDateTime openedAt) {
     this.openedAt = openedAt;
   }
 
-  public Letter of (LetterRequest request) {
-    this.title = request.getTitle();
-    this.content = request.getContent();
-    this.writer = Writer.USER;
-    this.openedAt = LocalDateTime.now();
-
-    return this;
+  public static Letter of(LetterRequest request, Long petId) {
+    return Letter.builder()
+        .petId(petId)
+        .title(request.getTitle())
+        .content(request.getContent())
+        .writer(Writer.USER)
+        .openedAt(LocalDateTime.now())
+        .build();
   }
 }
 
