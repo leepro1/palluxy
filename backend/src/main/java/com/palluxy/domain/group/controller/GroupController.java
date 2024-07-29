@@ -71,8 +71,8 @@ public class GroupController {
 
   @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<?> createGroup(@RequestBody GroupRequest groupRequest) {
-    groupService.createGroup(groupRequest.getGroup(), groupRequest.getUserId());
+  public CommonResponse<?> createGroup(@RequestBody Group group) {
+    groupService.createGroup(group);
     return CommonResponse.created("정상적으로 그룹이 생성되었음");
   }
 
@@ -80,8 +80,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> updateGroup(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
-    Group group = groupService.findById(groupId);
-    groupService.updateGroupByUser(group, groupRequest.getGroup());
+    groupService.updateGroupByUser(groupId, groupRequest.getGroup());
 
     return CommonResponse.ok("정상적으로 수정이 반영 되었음");
   }

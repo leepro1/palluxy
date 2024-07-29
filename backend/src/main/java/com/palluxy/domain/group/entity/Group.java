@@ -1,6 +1,7 @@
 package com.palluxy.domain.group.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -85,5 +86,11 @@ public class Group {
         .maxCapacity(groupResponse.getMaxCapacity())
         .remainingCapacity(groupResponse.getRemainingCapacity())
         .build();
+  }
+
+  public void updateInfo(Group request) {
+    this.title = request.getTitle();
+    this.description = request.getDescription();
+    this.filePath = request.getFilePath();
   }
 }
