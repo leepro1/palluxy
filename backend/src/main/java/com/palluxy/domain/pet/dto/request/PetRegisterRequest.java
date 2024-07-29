@@ -11,6 +11,9 @@ import java.util.List;
 public record PetRegisterRequest(
 
     @NotBlank
+    Long userId,
+
+    @NotBlank
     String name,
 
     @NotBlank
