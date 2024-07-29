@@ -108,7 +108,7 @@ public class GroupController {
     Pageable pageable = PageRequest.of(page, 9);
     Page<Group> groupPage = groupService.findGroupsByUserId(userId, pageable);
     List<GroupResponse> groupList = groupUtil.convertToDtoList(groupPage.getContent());
-    return CommonResponse.ok("정상적으로 조호;되었습니다.",
+    return CommonResponse.ok("정상적으로 조회되었습니다.",
         new GroupResponses(groupList, groupPage.getTotalElements()));
   }
 }

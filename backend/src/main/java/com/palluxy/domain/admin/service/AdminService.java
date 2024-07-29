@@ -1,5 +1,6 @@
 package com.palluxy.domain.admin.service;
 
+import com.palluxy.domain.notice.repository.repository.NoticeRepository;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.exception.NotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class AdminService {
 
   private final GroupRepository groupRepository;
+  private final NoticeRepository noticeRepository;
   private final Random random = new Random();
 
   public void approveGroup(Long groupId, String key) {

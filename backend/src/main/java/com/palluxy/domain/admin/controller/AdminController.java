@@ -2,12 +2,6 @@ package com.palluxy.domain.admin.controller;
 
 import com.palluxy.domain.admin.service.AdminService;
 import com.palluxy.domain.email.service.EmailService;
-import com.palluxy.domain.group.entity.Group;
-import com.palluxy.domain.group.entity.Status;
-import com.palluxy.domain.group.service.GroupService;
-import com.palluxy.domain.group.util.GroupUtil;
-import com.palluxy.domain.user.dto.response.UserResponse;
-import com.palluxy.domain.user.service.UserService;
 import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +26,7 @@ public class AdminController {
   public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
     String key = adminService.generateKey();
     adminService.approveGroup(request.get("groupId"), key);
-    //이메일 전송
+    //이메일 전송 => 승인키를 파라미터로 전달할 수 있어야할듯?
     return CommonResponse.ok("그룹이 정상적으로 승인되었음");
   }
 
