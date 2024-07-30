@@ -3,7 +3,13 @@ import GlobalBtn from '@components/GlobalBtn';
 import { useQuery } from '@tanstack/react-query';
 import { fetchpetPersonalities } from '@/api/petapi';
 import { useForm, useFormContext, FormProvider } from 'react-hook-form';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { ErrorMessage } from '@hookform/error-message';
+import {
+  postCreateAlbum,
+  postCreateRoom,
+  postCreatePet,
+} from '@/api/memorySpace/createApi';
 
 const PersonalityCheckbox = ({ personality, checkboxName, register }) => {
   return (
@@ -37,6 +43,31 @@ const MemorySpaceCreatePage = () => {
       relation: '',
     },
   });
+  const queryClient = useQueryClient();
+  const { mutate: petMutate, isSuccess: petSuccess } = useMutation({
+    mutationFn: postCreatePet,
+    onSuccess: async () => {
+      console.log('mutate');
+      // await queryClient.invalidateQueries({
+      //   queryKey: ['palFrameImage'],
+      // });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  const { mutate: roomMutate, isSuccess: roomSuccess } = useMutation({
+    mutationFn: postCreateRoom,
+    onSuccess: async () => {
+      console.log('mutate');
+      // await queryClient.invalidateQueries({
+      //   queryKey: ['palFrameImage'],
+      // });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   const { data: petPersonalities, isSuccess } = useQuery({
     queryKey: ['petPersonalities'],
@@ -53,7 +84,6 @@ const MemorySpaceCreatePage = () => {
   }
 
   const memorySpaceCreateSubmit = (formValues) => {
-    console.log('asdfs');
     // resetField('name');
     // resetField('password');
     console.log(formValues);
@@ -69,10 +99,11 @@ const MemorySpaceCreatePage = () => {
     //   "likeCount": 0,
     //   "userId": 0
     // }
-    const roomPayload = {
+    const userInfo = queryClient.getQueryData(['userInfo']);
+    const memorySpacePayload = {
       name: formValues.name,
       description: formValues.description,
-      // name: formValues.name,
+      userId: userInfo.id,
     };
 
     // {
@@ -88,16 +119,28 @@ const MemorySpaceCreatePage = () => {
     //   "firstAt": "2024-07-27",
     //   "lastAt": "2024-07-27"
     // }
+    const characters = queryClient.getQueryData(['petPersonalities']);
+
+    const filteredValue = formValues.character.map((character) => {
+      const value = characters.find((item) => item.type === character);
+      return value;
+    });
+
     const petPayload = {
       name: formValues.pet_name,
       relation: formValues.relation,
-      // 성격은 추후 가공 필요
-      personalities: formValues.character,
+      species: formValues.pet_gender,
+      personalities: filteredValue,
       firstAt: formValues.first_at,
       lastAt: formValues.last_at,
     };
+    console.log(memorySpacePayload);
+    petMutate(petPayload);
+    roomMutate(memorySpacePayload);
 
-    console.log(petPayload);
+    if (petSuccess && roomSuccess) {
+      console.log('다 성공');
+    }
   };
 
   const validatePersonality = (value) => {

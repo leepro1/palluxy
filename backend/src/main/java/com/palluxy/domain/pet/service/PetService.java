@@ -2,6 +2,7 @@ package com.palluxy.domain.pet.service;
 
 import com.palluxy.domain.pet.dto.request.PetRegisterRequest;
 import com.palluxy.domain.pet.dto.response.PersonalityResponse;
+import com.palluxy.domain.pet.dto.response.PetIdResponse;
 import com.palluxy.domain.pet.dto.response.PetResponse;
 import com.palluxy.domain.pet.entity.Personality;
 import com.palluxy.domain.pet.entity.Pet;
@@ -39,6 +40,7 @@ public class PetService {
         }
 
         Pet pet = Pet.builder()
+            .userId(request.userId())
             .name(request.name())
             .species(request.species())
             .relation(request.relation())
@@ -69,5 +71,9 @@ public class PetService {
             .orElseThrow(PetNotFoundException::new);
     }
 
-
+    public PetIdResponse findByUserId(Long userid) {
+        return petRepository.findByUserId(userid)
+            .map(PetIdResponse::of)
+            .orElseThrow(PetNotFoundException::new);
+    }
 }

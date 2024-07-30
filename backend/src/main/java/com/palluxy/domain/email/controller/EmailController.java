@@ -25,13 +25,26 @@ public class EmailController {
             throw new SignupFormatException();
         }
 
-        emailService.sendVerificationCode(request.type(), request.email());
+        String code;
+        if (request.type().equals("signup")) {
+            code = emailService.generateVerificationCodeForSignup(request.email());
+        } else if (request.type().equals("password")) {
+            code = emailService.generateResetPasswordToken(request.email());
+        } else {
+            throw new IllegalArgumentException("Invalid request type");
+        }
+
+        emailService.sendVerificationCode(request.type(), request.email(), code, null);
         return CommonResponse.ok("이메일 전송 성공");
     }
 
     @PostMapping("/verify")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> verifyCode(@RequestBody EmailVerifyRequest request) {
+    public CommonResponse<?> verifyCode(@Valid @RequestBody EmailVerifyRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new SignupFormatException();
+        }
+
         emailService.verifyCode(request.email(), request.verifyCode());
         return CommonResponse.ok("이메일 인증 성공");
     }
