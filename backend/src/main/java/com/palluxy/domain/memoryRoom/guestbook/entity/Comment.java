@@ -30,6 +30,8 @@ public class Comment {
 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+
+  @Column(nullable = false, columnDefinition = "boolean default false")
   private boolean isDeleted = false;
 
   @PrePersist
