@@ -10,6 +10,7 @@ import com.palluxy.global.common.util.CookieUtil;
 import com.palluxy.global.common.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -90,8 +91,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             refreshService.saveRefreshToken(refresh, userId);
 
             response.setHeader("access", access);
-            response.addCookie(CookieUtil.createCookie("refresh", refresh));
             response.setStatus(HttpStatus.OK.value());
+
+            Cookie cookie = CookieUtil.createCookie("refresh", refresh);
+            CookieUtil.addSameSiteCookieAttribute(response, cookie);
 
             LoginUserResponse loginUserResponse = LoginUserResponse.of(userDetails);
             CommonResponse<LoginUserResponse> responseBody = CommonResponse.ok(
