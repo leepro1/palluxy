@@ -2,6 +2,7 @@ package com.palluxy.domain.admin.controller;
 
 import com.palluxy.domain.admin.service.AdminService;
 import com.palluxy.domain.email.service.EmailService;
+import com.palluxy.domain.group.entity.Group;
 import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,9 @@ public class AdminController {
   @PatchMapping("/group/accept")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
-    String key = adminService.generateKey();
-    adminService.approveGroup(request.get("groupId"), key);
-
+    Group group = adminService.approveGroup(request.get("groupId"));
     String to = adminService.getUserEmail(request.get("userId"));
-//    emailService.sendVerificationCode("group", to, key);
+    emailService.sendVerificationCode("group", to, group.getApproveKey(), group.getTitle());
     return CommonResponse.ok("그룹이 정상적으로 승인되었음");
   }
 

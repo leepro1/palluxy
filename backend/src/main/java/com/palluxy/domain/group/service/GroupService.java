@@ -1,6 +1,8 @@
 package com.palluxy.domain.group.service;
 
 import com.palluxy.domain.group.dto.GroupRequest;
+import com.palluxy.domain.group.dto.GroupResponse;
+import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
@@ -12,7 +14,9 @@ import com.palluxy.domain.group.repository.GroupHistoryRepository;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.group.repository.GroupUserRepository;
 import com.palluxy.domain.user.repository.UserRepository;
+import com.palluxy.global.config.FileStorageService;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,13 +33,24 @@ public class GroupService {
   private final GroupUserRepository groupUserRepository;
   private final GroupHistoryRepository groupHistoryRepository;
   private final UserRepository userRepository;
+  private final FileStorageService fileStorageService;
 
   public List<Group> findAllGroups() {
     return groupRepository.findAll();
   }
 
-  public Page<Group> findByStatus(Status status, Pageable pageable) {
-    return groupRepository.findByStatus(status, pageable);
+  public GroupResponses findByStatus(Status status, Pageable pageable) {
+    Page<Group> groupPage = groupRepository.findByStatus(status, pageable);
+    return getGroupResponses(groupPage);
+  }
+
+  public GroupResponses getGroupResponses(Page<Group> groupPage) {
+    List<GroupResponse> groups = new ArrayList<>();
+    for (Group group : groupPage) {
+      groups.add(GroupResponse.of(group));
+    }
+
+    return new GroupResponses(groups, groupPage.getTotalElements());
   }
 
   public Group findById(Long groupId) {
@@ -56,17 +71,28 @@ public class GroupService {
     return groupUser.get();
   }
 
-  public void createGroup(Group group) {
-    Optional<User> leader = userRepository.findById(group.getLeader().getId());
+  public Group createGroup(GroupRequest groupRequest, String filePath) {
+    Optional<User> leader = userRepository.findById(groupRequest.getLeaderId());
     if (leader.isEmpty()) {
       throw new NotFoundException("유저");
     }
 
+    Group group = Group.builder()
+        .title(groupRequest.getTitle())
+        .description(groupRequest.getDescription())
+        .startTime(groupRequest.getStartTime())
+        .endTime(groupRequest.getEndTime())
+        .maxCapacity(groupRequest.getMaxCapacity())
+        .remainingCapacity(groupRequest.getMaxCapacity() - 1)
+        .leader(leader.get())
+        .filePath(filePath)
+        .build();
+
     group.setStatus(Status.WAIT);
-    group.setRemainingCapacity(group.getMaxCapacity() - 1);
     groupRepository.saveAndFlush(group);
 
     createGroupUser(group, leader.get(), true);
+    return group;
   }
 
   public void createHistory(GroupHistory groupHistory) {
@@ -74,14 +100,14 @@ public class GroupService {
   }
 
   public void createJoin(Long groupId, Long userId) {
-    Group group = findById(groupId);
+    Group group = groupRepository.findById(groupId).get();
     Optional<User> user = userRepository.findById(userId);
     if (user.isEmpty()) {
       throw new NotFoundException("유저");
     }
     createGroupUser(group, user.get(), false);
 
-    group.setRemainingCapacity(group.getRemainingCapacity() - 1);
+    group.updateCapacity(group.getRemainingCapacity() - 1);
     groupRepository.saveAndFlush(group);
   }
 
@@ -90,7 +116,7 @@ public class GroupService {
     groupUser.setLeader(isLeader);
     groupUserRepository.saveAndFlush(groupUser);
 
-    group.setRemainingCapacity(group.getRemainingCapacity() - 1);
+    group.updateCapacity(group.getRemainingCapacity() - 1);
     groupRepository.saveAndFlush(group);
   }
 
@@ -105,39 +131,43 @@ public class GroupService {
     }
 
     GroupUser groupUser = findGroupUser.get();
-    Group group = findById(groupId);
+    Group group = groupRepository.findById(groupId).get();
     if (groupUser.isLeader()) {
       group.setStatus(Status.CANCEL);
       return;
     }
 
     groupUserRepository.delete(groupUser);
-    group.setRemainingCapacity(group.getRemainingCapacity() + 1);
+    group.updateCapacity(group.getRemainingCapacity() + 1);
     groupRepository.saveAndFlush(group);
   }
 
-  public void updateGroupByUser(Long groupId, Group request) {
-    Group group = findById(groupId);
-    group.updateInfo(request);
+  public void updateGroupByUser(Long groupId, GroupRequest request) {
+    Group group = groupRepository.findById(groupId).get();
+    group.updateInfo(request.getTitle(), request.getDescription());
     groupRepository.saveAndFlush(group);
   }
 
-  public Page<Group> searchByKey(String key, String value, Pageable pageable) {
+  public GroupResponses searchByKey(String key, String value, Pageable pageable) {
+    Page<Group> groupPage = null;
     switch (key) {
       case "title":
-        return groupRepository.findByTitleContaining(value, pageable);
+        groupPage = groupRepository.findByTitleContaining(value, pageable);
       case "leader":
-        return groupRepository.findByLeaderContaining(value, pageable);
-      default:
-        throw new ValidateException("유효하지 않은 key가 요청됨");
+        groupPage = groupRepository.findByLeaderContaining(value, pageable);
     }
+
+    return getGroupResponses(groupPage);
   }
 
-  public Page<Group> findAvailableGroups(Pageable pageable) {
-    return groupRepository.findAvailableGroup(Status.ACCEPT, 0, LocalDateTime.now(), pageable);
+  public GroupResponses findAvailableGroups(Pageable pageable) {
+    Page<Group> groupPage = groupRepository.findAvailableGroup(Status.ACCEPT, 0,
+        LocalDateTime.now(), pageable);
+    return getGroupResponses(groupPage);
   }
 
-  public Page<Group> findGroupsByUserId(Long userId, Pageable pageable) {
-    return groupRepository.findGroupsByUserId(userId, pageable);
+  public GroupResponses findGroupsByUserId(Long userId, Pageable pageable) {
+    Page<Group> groupPage = groupRepository.findGroupsByUserId(userId, pageable);
+    return getGroupResponses(groupPage);
   }
 }
