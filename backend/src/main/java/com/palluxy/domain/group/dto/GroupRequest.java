@@ -1,13 +1,13 @@
 package com.palluxy.domain.group.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.palluxy.domain.group.entity.Group;
 import java.time.LocalDateTime;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
+@Setter
 public class GroupRequest {
   private String title;
   private String description;

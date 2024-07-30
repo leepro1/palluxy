@@ -2,7 +2,7 @@ package com.palluxy.domain.group.util;
 
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupUser;
-import com.palluxy.domain.group.entity.Status;
+import com.palluxy.global.common.data.Status;
 import com.palluxy.domain.group.exception.ValidateException;
 import org.springframework.stereotype.Component;
 

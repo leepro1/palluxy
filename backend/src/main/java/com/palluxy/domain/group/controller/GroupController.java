@@ -4,17 +4,16 @@ import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
-import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.common.data.Status;
 import com.palluxy.global.config.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/group")
@@ -61,12 +60,12 @@ public class GroupController {
 
   @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<?> createGroup(@RequestBody GroupRequest groupRequest, @RequestParam(required = false) MultipartFile image) {
+  public CommonResponse<?> createGroup(@ModelAttribute GroupRequest groupRequest) {
 
-    if (image != null) {
+    if (groupRequest.getFile() != null) {
       try {
         String folderName = "groups/";
-        String fileName = fileStorageService.storeFile(image, folderName);
+        String fileName = fileStorageService.storeFile(groupRequest.getFile(), folderName);
         String filePath = fileStorageService.getFileUrl(fileName);
         groupService.createGroup(groupRequest, filePath);
       } catch (Exception e) {
