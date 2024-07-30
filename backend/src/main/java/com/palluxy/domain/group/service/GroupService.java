@@ -100,7 +100,7 @@ public class GroupService {
   }
 
   public void createJoin(Long groupId, Long userId) {
-    Group group = groupRepository.findById(groupId).get();
+    Group group = findById(groupId);
     Optional<User> user = userRepository.findById(userId);
     if (user.isEmpty()) {
       throw new NotFoundException("유저");
@@ -131,7 +131,7 @@ public class GroupService {
     }
 
     GroupUser groupUser = findGroupUser.get();
-    Group group = groupRepository.findById(groupId).get();
+    Group group = findById(groupId);
     if (groupUser.isLeader()) {
       group.setStatus(Status.CANCEL);
       return;
@@ -143,7 +143,7 @@ public class GroupService {
   }
 
   public void updateGroupByUser(Long groupId, GroupRequest request) {
-    Group group = groupRepository.findById(groupId).get();
+    Group group = findById(groupId);
     group.updateInfo(request.getTitle(), request.getDescription());
     groupRepository.saveAndFlush(group);
   }
@@ -161,8 +161,7 @@ public class GroupService {
   }
 
   public GroupResponses findAvailableGroups(Pageable pageable) {
-    Page<Group> groupPage = groupRepository.findAvailableGroup(Status.ACCEPT, 0,
-        LocalDateTime.now(), pageable);
+    Page<Group> groupPage = groupRepository.findAvailableGroup(pageable);
     return getGroupResponses(groupPage);
   }
 

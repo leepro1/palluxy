@@ -9,16 +9,11 @@ import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.global.config.FileStorageService;
-import java.io.IOException;
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -66,12 +61,21 @@ public class GroupController {
 
   @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<?> createGroup(@RequestBody GroupRequest groupRequest, @RequestParam MultipartFile image)
-      throws IOException {
-    String folderName = "groups/";
-    String fileName = fileStorageService.storeFile(image, folderName);
-    String filePath = fileStorageService.getFileUrl(fileName);
-    groupService.createGroup(groupRequest, filePath);
+  public CommonResponse<?> createGroup(@RequestBody GroupRequest groupRequest, @RequestParam(required = false) MultipartFile image) {
+
+    if (image != null) {
+      try {
+        String folderName = "groups/";
+        String fileName = fileStorageService.storeFile(image, folderName);
+        String filePath = fileStorageService.getFileUrl(fileName);
+        groupService.createGroup(groupRequest, filePath);
+      } catch (Exception e) {
+        return CommonResponse.badRequest("Failed to create group");
+      }
+    } else {
+      groupService.createGroup(groupRequest, null);
+    }
+
     return CommonResponse.created("정상적으로 그룹이 생성되었음");
   }
 

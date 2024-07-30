@@ -7,8 +7,10 @@ import com.palluxy.domain.email.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,20 +24,20 @@ public class AdminController {
   private final AdminService adminService;
   private final EmailService emailService;
 
-  @PatchMapping("/group/accept")
+  @PatchMapping("/group/accept/{groupId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> approveGroup(@RequestBody Map<String, Long> request) {
-    Group group = adminService.approveGroup(request.get("groupId"));
-    String to = adminService.getUserEmail(request.get("userId"));
+  public CommonResponse<?> approveGroup(@PathVariable("groupId") Long groupId) {
+    Group group = adminService.approveGroup(groupId);
+    String to = adminService.getUserEmail(group.getLeader().getId());
     emailService.sendVerificationCode("group", to, group.getApproveKey(), group.getTitle());
     return CommonResponse.ok("그룹이 정상적으로 승인되었음");
 
   }
 
-  @PatchMapping("/group/reject")
+  @PatchMapping("/group/reject/{groupId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> rejectGroup(@RequestBody Map<String, Long> request) {
-    adminService.rejectGroup(request.get("groupId"));
+  public CommonResponse<?> rejectGroup(@PathVariable("groupId") Long groupId) {
+    adminService.rejectGroup(groupId);
     return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
   }
 }
