@@ -1,8 +1,8 @@
 package com.palluxy.domain.admin.controller;
 
+import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.domain.admin.service.AdminService;
 import com.palluxy.domain.email.service.EmailService;
-import com.palluxy.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;

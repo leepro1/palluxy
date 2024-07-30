@@ -1,17 +1,15 @@
 package com.palluxy.domain.user.controller;
 
-import com.palluxy.domain.user.entity.Refresh;
 import com.palluxy.domain.user.exception.RefreshTokenNullException;
 import com.palluxy.domain.user.exception.RefreshTokenExpiredException;
 import com.palluxy.domain.user.exception.InvalidRefreshTokenException;
-import com.palluxy.domain.user.repository.RefreshRepository;
-import com.palluxy.global.util.CookieUtil;
-import com.palluxy.global.util.JWTUtil;
+import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.global.common.util.CookieUtil;
+import com.palluxy.global.common.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.palluxy.global.common.constant.JWT_SET.*;
+
 @RestController
 @RequiredArgsConstructor
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @PostMapping("/api/reissue")
     @ResponseStatus(HttpStatus.OK)
@@ -32,10 +32,12 @@ public class ReissueController {
 
         String refresh = null;
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh")) {
-                refresh = cookie.getValue();
-                break;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh")) {
+                    refresh = cookie.getValue();
+                    break;
+                }
             }
         }
 
@@ -54,35 +56,22 @@ public class ReissueController {
             throw new InvalidRefreshTokenException("refresh token이 아닙니다.");
         }
 
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if (!isExist) {
+        if (!refreshService.isTokenExists(refresh)) {
             throw new InvalidRefreshTokenException("refresh token이 DB에 존재하지 않습니다.");
         }
 
-        String email = jwtUtil.getEmail(refresh);
+        Long userId = jwtUtil.getUserId(refresh);
         boolean isAdmin = jwtUtil.isAdmin(refresh);
 
-        String newAccess = jwtUtil.createJwt("access", email, isAdmin, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", email, isAdmin, 86400000L);
+        String newAccess = jwtUtil.createJwt("access", userId, isAdmin, ACCESS_TOKEN_EXPIRATION);
+        String newRefresh = jwtUtil.createJwt("refresh", userId, isAdmin, REFRESH_TOKEN_EXPIRATION);
 
-        refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(email, newRefresh, 86400000L);
+        refreshService.deleteRefreshToken(refresh);
+        refreshService.saveRefreshToken(newRefresh, userId);
 
         response.setHeader("access", newAccess);
-        response.addCookie(CookieUtil.createCookie("refresh", refresh));
+        response.addCookie(CookieUtil.createCookie("refresh", newRefresh));
 
         return ResponseEntity.ok().build();
-    }
-
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        Refresh refreshEntity = Refresh.builder()
-            .email(email)
-            .refresh(refresh)
-            .expiration(date.toString())
-            .build();
-
-        refreshRepository.save(refreshEntity);
     }
 }

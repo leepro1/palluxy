@@ -2,7 +2,7 @@ package com.palluxy.domain.memoryRoom.room.controller;
 
 import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import com.palluxy.domain.memoryRoom.room.service.RoomService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

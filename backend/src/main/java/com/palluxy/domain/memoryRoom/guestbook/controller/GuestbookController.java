@@ -3,7 +3,7 @@ package com.palluxy.domain.memoryRoom.guestbook.controller;
 import com.palluxy.domain.memoryRoom.guestbook.dto.CommentDto;
 import com.palluxy.domain.memoryRoom.guestbook.dto.GuestbookDto;
 import com.palluxy.domain.memoryRoom.guestbook.service.GuestbookService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

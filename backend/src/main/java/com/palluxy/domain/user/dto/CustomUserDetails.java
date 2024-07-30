@@ -27,11 +27,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getNickname();
     }
 
-    public String getNickname() {
-        return user.getNickname();
+    public String getEmail(){
+        return user.getEmail();
     }
 
     public Long getUserId() {

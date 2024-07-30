@@ -1,4 +1,4 @@
-package com.palluxy.global.util;
+package com.palluxy.global.common.util;
 
 import jakarta.servlet.http.Cookie;
 

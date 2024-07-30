@@ -1,6 +1,6 @@
 package com.palluxy.domain.user.entity;
 
-import com.palluxy.global.common.BaseEntity;
+import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,8 +41,8 @@ public class User extends BaseEntity {
         this.acceptedTermsAt = LocalDateTime.now();
     }
 
-    public User(String email, boolean isAdmin) {
-        this.email = email;
+    public User(Long userId, boolean isAdmin) {
+        this.id = userId;
         this.isAdmin = isAdmin;
     }
 
