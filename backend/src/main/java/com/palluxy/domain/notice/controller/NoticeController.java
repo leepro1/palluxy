@@ -1,7 +1,8 @@
 package com.palluxy.domain.notice.controller;
 
 import com.palluxy.domain.notice.dto.NoticeRequest;
-import com.palluxy.domain.notice.dto.NoticeTitleResponse;
+import com.palluxy.domain.notice.dto.NoticeDto;
+import com.palluxy.domain.notice.dto.NoticeResponse;
 import com.palluxy.domain.notice.entity.Notice;
 import com.palluxy.domain.notice.service.NoticeService;
 import com.palluxy.global.common.data.CommonResponse;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/api/notice")
 @RequiredArgsConstructor
@@ -30,10 +30,10 @@ public class NoticeController {
 
   @GetMapping("/{pageNumber}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> getNotices(@PathVariable("pageId") int pageNumber) {
+  public CommonResponse<?> getNotices(@PathVariable("pageNumber") int pageNumber) {
     Pageable pageable = PageRequest.of(pageNumber, 10);
-    List<NoticeTitleResponse> notices = noticeService.getNotices(pageable);
-    return CommonResponse.ok("공지사항이 정상적으로 조회되었음", notices);
+    NoticeResponse noticeResponse = noticeService.getNotices(pageable);
+    return CommonResponse.ok("공지사항이 정상적으로 조회되었음", noticeResponse);
   }
 
   @GetMapping("/detail/{noticeId}")
