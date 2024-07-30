@@ -2,7 +2,7 @@ package com.palluxy.domain.memoryRoom.petmeta.controller;
 
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
 import com.palluxy.domain.memoryRoom.petmeta.service.PetMetaService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

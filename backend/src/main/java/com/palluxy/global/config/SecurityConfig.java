@@ -1,14 +1,12 @@
 package com.palluxy.global.config;
 
-import com.palluxy.domain.user.repository.RefreshRepository;
-import com.palluxy.global.error.CustomAuthenticationEntryPoint;
-import com.palluxy.global.error.CustomAccessDeniedHandler;
-import com.palluxy.global.filter.CustomLogoutFilter;
-import com.palluxy.global.filter.JWTFilter;
-import com.palluxy.global.filter.LoginFilter;
-import com.palluxy.global.util.JWTUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Collections;
+import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.global.common.error.CustomAuthenticationEntryPoint;
+import com.palluxy.global.common.error.CustomAccessDeniedHandler;
+import com.palluxy.global.common.filter.CustomLogoutFilter;
+import com.palluxy.global.common.filter.JWTFilter;
+import com.palluxy.global.common.filter.LoginFilter;
+import com.palluxy.global.common.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import static com.palluxy.global.common.constant.CORS_SET.*;
+import static com.palluxy.global.common.constant.SECURITY_SET.*;
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +33,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
@@ -49,21 +52,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors((cors) -> cors
-                .configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration configuration = new CorsConfiguration();
-                        configuration.setAllowedOrigins(
-                            Collections.singletonList("http://localhost:5173"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
-                        configuration.setExposedHeaders(Collections.singletonList("access"));
-                        return configuration;
-                    }
-                })
+            .cors(cors -> cors
+                .configurationSource(configurationSource())
             )
 
             .csrf((csrf) -> csrf
@@ -79,18 +69,15 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests((auth) -> auth
-                .requestMatchers(
-                    "/api/reissue",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/html",
-                    "/swagger-ui/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(PERMITALL_URL_PATTERNS).permitAll()
+                .requestMatchers(NEED_LOGIN_URL_PATTERNS).authenticated()
+                .requestMatchers(NEED_ADMIN_ROLE_URL_PATTERNS).hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
 
             .addFilterAt(
                 new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
-                    refreshRepository),
+                    refreshService),
                 UsernamePasswordAuthenticationFilter.class
             )
 
@@ -99,7 +86,7 @@ public class SecurityConfig {
             )
 
             .addFilterBefore(
-                new CustomLogoutFilter(jwtUtil, refreshRepository), JWTFilter.class
+                new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class
             )
 
             .sessionManagement((session) -> session
@@ -112,5 +99,21 @@ public class SecurityConfig {
             );
 
         return http.build();
+    }
+
+    public CorsConfigurationSource configurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(ALLOWED_ORIGINS);
+        configuration.setAllowedHeaders(ALLOWED_HEADERS);
+        configuration.setAllowedMethods(ALLOWED_METHODS);
+        configuration.setAllowCredentials(ALLOWED_CREDENTIALS);
+        configuration.setExposedHeaders(EXPOSED_HEADERS);
+        configuration.setMaxAge(MAX_AGE_1H);
+
+        UrlBasedCorsConfigurationSource corsConfigSource = new UrlBasedCorsConfigurationSource();
+        corsConfigSource.registerCorsConfiguration("/**", configuration);
+
+        return corsConfigSource;
     }
 }

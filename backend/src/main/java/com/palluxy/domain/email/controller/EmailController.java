@@ -4,7 +4,7 @@ import com.palluxy.domain.email.dto.EmailRequest;
 import com.palluxy.domain.email.dto.EmailVerifyRequest;
 import com.palluxy.domain.email.service.EmailService;
 import com.palluxy.domain.user.exception.SignupFormatException;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

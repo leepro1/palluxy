@@ -2,7 +2,7 @@ package com.palluxy.domain.memoryRoom.like.controller;
 
 import com.palluxy.domain.memoryRoom.like.dto.LikeDto;
 import com.palluxy.domain.memoryRoom.like.service.LikeService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -13,7 +13,7 @@ public record LoginUserResponse(
     public static LoginUserResponse of(CustomUserDetails data) {
         return LoginUserResponse.builder()
             .id(data.getUserId())
-            .nickname(data.getNickname())
+            .nickname(data.getUsername())
             .build();
     }
 }
