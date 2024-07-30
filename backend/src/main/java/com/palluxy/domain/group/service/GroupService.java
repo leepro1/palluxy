@@ -8,11 +8,7 @@ import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
 import com.palluxy.global.common.data.Status;
 import com.palluxy.domain.user.entity.*;
-<<<<<<< HEAD
 import com.palluxy.global.common.error.NotFoundException;
-=======
-import com.palluxy.domain.group.exception.NotFoundException;
->>>>>>> 072347bc5da46fb733ae862a4cc988a5bd685da3
 import com.palluxy.domain.group.repository.GroupHistoryRepository;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.group.repository.GroupUserRepository;
@@ -118,7 +114,9 @@ public class GroupService {
     groupUser.setLeader(isLeader);
     groupUserRepository.saveAndFlush(groupUser);
 
-    group.updateCapacity(group.getRemainingCapacity() - 1);
+    if (!isLeader) {
+      group.updateCapacity(group.getRemainingCapacity() - 1);
+    }
     groupRepository.saveAndFlush(group);
   }
 

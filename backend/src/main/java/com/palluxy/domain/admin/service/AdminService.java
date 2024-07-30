@@ -1,6 +1,8 @@
 package com.palluxy.domain.admin.service;
 
 import com.palluxy.domain.group.entity.Group;
+import com.palluxy.global.common.error.NotFoundException;
+import com.palluxy.global.common.data.Status;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.repository.UserRepository;
