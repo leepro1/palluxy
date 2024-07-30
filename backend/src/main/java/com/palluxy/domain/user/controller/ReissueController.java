@@ -70,7 +70,9 @@ public class ReissueController {
         refreshService.saveRefreshToken(newRefresh, userId);
 
         response.setHeader("access", newAccess);
-        response.addCookie(CookieUtil.createCookie("refresh", newRefresh));
+
+        Cookie cookie = CookieUtil.createCookie("refresh", refresh);
+        CookieUtil.addSameSiteCookieAttribute(response, cookie);
 
         return ResponseEntity.ok().build();
     }
