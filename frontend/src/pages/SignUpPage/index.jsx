@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { instance } from '@/utils/axios';
 
 const SignupModal = () => {
   const navigate = useNavigate();
@@ -31,7 +32,6 @@ const SignupModal = () => {
           if (prevTimer <= 1) {
             clearInterval(timerInterval);
             setVerificationCodeSent(false);
-
             return 0;
           }
           return prevTimer - 1;
@@ -88,14 +88,10 @@ const SignupModal = () => {
     }
   };
 
-  // 폼 작성이 정상적인지 확인 ,
+  // 폼 작성이 정상적인지 확인 , 지금 setError가 의미 없음
   const validateForm = (data) => {
     let isValid = true;
-    if (!data.termsOfUseAccepted) {
-      isValid = false;
-    }
-
-    if (!data.privacyPolicyAccepted) {
+    if (!data.termsOfUseAccepted || !data.privacyPolicyAccepted) {
       isValid = false;
     }
 
@@ -265,6 +261,55 @@ const SignupModal = () => {
       });
     }
   };
+  // const checkNicknameDuplicate = async (nickname) => {
+  //   try {
+  //     const response = await instance.get(
+  //       `/api/users/check-nickname/${nickname}`,
+  //     );
+
+  //     console.log('API 응답:', response.status);
+  //     console.log(response.data);
+  //     console.log(response.data.message);
+
+  //     // API 응답 구조에 따라 조건을 확인
+  //     if (response.status === 200) {
+  //       setError('nickname', {
+  //         type: 'manual',
+  //         message: '사용 가능한 닉네임입니다.',
+  //       });
+  //       setIsNicknameChecked(true);
+  //     } else if (response.statusCode === 400) {
+  //       setError('nickname', {
+  //         type: 'manual',
+  //         message: '이미 사용 중인 닉네임입니다.',
+  //       });
+  //       setIsNicknameChecked(false);
+  //     }
+  //   } catch (error) {
+  //     if (error.response) {
+  //       if (error.response.status === 400) {
+  //         console.log(error.response.status);
+  //         setError('nickname', {
+  //           type: 'manual',
+  //           message: '이미 사용 중인 닉네임입니다.',
+  //         });
+  //         setIsNicknameChecked(false);
+  //       } else {
+  //         console.error('닉네임 중복 확인 에러:', error.response.status);
+  //         setError('nickname', {
+  //           type: 'manual',
+  //           message: '닉네임 확인에 실패했습니다.',
+  //         });
+  //       }
+  //     } else {
+  //       console.error('닉네임 중복 확인 에러:', error);
+  //       setError('nickname', {
+  //         type: 'manual',
+  //         message: '서버와의 통신에 실패했습니다.',
+  //       });
+  //     }
+  //   }
+  // };
 
   const email = watch('email', '');
   const verificationCode = watch('verificationCode', '');
