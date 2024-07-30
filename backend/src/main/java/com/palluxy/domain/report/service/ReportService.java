@@ -49,21 +49,21 @@ public class ReportService {
 
   public void isValidUser(Long userId) {
     Optional<User> findUser = userRepository.findById(userId);
-    if (findUser.isPresent()) {
+    if (!findUser.isPresent()) {
       throw new NotFoundException("user");
     }
   }
 
   public void isValidComment(Long commentId) {
     Optional<Comment> findComment = commentRepository.findById(commentId);
-    if (findComment.isPresent()) {
+    if (!findComment.isPresent()) {
       throw new NotFoundException("comment");
     }
   }
 
   public void isValidRoom(Long roomId) {
     Optional<Room> findRoom = roomRepository.findById(roomId);
-    if (findRoom.isPresent()) {
+    if (!findRoom.isPresent()) {
       throw new NotFoundException("room");
     }
   }

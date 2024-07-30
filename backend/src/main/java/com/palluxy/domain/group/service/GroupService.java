@@ -114,7 +114,9 @@ public class GroupService {
     groupUser.setLeader(isLeader);
     groupUserRepository.saveAndFlush(groupUser);
 
-    group.updateCapacity(group.getRemainingCapacity() - 1);
+    if (!isLeader) {
+      group.updateCapacity(group.getRemainingCapacity() - 1);
+    }
     groupRepository.saveAndFlush(group);
   }
 
