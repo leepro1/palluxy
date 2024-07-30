@@ -2,6 +2,7 @@ package com.palluxy.domain.group.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.palluxy.domain.user.entity.User;
+import com.palluxy.global.common.data.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
