@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class GroupResponse {
   private Long id;
   private Long leaderId;
+  private String leaderNickname;
   private String title;
   private String description;
   private String filePath;
@@ -20,10 +21,11 @@ public class GroupResponse {
   private int remainCapacity;
 
   @Builder
-  public GroupResponse(Long id, Long leaderId, String title, String description, String filePath,
+  public GroupResponse(Long id, Long leaderId, String leaderNickname, String title, String description, String filePath,
       LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainCapacity) {
     this.id = id;
     this.leaderId = leaderId;
+    this.leaderNickname = leaderNickname;
     this.title = title;
     this.description = description;
     this.filePath = filePath;
@@ -37,6 +39,7 @@ public class GroupResponse {
     return GroupResponse.builder()
         .id(group.getId())
         .leaderId(group.getLeader().getId())
+        .leaderNickname(group.getLeader().getNickname())
         .title(group.getTitle())
         .description(group.getDescription())
         .filePath(group.getFilePath())
