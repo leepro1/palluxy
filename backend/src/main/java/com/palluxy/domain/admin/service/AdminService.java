@@ -19,9 +19,12 @@ public class AdminService {
   private final Random random = new Random();
   private final UserRepository userRepository;
 
-  public void approveGroup(Long groupId, String key) {
+  public Group approveGroup(Long groupId) {
     Group group = getGroup(groupId);
+    String key = generateKey();
     updateGroup(group, Status.ACCEPT, key);
+
+    return group;
   }
 
   public void rejectGroup(Long groupId) {
@@ -32,7 +35,7 @@ public class AdminService {
   public void updateGroup(Group group, Status status, String key) {
     group.setStatus(status);
     if (status == Status.ACCEPT) {
-      group.setApproveKey(key);
+      group.updateApproveKey(key);
     }
     groupRepository.saveAndFlush(group);
   }

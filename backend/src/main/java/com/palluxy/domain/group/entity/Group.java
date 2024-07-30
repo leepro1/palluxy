@@ -1,8 +1,6 @@
 package com.palluxy.domain.group.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.palluxy.domain.group.dto.GroupRequest;
-import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -18,7 +16,6 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "`group`")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group {
@@ -41,6 +38,7 @@ public class Group {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime updatedAt;
 
+  @Setter
   @Enumerated(EnumType.STRING)
   private Status status;
 
@@ -56,41 +54,34 @@ public class Group {
   private Set<GroupUser> groupUser;
 
   @Builder
-  public Group(
-      Long id,
-      String title,
-      String description,
-      String filePath,
-      LocalDateTime startTime,
-      LocalDateTime endTime,
-      int maxCapacity,
-      int remainingCapacity) {
+  public Group(Long id, String title, String description, String filePath, LocalDateTime startTime,
+      LocalDateTime endTime, LocalDateTime createdAt, LocalDateTime updatedAt,
+      String approveKey, int maxCapacity, int remainingCapacity, User leader
+  ) {
     this.id = id;
     this.title = title;
     this.description = description;
     this.filePath = filePath;
     this.startTime = startTime;
     this.endTime = endTime;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.approveKey = approveKey;
     this.maxCapacity = maxCapacity;
     this.remainingCapacity = remainingCapacity;
+    this.leader = leader;
   }
 
-  public Group of(GroupResponse groupResponse) {
-    return Group.builder()
-        .id(groupResponse.getId())
-        .title(groupResponse.getTitle())
-        .description(groupResponse.getDescription())
-        .filePath(groupResponse.getFilePath())
-        .startTime(groupResponse.getStartTime())
-        .endTime(groupResponse.getEndTime())
-        .maxCapacity(groupResponse.getMaxCapacity())
-        .remainingCapacity(groupResponse.getRemainingCapacity())
-        .build();
+  public void updateCapacity(int newCapacity) {
+    this.remainingCapacity = newCapacity;
   }
 
-  public void updateInfo(Group request) {
-    this.title = request.getTitle();
-    this.description = request.getDescription();
-    this.filePath = request.getFilePath();
+  public void updateApproveKey(String key) {
+    this.approveKey = key;
+  }
+
+  public void updateInfo(String title, String description) {
+    this.title = title;
+    this.description = description;
   }
 }

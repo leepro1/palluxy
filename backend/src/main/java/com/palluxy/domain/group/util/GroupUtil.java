@@ -1,16 +1,10 @@
 package com.palluxy.domain.group.util;
 
-import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupUser;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.exception.ValidateException;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @Component
 public class GroupUtil {
@@ -26,28 +20,6 @@ public class GroupUtil {
       default:
         throw new ValidateException("유효하지 않은 status 값");
     }
-  }
-
-  public List<GroupResponse> convertToDtoList(List<Group> groups) {
-    List<GroupResponse> result = new ArrayList<>();
-    for (Group group : groups) {
-      result.add(convertToDto(group));
-    }
-
-    return result;
-  }
-
-  public GroupResponse convertToDto(Group group) {
-    return new GroupResponse(
-        group.getId(),
-        group.getLeader().getId(),
-        group.getTitle(),
-        group.getDescription(),
-        group.getFilePath(),
-        group.getStartTime(),
-        group.getEndTime(),
-        group.getMaxCapacity(),
-        group.getRemainingCapacity());
   }
 
   public void validateApproveKey(Group group, String approveKey) {
