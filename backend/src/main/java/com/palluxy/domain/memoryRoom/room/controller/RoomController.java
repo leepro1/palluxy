@@ -30,9 +30,12 @@ public class RoomController {
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<RoomDto> createRoom(@ModelAttribute @Valid RoomCreateRequest request) {
         try {
-            String folderName = "rooms/" + request.getUserId(); // 사용자별 폴더 생성
-            String fileName = fileStorageService.storeFile(request.getFile(), folderName);
-            String fileUrl = fileStorageService.getFileUrl(fileName);
+            String fileUrl = null;
+            if (request.getFile() != null && !request.getFile().isEmpty()) {
+                String folderName = "rooms/" + request.getUserId(); // 사용자별 폴더 생성
+                String fileName = fileStorageService.storeFile(request.getFile(), folderName);
+                fileUrl = fileStorageService.getFileUrl(fileName);
+            }
             RoomDto roomDto = request.toRoomDto(fileUrl);
             RoomDto createdRoom = roomService.createRoom(roomDto);
             return CommonResponse.created("Room created successfully");
