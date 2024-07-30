@@ -6,8 +6,8 @@ import com.palluxy.domain.user.dto.response.UserResponse;
 import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.exception.BadResetPasswordCodeUserException;
 import com.palluxy.domain.user.exception.DuplicateUserException;
-import com.palluxy.domain.user.exception.UserNotFoundException;
 import com.palluxy.domain.user.repository.UserRepository;
+import com.palluxy.global.common.error.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,17 +41,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void duplicateEmail(String email) {
         userRepository.findByEmail(email)
-                .ifPresent(user -> {
-                    throw new DuplicateUserException("이미 가입한 회원입니다.");
-                });
+            .ifPresent(user -> {
+                throw new DuplicateUserException("이미 가입한 회원입니다.");
+            });
     }
 
     @Override
     public void duplicateNickname(String nickname) {
         userRepository.findByNickname(nickname)
-                .ifPresent(user -> {
-                    throw new DuplicateUserException("이미 존재하는 닉네임입니다.");
-                });
+            .ifPresent(user -> {
+                throw new DuplicateUserException("이미 존재하는 닉네임입니다.");
+            });
     }
 
     @Override
@@ -75,18 +75,18 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getUsers() {
         List<User> data = userRepository.findAll();
         if (data.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new NotFoundException("user");
         }
 
         return data.stream()
-                .map(UserResponse::of)
-                .toList();
+            .map(UserResponse::of)
+            .toList();
     }
 
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("user : " + id));
 
         return UserResponse.of(user);
     }
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("user : " + email));
 
         return UserResponse.of(user);
     }
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname)
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("user : " + nickname));
 
         return UserResponse.of(user);
     }

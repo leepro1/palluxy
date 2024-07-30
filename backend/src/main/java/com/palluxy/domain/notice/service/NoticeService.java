@@ -4,7 +4,7 @@ import com.palluxy.domain.notice.dto.NoticeRequest;
 import com.palluxy.domain.notice.dto.NoticeDto;
 import com.palluxy.domain.notice.dto.NoticeResponse;
 import com.palluxy.domain.notice.entity.Notice;
-import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.global.common.error.NotFoundException;
 import com.palluxy.domain.notice.repository.NoticeRepository;
 import java.util.ArrayList;
 import java.util.List;
