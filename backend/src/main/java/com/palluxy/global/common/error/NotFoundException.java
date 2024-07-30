@@ -1,7 +1,7 @@
-package com.palluxy.domain.group.exception;
+package com.palluxy.global.common.error;
 
 public class NotFoundException extends RuntimeException {
   public NotFoundException(String target) {
-    super(target + "이 존재하지 않음");
+    super(target + " is not found.");
   }
 }

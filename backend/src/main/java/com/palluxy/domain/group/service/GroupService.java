@@ -6,16 +6,18 @@ import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
-import com.palluxy.domain.group.entity.Status;
+import com.palluxy.global.common.data.Status;
 import com.palluxy.domain.user.entity.*;
+<<<<<<< HEAD
+import com.palluxy.global.common.error.NotFoundException;
+=======
 import com.palluxy.domain.group.exception.NotFoundException;
-import com.palluxy.domain.group.exception.ValidateException;
+>>>>>>> 072347bc5da46fb733ae862a4cc988a5bd685da3
 import com.palluxy.domain.group.repository.GroupHistoryRepository;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.group.repository.GroupUserRepository;
 import com.palluxy.domain.user.repository.UserRepository;
 import com.palluxy.global.config.FileStorageService;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
