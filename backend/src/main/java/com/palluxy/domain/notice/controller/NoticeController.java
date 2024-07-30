@@ -4,7 +4,7 @@ import com.palluxy.domain.notice.dto.NoticeRequest;
 import com.palluxy.domain.notice.dto.NoticeTitleResponse;
 import com.palluxy.domain.notice.entity.Notice;
 import com.palluxy.domain.notice.service.NoticeService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
