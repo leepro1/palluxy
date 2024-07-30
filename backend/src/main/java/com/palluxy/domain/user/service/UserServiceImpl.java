@@ -56,14 +56,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(UserResetPasswordRequest request) {
-        String email = redisTemplate.opsForValue().get(request.UUID());
-        userRepository.updatePasswordByEmail(email, bCryptPasswordEncoder.encode(request.password()));
-    }
+        String resetCode = request.code();
 
-    @Override
-    public void verifyResetPasswordCode(String code) {
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(code))) {
+        if (!Boolean.TRUE.equals(redisTemplate.hasKey(resetCode))) {
             throw new BadResetPasswordCodeUserException("해당 URL이 일치하지 않습니다.");
+        }
+
+        String email = redisTemplate.opsForValue().get(resetCode);
+        if (email != null) {
+            String encodedPassword = bCryptPasswordEncoder.encode(request.password());
+            userRepository.updatePasswordByEmail(email, encodedPassword);
+        } else {
+            throw new BadResetPasswordCodeUserException("유효하지 않은 코드입니다.");
         }
     }
 

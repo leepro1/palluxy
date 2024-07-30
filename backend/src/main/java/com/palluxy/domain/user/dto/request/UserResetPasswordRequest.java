@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 public record UserResetPasswordRequest(
 
         @NotEmpty
-        String UUID,
+        String code,
 
         @NotEmpty
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$",

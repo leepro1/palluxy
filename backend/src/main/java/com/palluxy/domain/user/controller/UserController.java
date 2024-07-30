@@ -54,13 +54,6 @@ public class UserController {
         return CommonResponse.ok("닉네임 사용 가능");
     }
 
-    @GetMapping("/reset-password")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> resetPassword(@RequestParam("code") String code) {
-        userService.verifyResetPasswordCode(code);
-        return CommonResponse.ok("비밀번호 code 인증 성공");
-    }
-
     @PatchMapping("/reset-password")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> resetPassword(@Valid @RequestBody UserResetPasswordRequest request, BindingResult bindingResult) {

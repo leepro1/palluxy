@@ -19,7 +19,7 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final StringRedisTemplate redisTemplate;
-    private static final long VERIFICATION_CODE_EXPIRATION = 20;
+    private static final long VERIFICATION_CODE_EXPIRATION = 10;
 
     private String generateVerificationCode() {
         Random random = new Random();
@@ -83,7 +83,7 @@ public class EmailService {
         } else if (type.equals("password")) {
             subject = "PAL:LUXY 비밀번호 변경 링크입니다.";
             String token = code;
-            String resetLink = "http://localhost:8080/api/users/reset-password?code=" + token;
+            String resetLink = "http://localhost:5173/reset?code=" + token;
 
             code = resetLink;
         } else if (type.equals("group")){
