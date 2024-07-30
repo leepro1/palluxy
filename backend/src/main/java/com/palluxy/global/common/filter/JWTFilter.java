@@ -1,17 +1,19 @@
-package com.palluxy.global.filter;
+package com.palluxy.global.common.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.palluxy.domain.user.dto.CustomUserDetails;
 import com.palluxy.domain.user.entity.User;
-import com.palluxy.global.util.JWTUtil;
+import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.common.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,11 +39,13 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            CommonResponse<?> responseBody = CommonResponse.unauthorized("access token이 만료되었습니다.");
 
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
 
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
@@ -49,17 +53,20 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (!category.equals("access")) {
 
-            PrintWriter writer = response.getWriter();
-            writer.print("invalid access token");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            CommonResponse<?> responseBody = CommonResponse.unauthorized("access token이 유효하지 않습니다.");
 
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+
             return;
         }
 
-        String email = jwtUtil.getEmail(accessToken);
+        Long userId = jwtUtil.getUserId(accessToken);
         boolean isAdmin = jwtUtil.isAdmin(accessToken);
 
-        User user = new User(email, isAdmin);
+        User user = new User(userId, isAdmin);
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(

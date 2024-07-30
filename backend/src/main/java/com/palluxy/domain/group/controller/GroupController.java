@@ -7,7 +7,7 @@ import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.Status;
 import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.global.config.FileStorageService;
 import java.io.IOException;
 import java.util.ArrayList;

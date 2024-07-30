@@ -1,4 +1,4 @@
-package com.palluxy.global.error;
+package com.palluxy.global.common.error;
 
 import com.palluxy.domain.group.exception.NotFoundException;
 import com.palluxy.domain.group.exception.OpenviduException;
@@ -7,7 +7,7 @@ import com.palluxy.domain.user.exception.DuplicateUserException;
 import com.palluxy.domain.user.exception.InvalidRefreshTokenException;
 import com.palluxy.domain.user.exception.RefreshTokenExpiredException;
 import com.palluxy.domain.user.exception.RefreshTokenNullException;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -5,7 +5,7 @@ import com.palluxy.domain.pet.dto.response.PersonalityResponse;
 import com.palluxy.domain.pet.dto.response.PetIdResponse;
 import com.palluxy.domain.pet.dto.response.PetResponse;
 import com.palluxy.domain.pet.service.PetService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

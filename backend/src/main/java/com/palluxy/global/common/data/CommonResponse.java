@@ -1,4 +1,4 @@
-package com.palluxy.global.common;
+package com.palluxy.global.common.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
@@ -30,11 +30,11 @@ public record CommonResponse<T>(
         return new CommonResponse<>(HttpStatus.CREATED.value(), message, null);
     }
 
-    public static <T> CommonResponse<T> unauthorized(String message, T result) {
+    public static <T> CommonResponse<T> unauthorized(String message) {
         return new CommonResponse<>(HttpStatus.UNAUTHORIZED.value(), message, null);
     }
 
-    public static <T> CommonResponse<T> forbidden(String message, T result) {
+    public static <T> CommonResponse<T> forbidden(String message) {
         return new CommonResponse<>(HttpStatus.FORBIDDEN.value(), message, null);
     }
 

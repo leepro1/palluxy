@@ -1,4 +1,4 @@
-package com.palluxy.global.util;
+package com.palluxy.global.common.util;
 
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
@@ -19,11 +19,11 @@ public class JWTUtil {
             Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String createJwt(String category, String email, boolean isAdmin, Long expiredMs) {
+    public String createJwt(String category, Long userId, boolean isAdmin, Long expiredMs) {
 
         return Jwts.builder()
             .claim("category", category)
-            .claim("email", email)
+            .claim("userId", userId)
             .claim("isAdmin", isAdmin)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expiredMs))
@@ -41,14 +41,14 @@ public class JWTUtil {
             .get("category", String.class);
     }
 
-    public String getEmail(String token) {
+    public Long getUserId(String token) {
 
         return Jwts.parser()
             .verifyWith(secretKey)
             .build()
             .parseSignedClaims(token)
             .getPayload()
-            .get("email", String.class);
+            .get("userId", Long.class);
     }
 
     public boolean isAdmin(String token) {
