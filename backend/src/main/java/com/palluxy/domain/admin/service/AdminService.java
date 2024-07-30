@@ -6,6 +6,8 @@ import com.palluxy.global.common.data.Status;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.repository.UserRepository;
+import com.palluxy.global.common.data.Status;
+import com.palluxy.global.common.error.NotFoundException;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;

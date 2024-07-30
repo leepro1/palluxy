@@ -8,6 +8,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Room 엔티티 클래스
+ */
 @Getter
 @Setter
 @Entity

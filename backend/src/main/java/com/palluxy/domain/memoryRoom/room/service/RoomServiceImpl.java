@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Room 서비스 구현체
+ */
 @Service
 public class RoomServiceImpl implements RoomService {
 
@@ -92,5 +95,13 @@ public class RoomServiceImpl implements RoomService {
   @Override
   public void deleteRoom(Long roomId) {
     roomRepository.deleteById(roomId);
+  }
+
+  @Override
+  public void updateThumbnailUrl(Long roomId, String thumbnailUrl) {
+    Room room = roomRepository.findById(roomId)
+        .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+    room.setThumbnailUrl(thumbnailUrl);
+    roomRepository.save(room);
   }
 }
