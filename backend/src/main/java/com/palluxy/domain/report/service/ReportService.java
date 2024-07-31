@@ -49,6 +49,56 @@ public class ReportService {
     return new ReportResponses<>(guestBookReports.getContent(), guestBookReports.getTotalPages());
   }
 
+  public void updateGuestBookReport(Long reportId, Status status) {
+    GuestBookReport guestBookReport = getGuestBookReport(reportId);
+    guestBookReport.updateStatus(status);
+    if (status.equals(Status.ACCEPT)) {
+      banUser(guestBookReport.getReportTo());
+    }
+    guestBookRepository.saveAndFlush(guestBookReport);
+  }
+
+  public void updateRoomReport(Long reportId, Status status) {
+    RoomReport roomReport = getRoomReport(reportId);
+    roomReport.updateStatus(status);
+    if (status.equals(Status.ACCEPT)) {
+      banUser(roomReport.getReportTo());
+    }
+    roomReportRepository.saveAndFlush(roomReport);
+  }
+
+  private RoomReport getRoomReport(Long reportId) {
+    Optional<RoomReport> roomReport = roomReportRepository.findById(reportId);
+    if (roomReport.isEmpty()) {
+      throw new NotFoundException("roomReport");
+    }
+    return roomReport.get();
+  }
+
+  public void banUser(Long userId) {
+    User user = getUser(userId);
+    user.updateIsBanned();
+    userRepository.saveAndFlush(user);
+  }
+
+  public GuestBookReport getGuestBookReport(Long reportId) {
+    Optional<GuestBookReport> guestBookReport = guestBookRepository.findById(reportId);
+    if (guestBookReport.isEmpty()) {
+      throw new NotFoundException("guestBookReport");
+    }
+
+    return guestBookReport.get();
+  }
+
+  public User getUser(Long userId) {
+    Optional<User> user = userRepository.findById(userId);
+    if (user.isEmpty()) {
+      throw new NotFoundException("user");
+    }
+
+    return user.get();
+  }
+
   public void isValidGuestBookReport(GuestBookReport guestBookReport) {
     isValidUser(guestBookReport.getReportTo());
     isValidUser(guestBookReport.getReportFrom());
