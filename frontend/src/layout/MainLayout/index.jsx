@@ -8,12 +8,8 @@ import { instance } from '@/utils/axios';
 const MainLayout = () => {
   const fetchUserByAccess = async () => {
     const access = sessionStorage.getItem('access');
-    if (!access) return;
-    const res = await instance.get('/api/users/user-info', {
-      header: {
-        access: access,
-      },
-    });
+    if (!access) return null;
+    const res = await instance.get('/api/users/user-info');
     return res.data.result;
   };
 
