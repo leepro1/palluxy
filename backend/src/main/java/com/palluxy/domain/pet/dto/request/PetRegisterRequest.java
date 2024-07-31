@@ -10,7 +10,7 @@ import java.util.List;
 
 public record PetRegisterRequest(
 
-    @NotBlank
+    @NotNull
     Long userId,
 
     @NotBlank
