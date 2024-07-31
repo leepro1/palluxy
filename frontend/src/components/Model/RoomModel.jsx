@@ -8,6 +8,7 @@ const RoomModel = React.memo(({ data }) => {
   const { materials, scene } = useGLTF('/models/frameRoom.glb');
 
   console.log('실행됨');
+  console.log(data);
   data.forEach(async (frameData) => {
     console.log(frameData.index);
     const matrialName = FRAME_INDEX[frameData.index];

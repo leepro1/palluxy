@@ -12,6 +12,8 @@ import ResetPassword from '@components/ResetPassword';
 import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
 import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
 import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
+import NotFound from '@/components/NotFound';
+
 const routerInfo = [
   {
     path: '/',
@@ -42,17 +44,22 @@ const routerInfo = [
         element: <MemorySpacePage />,
         children: [
           {
-            index: true,
-            // path: 'setting',
-            element: <SettingSideBar />,
-          },
-          {
-            path: 'mailbox',
-            element: <MailboxSideBar />,
-          },
-          {
-            path: 'guest-box',
-            element: <GuestBoxSideBar />,
+            path: ':userId',
+            children: [
+              {
+                index: true,
+                // path: 'setting',
+                element: <SettingSideBar />,
+              },
+              {
+                path: 'mailbox',
+                element: <MailboxSideBar />,
+              },
+              {
+                path: 'guest-box',
+                element: <GuestBoxSideBar />,
+              },
+            ],
           },
         ],
       },
@@ -61,7 +68,8 @@ const routerInfo = [
       { path: '/signin', element: <SignIn /> },
       { path: '/signup', element: <SignUp /> },
       { path: '/find', element: <FindPassword /> },
-      { path: '/reset', element: <ResetPassword /> },
+
+      { path: '/404', element: <NotFound /> },
     ],
   },
 ];

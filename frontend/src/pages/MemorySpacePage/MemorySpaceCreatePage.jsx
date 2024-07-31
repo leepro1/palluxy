@@ -40,6 +40,7 @@ const MemorySpaceCreatePage = () => {
       relation: '',
     },
   });
+  const [isFormOpen, setFormOpen] = useState(false);
   const [isRoomCreate, setRoomCreate] = useState(false);
   const [isPetCreate, setPetCreate] = useState(false);
   const queryClient = useQueryClient();
