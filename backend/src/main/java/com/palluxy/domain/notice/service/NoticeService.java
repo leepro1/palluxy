@@ -1,9 +1,10 @@
 package com.palluxy.domain.notice.service;
 
 import com.palluxy.domain.notice.dto.NoticeRequest;
-import com.palluxy.domain.notice.dto.NoticeTitleResponse;
+import com.palluxy.domain.notice.dto.NoticeDto;
+import com.palluxy.domain.notice.dto.NoticeResponse;
 import com.palluxy.domain.notice.entity.Notice;
-import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.global.common.error.NotFoundException;
 import com.palluxy.domain.notice.repository.NoticeRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +20,14 @@ public class NoticeService {
 
   private final NoticeRepository noticeRepository;
 
-  public List<NoticeTitleResponse> getNotices(Pageable pageable) {
-    Page<Notice> notices = noticeRepository.findAll(pageable);
-    List<NoticeTitleResponse> noticeTitles = new ArrayList<>();
-    for (Notice notice : notices.getContent()) {
-      noticeTitles.add(NoticeTitleResponse.of(notice));
+  public NoticeResponse getNotices(Pageable pageable) {
+    Page<Notice> noticePage = noticeRepository.findAll(pageable);
+    List<NoticeDto> notices = new ArrayList<>();
+    for (Notice notice : noticePage.getContent()) {
+      notices.add(NoticeDto.of(notice));
     }
 
-    return noticeTitles;
+    return new NoticeResponse(notices, noticePage.getTotalElements());
   }
 
   public void createNotice(Notice notice) {

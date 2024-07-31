@@ -3,11 +3,10 @@ package com.palluxy.domain.user.controller;
 import com.palluxy.domain.user.dto.request.UserResetPasswordRequest;
 import com.palluxy.domain.user.dto.request.UserSignupRequest;
 import com.palluxy.domain.user.dto.response.UserResponse;
-import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.exception.SignupFormatException;
 import com.palluxy.domain.user.service.UserService;
-import com.palluxy.global.common.CommonResponse;
-import com.palluxy.global.util.JWTUtil;
+import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.common.util.JWTUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,8 +35,8 @@ public class UserController {
 
     @GetMapping("/user-info")
     public CommonResponse<?> getUserInfo(@RequestHeader("access") String token) {
-        String email = jwtUtil.getEmail(token);
-        UserResponse user = userService.getUserByEmail(email);
+        Long userId = jwtUtil.getUserId(token);
+        UserResponse user = userService.getUserById(userId);
         return CommonResponse.ok("토큰으로 user 정보 조회", user);
     }
 
@@ -53,13 +52,6 @@ public class UserController {
     public CommonResponse<?> checkNickname(@PathVariable("nickname") String nickname) {
         userService.duplicateNickname(nickname);
         return CommonResponse.ok("닉네임 사용 가능");
-    }
-
-    @GetMapping("/reset-password")
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> resetPassword(@RequestParam("code") String code) {
-        userService.verifyResetPasswordCode(code);
-        return CommonResponse.ok("비밀번호 code 인증 성공");
     }
 
     @PatchMapping("/reset-password")

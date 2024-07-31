@@ -1,9 +1,9 @@
-package com.palluxy.global.filter;
+package com.palluxy.global.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.palluxy.domain.user.repository.RefreshRepository;
-import com.palluxy.global.common.CommonResponse;
-import com.palluxy.global.util.JWTUtil;
+import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.common.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,17 +20,19 @@ import org.springframework.web.filter.GenericFilterBean;
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
-        FilterChain filterChain) throws IOException, ServletException {
+        FilterChain filterChain)
+        throws IOException, ServletException {
         doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse,
             filterChain);
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain) throws IOException, ServletException {
+        FilterChain filterChain)
+        throws IOException, ServletException {
 
         String requestUri = request.getRequestURI();
         if (!requestUri.matches("^\\/logout$")) {
@@ -68,12 +70,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 throw new IllegalArgumentException("Invalid refresh token");
             }
 
-            Boolean isExist = refreshRepository.existsByRefresh(refresh);
-            if (!isExist) {
+            if (!refreshService.isTokenExists(refresh)) {
                 throw new IllegalArgumentException("Refresh token does not exist");
             }
 
-            refreshRepository.deleteByRefresh(refresh);
+            refreshService.deleteRefreshToken(refresh);
 
             Cookie cookie = new Cookie("refresh", null);
             cookie.setMaxAge(0);

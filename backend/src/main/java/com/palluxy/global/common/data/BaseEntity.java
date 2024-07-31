@@ -1,4 +1,4 @@
-package com.palluxy.global.common;
+package com.palluxy.global.common.data;
 
 import jakarta.persistence.*;
 import lombok.Getter;

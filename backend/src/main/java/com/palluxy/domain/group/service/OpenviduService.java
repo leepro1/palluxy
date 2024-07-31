@@ -1,6 +1,6 @@
 package com.palluxy.domain.group.service;
 
-import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.global.common.error.NotFoundException;
 import com.palluxy.domain.group.exception.OpenviduException;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;

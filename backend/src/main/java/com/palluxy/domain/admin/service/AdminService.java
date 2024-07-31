@@ -1,11 +1,13 @@
 package com.palluxy.domain.admin.service;
 
 import com.palluxy.domain.group.entity.Group;
-import com.palluxy.domain.group.entity.Status;
-import com.palluxy.domain.group.exception.NotFoundException;
+import com.palluxy.global.common.error.NotFoundException;
+import com.palluxy.global.common.data.Status;
 import com.palluxy.domain.group.repository.GroupRepository;
 import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.repository.UserRepository;
+import com.palluxy.global.common.data.Status;
+import com.palluxy.global.common.error.NotFoundException;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,12 @@ public class AdminService {
   private final Random random = new Random();
   private final UserRepository userRepository;
 
-  public void approveGroup(Long groupId, String key) {
+  public Group approveGroup(Long groupId) {
     Group group = getGroup(groupId);
+    String key = generateKey();
     updateGroup(group, Status.ACCEPT, key);
+
+    return group;
   }
 
   public void rejectGroup(Long groupId) {
@@ -32,7 +37,7 @@ public class AdminService {
   public void updateGroup(Group group, Status status, String key) {
     group.setStatus(status);
     if (status == Status.ACCEPT) {
-      group.setApproveKey(key);
+      group.updateApproveKey(key);
     }
     groupRepository.saveAndFlush(group);
   }

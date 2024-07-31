@@ -2,8 +2,8 @@ package com.palluxy.domain.memoryRoom.album.controller;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
 import com.palluxy.domain.memoryRoom.album.service.ImageService;
+import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.global.config.FileStorageService;
-import com.palluxy.global.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

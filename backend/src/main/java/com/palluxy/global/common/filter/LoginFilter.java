@@ -1,22 +1,21 @@
-package com.palluxy.global.filter;
+package com.palluxy.global.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.palluxy.domain.user.dto.CustomUserDetails;
 import com.palluxy.domain.user.dto.request.LoginRequest;
 import com.palluxy.domain.user.dto.response.LoginUserResponse;
-import com.palluxy.domain.user.entity.Refresh;
-import com.palluxy.domain.user.repository.RefreshRepository;
-import com.palluxy.global.common.CommonResponse;
-import com.palluxy.global.util.CookieUtil;
-import com.palluxy.global.util.JWTUtil;
+import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.common.util.CookieUtil;
+import com.palluxy.global.common.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,12 +26,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
+import static com.palluxy.global.common.constant.JWT_SET.*;
+
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -78,24 +79,26 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         throws IOException {
 
         try {
-            String email = authentication.getName();
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
+            Long userId = userDetails.getUserId();
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             boolean isAdmin = authorities.stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-            String access = jwtUtil.createJwt("access", email, isAdmin, 600000L);
-            String refresh = jwtUtil.createJwt("refresh", email, isAdmin, 86400000L);
+            String access = jwtUtil.createJwt("access", userId, isAdmin, ACCESS_TOKEN_EXPIRATION);
+            String refresh = jwtUtil.createJwt("refresh", userId, isAdmin, REFRESH_TOKEN_EXPIRATION);
 
-            addRefreshEntity(email, refresh, 86400000L);
+            refreshService.saveRefreshToken(refresh, userId);
 
             response.setHeader("access", access);
-            response.addCookie(CookieUtil.createCookie("refresh", refresh));
             response.setStatus(HttpStatus.OK.value());
 
+            Cookie cookie = CookieUtil.createCookie("refresh", refresh);
+            CookieUtil.addSameSiteCookieAttribute(response, cookie);
+
             LoginUserResponse loginUserResponse = LoginUserResponse.of(userDetails);
-            CommonResponse<LoginUserResponse> responseBody = CommonResponse.ok("Authentication successful", loginUserResponse);
+            CommonResponse<LoginUserResponse> responseBody = CommonResponse.ok(
+                "Authentication successful", loginUserResponse);
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -105,31 +108,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        Refresh refreshEntity = Refresh.builder()
-            .email(email)
-            .refresh(refresh)
-            .expiration(date.toString())
-            .build();
-
-        refreshRepository.save(refreshEntity);
-    }
-
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, AuthenticationException failed) throws IOException {
-
-        CommonResponse<String> errorResponse = CommonResponse.unauthorized("Authentication failed", null);
+        CommonResponse<String> errorResponse = CommonResponse.unauthorized("Authentication failed");
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
     }
 
-    private void handleException(HttpServletResponse response, Exception e, String message) throws IOException {
-        CommonResponse<String> errorResponse = CommonResponse.badRequest(message + ": " + e.getMessage());
+    private void handleException(HttpServletResponse response, Exception e, String message)
+        throws IOException {
+        CommonResponse<String> errorResponse = CommonResponse.badRequest(
+            message + ": " + e.getMessage());
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setContentType("application/json");

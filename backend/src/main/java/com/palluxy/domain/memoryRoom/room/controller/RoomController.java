@@ -1,15 +1,21 @@
 package com.palluxy.domain.memoryRoom.room.controller;
 
+import com.palluxy.domain.memoryRoom.room.dto.RoomCreateRequest;
 import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import com.palluxy.domain.memoryRoom.room.service.RoomService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.config.FileStorageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
+/**
+ * Room 관련 API 엔드포인트 컨트롤러
+ */
 @RestController
 @RequestMapping("/api/rooms")
 public class RoomController {
@@ -17,11 +23,25 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto) {
-        RoomDto createdRoom = roomService.createRoom(roomDto);
-        return CommonResponse.created("Room created successfully");
+    public CommonResponse<RoomDto> createRoom(@ModelAttribute @Valid RoomCreateRequest request) {
+        try {
+            String fileUrl = null;
+            if (request.getFile() != null && !request.getFile().isEmpty()) {
+                String folderName = "rooms/" + request.getUserId(); // 사용자별 폴더 생성
+                String fileName = fileStorageService.storeFile(request.getFile(), folderName);
+                fileUrl = fileStorageService.getFileUrl(fileName);
+            }
+            RoomDto roomDto = request.toRoomDto(fileUrl);
+            RoomDto createdRoom = roomService.createRoom(roomDto);
+            return CommonResponse.created("Room created successfully");
+        } catch (IOException e) {
+            return CommonResponse.badRequest("Failed to upload thumbnail");
+        }
     }
 
     @GetMapping("/user/{userId}")

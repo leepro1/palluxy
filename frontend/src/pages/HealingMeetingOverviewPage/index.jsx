@@ -1,30 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
 import MakeSession from './MakeSession';
 import Pagination from './Pagination';
 import './app.css';
 import ContentsLayout from '@layout/ContentsLayout';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
-import { useParams } from 'react-router-dom';
 import { ScrollRestoration } from 'react-router-dom';
-// 더미데이터([Item 1, Item 2, Item 3 ...])
-const data = Array.from({ length: 200 }, (_, index) => `Item ${index + 1}`);
+import { instance } from '@/utils/axios';
+
+// 날짜 포맷 유틸리티 함수
+const formatDateRange = (startDate, endDate) => {
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const start = new Date(startDate).toLocaleString('ko-KR', options);
+  const end = new Date(endDate).toLocaleString('ko-KR', options);
+
+  return `${start.replace(',', '')}~${end.split(' ')[3]}`;
+};
 
 const HealingSessionPage = () => {
+  const queryClient = useQueryClient();
+  const userInfo = queryClient.getQueryData(['userInfo']);
   const { pageIndex } = useParams();
   const pageIndexInt = parseInt(pageIndex, 10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 9;
-  const indexOfLastItem = pageIndexInt * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const totalPage = Math.ceil(data.length / itemsPerPage);
+  const [totalPage, setTotalPage] = useState(0);
   const [showingPage, setShowingPage] = useState(pageIndexInt);
   const showingPageMin = Math.max(showingPage - 2, 1);
   const showingPageMax = Math.min(showingPage + 2, totalPage);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await instance.get(
+          `/api/group/accept/${pageIndexInt - 1}`,
+        );
+        setTotalPage(Math.ceil(response.data.result.totalGroupCount / 9));
+        setData(response.data.result.groups);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [pageIndexInt]);
 
   const navigate = useNavigate();
-
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber) => {
     navigate(`/meetingoverview/${pageNumber}`);
@@ -149,47 +180,63 @@ const HealingSessionPage = () => {
             </div>
           </div>
         </div>
-
-        <div className="m-5 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {currentItems.map((item, index) => (
+        {/* Other code omitted for brevity */}
+        <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {data?.map((item, index) => (
             <div
               className="m-3 flex w-3/4 cursor-pointer flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
               key={index}
-              onClick={() => handleImageClick(index)}
+              onClick={() => handleImageClick(item.id)}
             >
               <div className="relative w-full rounded-md">
-                <div className="mb-1 flex aspect-square w-full justify-center">
-                  <img
-                    src={defaultImage}
-                    alt="default"
-                    className="rounded-md"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
-                    <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
-                      신청하기
-                    </button>
+                {item.filePath === null ? (
+                  <div className="mb-1 flex aspect-square w-full justify-center">
+                    <img
+                      src={defaultImage}
+                      alt="image"
+                      className="rounded-md"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                      <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
+                        신청하기
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="mb-1 flex aspect-square w-full justify-center">
+                    <img
+                      src={item.filePath}
+                      alt="image"
+                      className="rounded-md"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                      <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
+                        신청하기
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="w-full p-4 text-left">
                 <p className="mb-2 text-2xl font-semibold text-gray-900">
-                  여기가 제목
+                  {item.id} .{item.title}
                 </p>
                 <div className="flex flex-row gap-x-2 text-pal-purple">
                   <span className="material-symbols-outlined">
                     calendar_month
                   </span>
-                  <p>2024.07.26 14:30~15:00</p>
+                  <p>{formatDateRange(item.startTime, item.endTime)}</p>
                 </div>
                 <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
                   <span className="material-symbols-outlined">groups</span>
-                  <p>2/4</p>
+                  <p>
+                    {item.maxCapacity - item.remainCapacity}/{item.maxCapacity}
+                  </p>
                 </div>
               </div>
             </div>
           ))}
         </div>
-
         <Pagination
           itemsPerPage={itemsPerPage}
           totalPage={totalPage}
@@ -201,7 +248,6 @@ const HealingSessionPage = () => {
           showingPageMin={showingPageMin}
           pageIndexInt={pageIndexInt}
         />
-
         {isModalOpen && <MakeSession removeModal={closeModal} />}
       </div>
     </ContentsLayout>

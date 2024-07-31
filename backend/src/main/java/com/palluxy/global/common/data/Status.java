@@ -1,4 +1,4 @@
-package com.palluxy.domain.group.entity;
+package com.palluxy.global.common.data;
 
 public enum Status {
   WAIT,

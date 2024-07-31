@@ -319,7 +319,7 @@ const HealingMeetingPageContents = () => {
             </select>
           </div>
 
-          <div className="m-5 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
             {data.map((item, index) => (
               <form
                 className="m-3 flex w-3/4 flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"

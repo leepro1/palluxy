@@ -16,8 +16,6 @@ public interface UserService {
 
     void resetPassword(UserResetPasswordRequest request);
 
-    void verifyResetPasswordCode(String code);
-
     List<UserResponse> getUsers();
 
     UserResponse getUserById(Long id);
