@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/group")
 @RequiredArgsConstructor
-public class AdminController {
+public class AdminGroupController {
 
   private final GroupService groupService;
   private final EmailService emailService;
