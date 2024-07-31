@@ -10,6 +10,11 @@ import com.palluxy.domain.letter.util.ClaudeUtil;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import com.palluxy.domain.pet.entity.Pet;
+import com.palluxy.domain.pet.repository.PetRepository;
+import com.palluxy.global.common.error.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +24,7 @@ public class LetterService {
 
   private final AIUtil<ClaudeRequest> aiUtil;
   private final LetterRepository letterRepository;
+  private final PetRepository petRepository;
 
   public void saveLetter(Letter letter) {
     letterRepository.saveAndFlush(letter);
@@ -34,7 +40,8 @@ public class LetterService {
 
   public void sendLetters(Long petId) {
     List<Letter> letters = findByPetId(petId);
-    aiUtil.sendRequest(aiUtil.getRequest(letters), petId);
+    Pet pet = getPet(petId);
+    aiUtil.sendRequest(aiUtil.getRequest(letters, pet), petId);
   }
 
   public void saveFirstLetter(String relation, String petName, Long petId) {
@@ -68,5 +75,14 @@ public class LetterService {
     Letter letter = new Letter(title, content, Writer.PET, petId, LocalDateTime.now());
 
     return letter;
+  }
+
+  public Pet getPet(Long petId) {
+    Optional<Pet> pet = petRepository.findByUserId(petId);
+    if (pet.isEmpty()) {
+      throw new NotFoundException("pet");
+    }
+
+    return pet.get();
   }
 }
