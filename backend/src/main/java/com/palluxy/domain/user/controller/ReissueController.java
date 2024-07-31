@@ -71,7 +71,7 @@ public class ReissueController {
 
         response.setHeader("access", newAccess);
 
-        Cookie cookie = CookieUtil.createCookie("refresh", refresh);
+        Cookie cookie = CookieUtil.createCookie("refresh", newRefresh);
         CookieUtil.addSameSiteCookieAttribute(response, cookie);
 
         return ResponseEntity.ok().build();
