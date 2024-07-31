@@ -1,12 +1,9 @@
 import { instance } from '@/utils/axios';
 
-const fetchAllFrameImage = async () => {
-  try {
-    const res = await instance.get('/api/albums/1/images');
-    return res.data.result;
-  } catch {
-    console.error('error');
-  }
+const fetchAllFrameImage = async (payload) => {
+  const res = await instance.get(`/api/albums/room/${payload}`);
+  console.log(res);
+  return res.data.result;
 };
 
 const fetchFrameAngle = async (payload) => {
@@ -19,14 +16,15 @@ const fetchFrameAngle = async (payload) => {
 };
 
 const fetchFrameImage = async (payload) => {
-  await instance.post(`/api/albums/1/images`, payload.data, {
+  console.log(payload);
+  await instance.post(`/api/albums/${payload.albumId}/images`, payload.data, {
     headers: { 'content-type': 'multipart/form-data' },
   });
 };
 
 const updateFrameImage = async (payload) => {
   await instance.put(
-    `/api/albums/1/images/${payload.imageId}/url`,
+    `/api/albums/${payload.albumId}/images/${payload.imageId}/url`,
     payload.data,
     {
       headers: { 'content-type': 'multipart/form-data' },

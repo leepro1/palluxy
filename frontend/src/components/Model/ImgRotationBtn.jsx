@@ -17,14 +17,13 @@ const ImgRotationBtn = React.memo(({ index }) => {
 
   const handleRotation = () => {
     const frameData = queryClient.getQueryData(['palFrameImage']);
-    const selectData = frameData.find((frame) => frame.index === index);
+    const selectData = frameData.images.find((frame) => frame.index === index);
     if (selectData) {
-      const newAngle = (selectData.angle + 1.5) % 6;
+      const newAngle = selectData.angle + 1.5708;
       mutate({ angle: newAngle, imageId: selectData.imageId });
     }
   };
 
-  console.log(index, 'ImgRotationBtn');
   return (
     <span
       className="material-symbols-outlined cursor-pointer"
