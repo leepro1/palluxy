@@ -1,5 +1,7 @@
 package com.palluxy.domain.report.service;
 
+import com.palluxy.domain.report.dto.ReportResponses;
+import com.palluxy.domain.group.dto.Status;
 import com.palluxy.domain.memoryRoom.guestbook.entity.Comment;
 import com.palluxy.domain.memoryRoom.guestbook.repository.CommentRepository;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
@@ -13,6 +15,8 @@ import com.palluxy.domain.user.repository.UserRepository;
 import com.palluxy.global.common.error.NotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +37,16 @@ public class ReportService {
   public void createRoomReport(RoomReport roomReport) {
     isValidRoomReport(roomReport);
     roomReportRepository.saveAndFlush(roomReport);
+  }
+
+  public ReportResponses<RoomReport> findRoomReportByStatus(Status status, Pageable pageable) {
+    Page<RoomReport> roomReports = roomReportRepository.findByStatus(status, pageable);
+    return new ReportResponses<>(roomReports.getContent(), roomReports.getTotalPages());
+  }
+
+  public ReportResponses<GuestBookReport> findGuestBookReportByStatus(Status status, Pageable pageable) {
+    Page<GuestBookReport> guestBookReports = guestBookRepository.findByStatus(status, pageable);
+    return new ReportResponses<>(guestBookReports.getContent(), guestBookReports.getTotalPages());
   }
 
   public void isValidGuestBookReport(GuestBookReport guestBookReport) {

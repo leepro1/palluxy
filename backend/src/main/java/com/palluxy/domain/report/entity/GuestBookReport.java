@@ -1,7 +1,7 @@
 package com.palluxy.domain.report.entity;
 
 import com.palluxy.domain.report.dto.GuestBookReportRequest;
-import com.palluxy.domain.admin.dto.Status;
+import com.palluxy.domain.group.dto.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
