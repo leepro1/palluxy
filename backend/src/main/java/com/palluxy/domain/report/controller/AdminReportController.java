@@ -32,13 +32,15 @@ public class AdminReportController {
   @PatchMapping("/report/room/accept/{reportId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> acceptRoomReport(@PathVariable("reportId") Long reportId) {
-    return null;
+    reportService.updateRoomReport(reportId, Status.ACCEPT);
+    return CommonResponse.ok("정상적으로 신고가 승인됨");
   }
 
   @PatchMapping("/report/room/reject/{reportId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> rejectRoomReport(@PathVariable("reportId") Long reportId) {
-    return null;
+    reportService.updateRoomReport(reportId, Status.REJECT);
+    return CommonResponse.ok("정상적으로 신고가 거절됨");
   }
 
   @GetMapping("/report/guestbook/{status}/{pageNumber}")
@@ -54,13 +56,14 @@ public class AdminReportController {
   @PatchMapping("/report/guestbook/accept/{reportId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> acceptGuestBookReport(@PathVariable("reportId") Long reportId) {
-    return null;
+    reportService.updateGuestBookReport(reportId, Status.ACCEPT);
+    return CommonResponse.ok("정상적으로 신고가 승인됨");
   }
 
   @PatchMapping("/report/guestbook/reject/{reportId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> rejectGuestBookReport(@PathVariable("reportId") Long reportId) {
-    return null;
+    reportService.updateGuestBookReport(reportId, Status.REJECT);
+    return CommonResponse.ok("정상적으로 신고가 거절됨");
   }
-
 }

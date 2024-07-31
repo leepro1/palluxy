@@ -46,4 +46,7 @@ public class User extends BaseEntity {
         this.isAdmin = isAdmin;
     }
 
+    public void updateIsBanned() {
+        this.isBanned = true;
+    }
 }
