@@ -2,14 +2,10 @@ import ContentsLayout from '@layout/ContentsLayout';
 import GlobalBtn from '@components/GlobalBtn';
 import { useQuery } from '@tanstack/react-query';
 import { fetchpetPersonalities } from '@/api/petapi';
-import { useForm, useFormContext, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { ErrorMessage } from '@hookform/error-message';
-import {
-  postCreateAlbum,
-  postCreateRoom,
-  postCreatePet,
-} from '@/api/memorySpace/createApi';
+import { postCreateRoom, postCreatePet } from '@/api/memorySpace/createApi';
 
 const PersonalityCheckbox = ({ personality, checkboxName, register }) => {
   return (
@@ -47,7 +43,6 @@ const MemorySpaceCreatePage = () => {
   const { mutate: petMutate, isSuccess: petSuccess } = useMutation({
     mutationFn: postCreatePet,
     onSuccess: async () => {
-      console.log('mutate');
       // await queryClient.invalidateQueries({
       //   queryKey: ['palFrameImage'],
       // });
@@ -83,7 +78,7 @@ const MemorySpaceCreatePage = () => {
     );
   }
 
-  const memorySpaceCreateSubmit = (formValues) => {
+  const memorySpaceCreateSubmit = async (formValues) => {
     // resetField('name');
     // resetField('password');
     console.log(formValues);
@@ -99,13 +94,6 @@ const MemorySpaceCreatePage = () => {
     //   "likeCount": 0,
     //   "userId": 0
     // }
-    const userInfo = queryClient.getQueryData(['userInfo']);
-    const memorySpacePayload = {
-      name: formValues.name,
-      description: formValues.description,
-      userId: userInfo.id,
-    };
-
     // {
     //   "name": "string",
     //   "species": "string",
@@ -119,6 +107,12 @@ const MemorySpaceCreatePage = () => {
     //   "firstAt": "2024-07-27",
     //   "lastAt": "2024-07-27"
     // }
+    const userInfo = queryClient.getQueryData(['userInfo']);
+    const memorySpacePayload = {
+      name: formValues.name,
+      description: formValues.description,
+      userId: userInfo.id,
+    };
     const characters = queryClient.getQueryData(['petPersonalities']);
 
     const filteredValue = formValues.character.map((character) => {
@@ -127,6 +121,7 @@ const MemorySpaceCreatePage = () => {
     });
 
     const petPayload = {
+      userId: userInfo.id,
       name: formValues.pet_name,
       relation: formValues.relation,
       species: formValues.pet_gender,
@@ -134,12 +129,13 @@ const MemorySpaceCreatePage = () => {
       firstAt: formValues.first_at,
       lastAt: formValues.last_at,
     };
-    console.log(memorySpacePayload);
-    petMutate(petPayload);
-    roomMutate(memorySpacePayload);
 
-    if (petSuccess && roomSuccess) {
-      console.log('다 성공');
+    roomMutate(memorySpacePayload);
+    if (petSuccess) {
+      petMutate(petPayload);
+      if (roomSuccess) {
+        console.log('다 성공');
+      }
     }
   };
 
