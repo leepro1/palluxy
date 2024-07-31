@@ -6,6 +6,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { ErrorMessage } from '@hookform/error-message';
 import { postCreateRoom, postCreatePet } from '@/api/memorySpace/createApi';
+import { useState } from 'react';
 
 const PersonalityCheckbox = ({ personality, checkboxName, register }) => {
   return (
@@ -39,25 +40,22 @@ const MemorySpaceCreatePage = () => {
       relation: '',
     },
   });
+  const [isRoomCreate, setRoomCreate] = useState(false);
+  const [isPetCreate, setPetCreate] = useState(false);
   const queryClient = useQueryClient();
-  const { mutate: petMutate, isSuccess: petSuccess } = useMutation({
+  const { mutateAsync: petMutate } = useMutation({
     mutationFn: postCreatePet,
     onSuccess: async () => {
-      // await queryClient.invalidateQueries({
-      //   queryKey: ['palFrameImage'],
-      // });
+      setPetCreate(true);
     },
     onError: (error) => {
       console.log(error);
     },
   });
-  const { mutate: roomMutate, isSuccess: roomSuccess } = useMutation({
+  const { mutateAsync: roomMutate } = useMutation({
     mutationFn: postCreateRoom,
     onSuccess: async () => {
-      console.log('mutate');
-      // await queryClient.invalidateQueries({
-      //   queryKey: ['palFrameImage'],
-      // });
+      setRoomCreate(true);
     },
     onError: (error) => {
       console.log(error);
@@ -81,61 +79,33 @@ const MemorySpaceCreatePage = () => {
   const memorySpaceCreateSubmit = async (formValues) => {
     // resetField('name');
     // resetField('password');
-    console.log(formValues);
-    // {
-    //   "roomId": 0,
-    //   "name": "string",
-    //   "description": "string",
-    //   "thumbnailUrl": "string",
-    //   "createdAt": "2024-07-27T05:43:02.915Z",
-    //   "updatedAt": "2024-07-27T05:43:02.915Z",
-    //   "backgroundMusic": 0,
-    //   "type": 0,
-    //   "likeCount": 0,
-    //   "userId": 0
-    // }
-    // {
-    //   "name": "string",
-    //   "species": "string",
-    //   "relation": "string",
-    //   "personalities": [
-    //     {
-    //       "id": 0,
-    //       "type": "string"
-    //     }
-    //   ],
-    //   "firstAt": "2024-07-27",
-    //   "lastAt": "2024-07-27"
-    // }
     const userInfo = queryClient.getQueryData(['userInfo']);
-    const memorySpacePayload = {
-      name: formValues.name,
-      description: formValues.description,
-      userId: userInfo.id,
-    };
     const characters = queryClient.getQueryData(['petPersonalities']);
-
     const filteredValue = formValues.character.map((character) => {
       const value = characters.find((item) => item.type === character);
       return value;
     });
 
+    const memorySpacePayload = {
+      name: formValues.name,
+      description: formValues.description,
+      userId: userInfo.id,
+    };
+
     const petPayload = {
       userId: userInfo.id,
       name: formValues.pet_name,
       relation: formValues.relation,
-      species: formValues.pet_gender,
+      species: formValues.petSpecies,
       personalities: filteredValue,
       firstAt: formValues.first_at,
       lastAt: formValues.last_at,
     };
 
-    roomMutate(memorySpacePayload);
-    if (petSuccess) {
-      petMutate(petPayload);
-      if (roomSuccess) {
-        console.log('다 성공');
-      }
+    await petMutate(petPayload);
+    await roomMutate(memorySpacePayload);
+    if (isRoomCreate && isPetCreate) {
+      console.log('suc');
     }
   };
 
@@ -186,7 +156,7 @@ const MemorySpaceCreatePage = () => {
     },
   });
 
-  const petgenderRegister = register('pet_gender', {
+  const petgenderRegister = register('petSpecies', {
     required: {
       value: true,
       message: '해당 칸이 빈칸입니다.',
@@ -339,38 +309,70 @@ const MemorySpaceCreatePage = () => {
 
                 {/* 반려동물 성별 */}
                 <div className="flex flex-col gap-y-1">
-                  <span>성별</span>
+                  <span>동물종</span>
                   <div className="relative flex gap-x-4">
                     <div className="flex items-center gap-x-1">
                       <input
-                        id="petMale"
-                        name="petGender"
+                        id="강아지"
+                        name="petSpecies"
                         className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
                         type="radio"
-                        value="petMale"
+                        value="강아지"
                         {...petgenderRegister}
                       />
                       <label
-                        htmlFor="petMale"
+                        htmlFor="강아지"
                         className="shrink-0"
                       >
-                        수컷
+                        강아지
                       </label>
                     </div>
                     <div className="flex items-center gap-x-1">
                       <input
-                        id="petFemale"
-                        name="petGender"
+                        id="고양이"
+                        name="petSpecies"
                         className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
                         type="radio"
-                        value="petFemale"
+                        value="고양이"
                         {...petgenderRegister}
                       />
                       <label
-                        htmlFor="petFemale"
+                        htmlFor="고양이"
                         className="shrink-0"
                       >
-                        암컷
+                        고양이
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-x-1">
+                      <input
+                        id="햄스터"
+                        name="petSpecies"
+                        className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
+                        type="radio"
+                        value="햄스터"
+                        {...petgenderRegister}
+                      />
+                      <label
+                        htmlFor="햄스터"
+                        className="shrink-0"
+                      >
+                        햄스터
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-x-1">
+                      <input
+                        id="기타"
+                        name="petSpecies"
+                        className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
+                        type="radio"
+                        value="기타"
+                        {...petgenderRegister}
+                      />
+                      <label
+                        htmlFor="기타"
+                        className="shrink-0"
+                      >
+                        기타
                       </label>
                     </div>
                     <ErrorMessage
