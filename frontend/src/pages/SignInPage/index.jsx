@@ -99,13 +99,13 @@ const SigninModal = () => {
         <div className="flex justify-end">
           <button
             type="button"
-            className="rounded-full border border-black p-1"
+            className="rounded-full border border-black bg-pal-purple p-1"
             onClick={() => navigate(-1)}
           >
             ✖️
           </button>
         </div>
-        <div className="mb-4 flex justify-center">
+        <div className="mb-10 flex justify-center">
           <img
             src={logo}
             alt="logo_image"

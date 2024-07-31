@@ -7,9 +7,12 @@ import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/MailboxSideBar';
 import SignInPage from '@pages/SignInPage';
 import SignUpPage from '@pages/SignUpPage';
-import FindPassword from '@components/FindPassword';
-import ResetPassword from '@components/ResetPassword';
+import FindPasswordPage from '@pages/FindPasswordPage';
+import ResetPasswordPage from '@pages/ResetPasswordPage';
 import MyPage from '@pages/MyPage';
+import PersonalInfo from '@pages/MyPage/PersonalInfo';
+import CreatedMeetings from '@pages/MyPage/CreatedMeetings';
+import AppliedMeetings from '@pages/MyPage/AppliedMeetings';
 import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
 import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
 import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
@@ -61,9 +64,27 @@ const routerInfo = [
       //   { path: '/community', element: <CommunityPage /> },
       { path: '/signin', element: <SignInPage /> },
       { path: '/signup', element: <SignUpPage /> },
-      { path: '/find', element: <FindPassword /> },
-      { path: '/reset', element: <ResetPassword /> },
-      { path: '/mypage', element: <MyPage /> },
+      { path: '/find', element: <FindPasswordPage /> },
+      { path: '/reset', element: <ResetPasswordPage /> },
+      {
+        path: '/mypage',
+        element: <MyPage />,
+        children: [
+          // { index: true, element: <PersonalInfo /> },
+          {
+            path: 'personalInfo',
+            element: <PersonalInfo />,
+          },
+          {
+            path: 'createdMeetings',
+            element: <CreatedMeetings />,
+          },
+          {
+            path: 'appliedMeetings',
+            element: <AppliedMeetings />,
+          },
+        ],
+      },
     ],
   },
 ];
