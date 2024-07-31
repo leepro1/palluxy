@@ -1,4 +1,4 @@
-package com.palluxy.domain.admin.dto;
+package com.palluxy.domain.group.dto;
 
 import com.palluxy.global.common.error.NotFoundException;
 

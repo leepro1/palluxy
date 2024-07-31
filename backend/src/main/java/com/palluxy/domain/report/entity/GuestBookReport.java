@@ -1,7 +1,7 @@
 package com.palluxy.domain.report.entity;
 
 import com.palluxy.domain.report.dto.GuestBookReportRequest;
-import com.palluxy.domain.admin.dto.Status;
+import com.palluxy.domain.group.dto.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,19 +16,19 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GuestBookReport extends Report {
+public class GuestBookReport extends Report{
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  private Long guestBooKId;
+  private Long commentId;
+
   private String description;
   private Status status;
   @CreationTimestamp
   private LocalDateTime createdAt;
-
   private Long reportFrom;
   private Long reportTo;
-  private Long guestBooKId;
-  private Long commentId;
 
   @Builder
   public GuestBookReport(Long id, String description, Status status, LocalDateTime createdAt,
@@ -52,5 +52,9 @@ public class GuestBookReport extends Report {
         .commentId(guestBookReportRequest.getCommentId())
         .guestBooKId(guestBookReportRequest.getGuestBookId())
         .build();
+  }
+
+  public void updateStatus(Status status) {
+    this.status = status;
   }
 }

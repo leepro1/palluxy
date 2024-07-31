@@ -4,10 +4,9 @@ import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
-import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.data.CommonResponse;
-import com.palluxy.domain.admin.dto.Status;
+import com.palluxy.domain.group.dto.Status;
 import com.palluxy.global.config.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class GroupController {
 
   private final GroupService groupService;
-  private final GroupUtil groupUtil;
   private final FileStorageService fileStorageService;
 
   @GetMapping("/{status}/{page}")
@@ -82,7 +80,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> updateGroup(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
-    groupService.updateGroupByUser(groupId, groupRequest);
+    groupService.updateGroupInfo(groupId, groupRequest);
 
     return CommonResponse.ok("정상적으로 수정이 반영 되었음");
   }
