@@ -1,7 +1,7 @@
 package com.palluxy.domain.group.repository;
 
 import com.palluxy.domain.group.entity.Group;
-import com.palluxy.global.common.data.Status;
+import com.palluxy.domain.admin.dto.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -7,7 +7,7 @@ import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.data.CommonResponse;
-import com.palluxy.global.common.data.Status;
+import com.palluxy.domain.admin.dto.Status;
 import com.palluxy.global.config.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +28,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> getGroupsByStatus(@PathVariable("status") String status,
       @PathVariable("page") int page) {
-    Status statusEnum = groupUtil.convertToStatusType(status);
+    Status statusEnum = Status.of(status);
     Pageable pageable = PageRequest.of(page, 9);
     GroupResponses groups = groupService.findByStatus(statusEnum, pageable);
     return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", groups);

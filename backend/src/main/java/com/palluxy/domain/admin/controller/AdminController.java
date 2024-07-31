@@ -1,18 +1,17 @@
 package com.palluxy.domain.admin.controller;
 
+import com.palluxy.domain.admin.dto.ReportResponses;
+import com.palluxy.domain.admin.dto.Status;
 import com.palluxy.domain.group.entity.Group;
+import com.palluxy.domain.report.entity.RoomReport;
 import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.domain.admin.service.AdminService;
 import com.palluxy.domain.email.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -40,4 +39,15 @@ public class AdminController {
     adminService.rejectGroup(groupId);
     return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
   }
+
+  @GetMapping("/report/room/{status}/{pageNumber}")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<?> getRoomReportByStatus(@PathVariable("type") String type, @PathVariable("status") String strStatus, @PathVariable("pageNumber") int pageNumber) {
+    Status status = Status.of(strStatus);
+    Pageable pageable = PageRequest.of(pageNumber, 10);
+
+    ReportResponses<RoomReport> reports = adminService.findRoomReportByStatus(status);
+    return CommonResponse.ok("정상적으로 추억공간 신고가 조회됨", reports);
+  }
+
 }
