@@ -153,8 +153,10 @@ public class GroupService {
     switch (key) {
       case "title":
         groupPage = groupRepository.findByTitleContaining(value, pageable);
+        break;
       case "leader":
         groupPage = groupRepository.findByLeaderContaining(value, pageable);
+        break;
     }
 
     return getGroupResponses(groupPage);
