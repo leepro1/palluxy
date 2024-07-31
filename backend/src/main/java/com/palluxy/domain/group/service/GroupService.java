@@ -6,7 +6,7 @@ import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
-import com.palluxy.global.common.data.Status;
+import com.palluxy.domain.admin.dto.Status;
 import com.palluxy.domain.user.entity.*;
 import com.palluxy.global.common.error.NotFoundException;
 import com.palluxy.domain.group.repository.GroupHistoryRepository;

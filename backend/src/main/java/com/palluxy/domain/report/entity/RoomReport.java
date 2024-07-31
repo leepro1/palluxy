@@ -1,7 +1,7 @@
 package com.palluxy.domain.report.entity;
 
 import com.palluxy.domain.report.dto.RoomReportRequest;
-import com.palluxy.global.common.data.Status;
+import com.palluxy.domain.admin.dto.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RoomReport {
+public class RoomReport extends Report {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
