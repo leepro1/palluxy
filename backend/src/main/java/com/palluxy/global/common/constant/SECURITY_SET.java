@@ -99,7 +99,11 @@ public final class SECURITY_SET {
 
     public static final String[] NEED_ADMIN_ROLE_URL_PATTERNS = {
         "/api/admin/**",
-        "/api/admin/group/accept"
+        "/api/admin/group/accept",
+
+        // user
+        "/api/users/nickname/*",
+        "/api/users/email/*"
     };
 
     private SECURITY_SET() {
