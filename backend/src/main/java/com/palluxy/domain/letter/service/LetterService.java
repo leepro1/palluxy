@@ -7,6 +7,8 @@ import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.repository.LetterRepository;
 import com.palluxy.domain.letter.util.AIUtil;
 import com.palluxy.domain.letter.util.ClaudeUtil;
+import com.palluxy.domain.memoryRoom.room.entity.Room;
+import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +27,7 @@ public class LetterService {
   private final AIUtil<ClaudeRequest> aiUtil;
   private final LetterRepository letterRepository;
   private final PetRepository petRepository;
+  private final RoomRepository roomRepository;  // RoomRepository 추가
 
   public void saveLetter(Letter letter) {
     letterRepository.saveAndFlush(letter);
@@ -44,12 +47,13 @@ public class LetterService {
     aiUtil.sendRequest(aiUtil.getRequest(letters, pet), petId);
   }
 
-  public void saveFirstLetter(String relation, String petName, Long petId) {
-    Letter letter = makeFirstLetterForm(relation, petName, petId);
+  public void saveFirstLetter(String relation, String petName, Long petId, Long roomId) {
+    Room room = getRoom(roomId);
+    Letter letter = makeFirstLetterForm(relation, petName, petId, room);
     letterRepository.saveAndFlush(letter);
   }
 
-  private Letter makeFirstLetterForm(String relation, String petName, Long petId) {
+  private Letter makeFirstLetterForm(String relation, String petName, Long petId, Room room) {
     String template =
         """
             사랑하는 {0}에게 보내는 첫 편지
@@ -72,17 +76,33 @@ public class LetterService {
     String title = petName + "의 첫번째 편지";
     String content = MessageFormat.format(template, relation, petName);
 
-    Letter letter = new Letter(title, content, Writer.PET, petId, LocalDateTime.now());
+    Letter letter = Letter.builder()
+        .title(title)
+        .content(content)
+        .writer(Writer.PET)
+        .petId(petId)
+        .openedAt(LocalDateTime.now())
+        .room(room)  // Room 설정
+        .build();
 
     return letter;
   }
 
   public Pet getPet(Long petId) {
-    Optional<Pet> pet = petRepository.findByUserId(petId);
+    Optional<Pet> pet = petRepository.findById(petId);
     if (pet.isEmpty()) {
-      throw new NotFoundException("pet");
+      throw new NotFoundException("Pet not found with id: " + petId);
     }
 
     return pet.get();
+  }
+
+  public Room getRoom(Long roomId) {
+    return roomRepository.findById(roomId)
+        .orElseThrow(() -> new NotFoundException("Room not found with id: " + roomId));
+  }
+
+  public List<Letter> findLettersByRoomId(Long roomId) {
+    return letterRepository.findByRoom_RoomId(roomId);
   }
 }

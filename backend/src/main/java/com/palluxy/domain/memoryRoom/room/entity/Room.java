@@ -4,6 +4,7 @@ import com.palluxy.domain.memoryRoom.album.entity.Album;
 import com.palluxy.domain.memoryRoom.guestbook.entity.Guestbook;
 import com.palluxy.domain.memoryRoom.like.entity.Like;
 import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
+import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -44,6 +45,9 @@ public class Room {
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Letter> letters;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
