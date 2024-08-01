@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { instance } from '@/utils/axios';
+import ContentsLayout from '@layout/ContentsLayout';
 
 const SignupModal = () => {
   const navigate = useNavigate();
@@ -22,7 +23,6 @@ const SignupModal = () => {
     setError,
   } = useForm({ mode: 'onChange' });
 
-  // 이메일 인증 타이머
   useEffect(() => {
     let timerInterval;
     if (verificationCodeSent && !isEmailVerified) {
@@ -133,13 +133,15 @@ const SignupModal = () => {
     return await response.json();
   };
 
-  // const handleBackgroundClick = (e) => {
-  //   if (e.target === e.currentTarget) {
-  //     navigate(location.state?.from || '/');
-  //   }
-  // };
-
   const checkEmailDuplicate = async (email) => {
+    if (!email) {
+      setError('email', {
+        type: 'manual',
+        message: '이메일을 입력해주세요.',
+      });
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:8080/api/users/check-email/${email}`,
@@ -151,7 +153,6 @@ const SignupModal = () => {
       const responseData = await response.json();
 
       if (
-        //response body에서 이렇게 읽어옴
         response.status === 400 &&
         responseData.message === '이미 가입한 회원입니다.'
       ) {
@@ -226,8 +227,15 @@ const SignupModal = () => {
     }
   };
 
-  // 닉네임 중복 확인
   const checkNicknameDuplicate = async (nickname) => {
+    if (!nickname) {
+      setError('nickname', {
+        type: 'manual',
+        message: '닉네임을 입력해주세요.',
+      });
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:8080/api/users/check-nickname/${nickname}`,
@@ -341,334 +349,323 @@ const SignupModal = () => {
   }, [setError]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      // onClick={handleBackgroundClick}
-    >
-      <div
-        className="w-1/2 rounded bg-white bg-opacity-60 p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="rounded-full border border-black bg-pal-purple p-1"
-            onClick={() => navigate(-1)}
-          >
-            ✖️
-          </button>
-        </div>
-        <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
-          회원가입
-        </h2>
-        <h4 className="mb-5 ml-5 text-start text-xl font-bold text-black">
-          기본정보
-        </h4>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* 이메일 입력 */}
-          <div className="mb-4">
-            <div className="flex items-center text-center">
+    <ContentsLayout>
+      <div className="flex items-center justify-center">
+        <div className="w-[700px] rounded bg-white bg-opacity-60 p-6">
+          <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
+            회원가입
+          </h2>
+          {/* <h4 className="mb-5 ml-5 text-start text-xl font-bold text-black">
+            기본정보
+          </h4> */}
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* 이메일 입력 */}
+            <div className="mb-4">
+              <div className="flex items-center text-center">
+                <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
+                  이메일
+                </label>
+                <div className="flex w-3/4 justify-between">
+                  <Controller
+                    name="email"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: '이메일을 입력해주세요.',
+                      validate: validateEmail,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="email"
+                        className={`w-full rounded border px-3 py-2 text-black ${isEmailChecked ? 'bg-gray-200' : ''}`}
+                        placeholder="이메일을 입력해주세요."
+                        readOnly={isEmailChecked && isEmailVerified}
+                      />
+                    )}
+                  />
+
+                  {!verificationCodeSent && (
+                    <button
+                      type="button"
+                      className={`ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white ${isEmailChecked ? 'bg-gray-500' : 'bg-pal-purple'}`}
+                      onClick={() => checkEmailDuplicate(email)}
+                      disabled={isEmailChecked}
+                    >
+                      중복 확인
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-1/4"></div>
+                {errors.email && (
+                  <p className="text-red-500">{errors.email.message}</p>
+                )}
+              </div>
+              {isEmailChecked && !verificationCodeSent && (
+                <button
+                  type="button"
+                  className="mt-2 w-full rounded bg-pal-purple px-4 py-2 text-white"
+                  onClick={() => sendVerificationCode(email)}
+                >
+                  이메일 전송
+                </button>
+              )}
+              {verificationCodeSent && !isEmailVerified && (
+                <div className="mt-4 flex items-center">
+                  <Controller
+                    name="verificationCode"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: '인증코드를 입력해주세요.' }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="text"
+                        className="w-1/4 rounded border px-3 py-2 text-black"
+                        placeholder="인증코드 입력"
+                      />
+                    )}
+                  />
+                  <button
+                    type="button"
+                    className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
+                    onClick={() => verifyEmailCode(email, verificationCode)}
+                  >
+                    인증 확인
+                  </button>
+                  {timer > 0 && (
+                    <p className="ml-4 w-1/4 text-gray-700">
+                      {`남은 시간: ${Math.floor(timer / 60)}분 ${timer % 60}초`}
+                    </p>
+                  )}
+
+                  {errors.emailVerification && (
+                    <p className="text-red-500">
+                      {errors.emailVerification.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 닉네임 입력 */}
+            <div className="mb-4">
+              <div className="flex items-center text-center">
+                <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
+                  닉네임
+                </label>
+                <div className="flex w-3/4 justify-between">
+                  <Controller
+                    name="nickname"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: '닉네임을 입력해주세요.' }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="nickname"
+                        className="w-full rounded border px-3 py-2 text-black"
+                        placeholder="닉네임을 입력해주세요."
+                        autoComplete="off"
+                      />
+                    )}
+                  />
+                  <button
+                    type="button"
+                    className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
+                    onClick={() => checkNicknameDuplicate(nickname)}
+                  >
+                    중복 확인
+                  </button>
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-1/4"></div>
+                {errors.nickname && (
+                  <p className="text-red-500">{errors.nickname.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* 비밀번호 입력 */}
+            <div className="mt-5 flex items-center text-center">
               <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
-                이메일
+                비밀번호
               </label>
-              <div className="flex w-3/4 justify-between">
+              <div className="w-3/4">
                 <Controller
-                  name="email"
+                  name="password"
                   control={control}
                   defaultValue=""
                   rules={{
-                    required: '이메일을 입력해주세요.',
-                    validate: validateEmail,
+                    required: '비밀번호를 입력해주세요.',
+                    validate: validatePassword,
                   }}
                   render={({ field }) => (
                     <input
                       {...field}
-                      type="email"
-                      className={`w-full rounded border px-3 py-2 text-black ${isEmailChecked ? 'bg-gray-200' : ''}`}
-                      placeholder="이메일을 입력해주세요."
-                      readOnly={isEmailChecked && isEmailVerified}
+                      type="password"
+                      className="w-full rounded border px-3 py-2 text-black"
+                      placeholder="비밀번호를 입력해주세요."
                     />
                   )}
                 />
-
-                {!verificationCodeSent && (
-                  <button
-                    type="button"
-                    className={`ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white ${isEmailChecked ? 'bg-gray-500' : 'bg-pal-purple'}`}
-                    onClick={() => checkEmailDuplicate(email)}
-                    disabled={isEmailChecked}
-                  >
-                    중복 확인
-                  </button>
-                )}
               </div>
             </div>
             <div className="flex">
               <div className="w-1/4"></div>
-              {errors.email && (
-                <p className="text-red-500">{errors.email.message}</p>
+              {errors.password && (
+                <p className="text-start text-red-500">
+                  {errors.password.message}
+                </p>
               )}
             </div>
-            {isEmailChecked && !verificationCodeSent && (
+
+            {/* 비밀번호 확인 */}
+            <div className="mt-5 flex items-center text-center">
+              <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
+                비밀번호 확인
+              </label>
+              <div className="w-3/4">
+                <Controller
+                  name="confirmPassword"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '비밀번호를 다시 입력해주세요.',
+                    validate: (value) =>
+                      value === password || '비밀번호가 일치하지 않습니다.',
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="password"
+                      className="w-full rounded border px-3 py-2 text-black"
+                      placeholder="비밀번호를 다시 입력해주세요."
+                    />
+                  )}
+                />
+              </div>
+            </div>
+            <div className="flex">
+              <div className="w-1/4"></div>
+              {errors.confirmPassword && (
+                <p className="text-start text-red-500">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+            {/* 이용약관 동의 */}
+            <div className="ml-5 mt-10 flex items-center">
+              <label className="flex items-center">
+                <Controller
+                  name="termsOfUseAccepted"
+                  control={control}
+                  defaultValue={false}
+                  rules={{ required: '이용약관에 동의하셔야 합니다.' }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="checkbox"
+                      className="mr-2"
+                    />
+                  )}
+                />
+                <span>이용약관 동의 (필수)</span>
+              </label>
               <button
                 type="button"
-                className="mt-2 w-full rounded bg-pal-purple px-4 py-2 text-white"
-                onClick={() => sendVerificationCode(email)}
+                className="ml-2 text-pal-purple underline"
+                onClick={() => alert('이용약관 내용')}
               >
-                이메일 전송
+                보기
               </button>
+            </div>
+            {errors.termsOfUseAccepted && (
+              <p className="ml-5 text-sm text-red-500">
+                {errors.termsOfUseAccepted.message}
+              </p>
             )}
-            {verificationCodeSent && !isEmailVerified && (
-              <div className="mt-4 flex items-center">
+            <div className="ml-5 mt-4 flex items-center">
+              <label className="flex items-center">
                 <Controller
-                  name="verificationCode"
+                  name="privacyPolicyAccepted"
                   control={control}
-                  defaultValue=""
-                  rules={{ required: '인증코드를 입력해주세요.' }}
+                  defaultValue={false}
+                  rules={{
+                    required: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
+                  }}
                   render={({ field }) => (
                     <input
                       {...field}
-                      type="text"
-                      className="w-1/4 rounded border px-3 py-2 text-black"
-                      placeholder="인증코드 입력"
+                      type="checkbox"
+                      className="mr-2"
                     />
                   )}
                 />
-                <button
-                  type="button"
-                  className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
-                  onClick={() => verifyEmailCode(email, verificationCode)}
-                >
-                  인증 확인
-                </button>
-                {timer > 0 && (
-                  <p className="ml-4 w-1/4 text-gray-700">
-                    {`남은 시간: ${Math.floor(timer / 60)}분 ${timer % 60}초`}
-                  </p>
-                )}
-
-                {errors.emailVerification && (
-                  <p className="text-red-500">
-                    {errors.emailVerification.message}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* 닉네임 입력 */}
-          <div className="mb-4">
-            <div className="flex items-center text-center">
-              <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
-                닉네임
+                <span>개인정보 수집 및 이용동의 (필수)</span>
               </label>
-              <div className="flex w-3/4 justify-between">
-                <Controller
-                  name="nickname"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: '닉네임을 입력해주세요.' }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="nickname"
-                      className="w-full rounded border px-3 py-2 text-black"
-                      placeholder="닉네임을 입력해주세요."
-                      autoComplete="off"
-                    />
-                  )}
-                />
+              <button
+                type="button"
+                className="ml-2 text-pal-purple underline"
+                onClick={() => alert('개인정보 수집 및 이용동의 내용')}
+              >
+                보기
+              </button>
+            </div>
+            {errors.privacyPolicyAccepted && (
+              <p className="ml-5 text-sm text-red-500">
+                {errors.privacyPolicyAccepted.message}
+              </p>
+            )}
+            {/* 회원가입 버튼 */}
+            <div className="flex justify-center gap-20">
+              <button
+                type="submit"
+                className={`my-6 w-full rounded p-2 text-white ${
+                  isFormValid
+                    ? 'bg-pal-purple'
+                    : 'cursor-not-allowed bg-gray-400'
+                }`}
+                disabled={!isFormValid}
+              >
+                회원가입
+              </button>
+            </div>
+          </form>
+          {/*회원 여부 확인 */}
+          <div className="mt-4 text-center">
+            이미 회원이신가요?{' '}
+            <button
+              type="button"
+              className="text-pal-purple underline"
+              onClick={() => navigate('/signin')}
+            >
+              로그인
+            </button>
+          </div>
+          {/* 성공 모달  */}
+          {showSuccessModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="rounded bg-white p-6">
+                <h3 className="mb-4 text-xl font-bold">{successMessage}</h3>
                 <button
-                  type="button"
-                  className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
-                  onClick={() => checkNicknameDuplicate(nickname)}
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    navigate('/signin');
+                  }}
+                  className="mt-4 rounded bg-pal-purple px-4 py-2 text-white"
                 >
-                  중복 확인
+                  확인
                 </button>
               </div>
             </div>
-            <div className="flex">
-              <div className="w-1/4"></div>
-              {errors.nickname && (
-                <p className="text-red-500">{errors.nickname.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* 비밀번호 입력 */}
-          <div className="mt-5 flex items-center text-center">
-            <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
-              비밀번호
-            </label>
-            <div className="w-3/4">
-              <Controller
-                name="password"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '비밀번호를 입력해주세요.',
-                  validate: validatePassword,
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="password"
-                    className="w-full rounded border px-3 py-2 text-black"
-                    placeholder="비밀번호를 입력해주세요."
-                  />
-                )}
-              />
-            </div>
-          </div>
-          <div className="flex">
-            <div className="w-1/4"></div>
-            {errors.password && (
-              <p className="text-start text-red-500">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          {/* 비밀번호 확인 */}
-          <div className="mt-5 flex items-center text-center">
-            <label className="w-1/4 px-4 text-right font-semibold text-gray-700">
-              비밀번호 확인
-            </label>
-            <div className="w-3/4">
-              <Controller
-                name="confirmPassword"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '비밀번호를 다시 입력해주세요.',
-                  validate: (value) =>
-                    value === password || '비밀번호가 일치하지 않습니다.',
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="password"
-                    className="w-full rounded border px-3 py-2 text-black"
-                    placeholder="비밀번호를 다시 입력해주세요."
-                  />
-                )}
-              />
-            </div>
-          </div>
-          <div className="flex">
-            <div className="w-1/4"></div>
-            {errors.confirmPassword && (
-              <p className="text-start text-red-500">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-          {/* 이용약관 동의 */}
-          <div className="ml-5 mt-10 flex items-center">
-            <label className="flex items-center">
-              <Controller
-                name="termsOfUseAccepted"
-                control={control}
-                defaultValue={false}
-                rules={{ required: '이용약관에 동의하셔야 합니다.' }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="checkbox"
-                    className="mr-2"
-                  />
-                )}
-              />
-              <span>이용약관 동의 (필수)</span>
-            </label>
-            <button
-              type="button"
-              className="ml-2 text-pal-purple underline"
-              onClick={() => alert('이용약관 내용')}
-            >
-              보기
-            </button>
-          </div>
-          {errors.termsOfUseAccepted && (
-            <p className="ml-5 text-red-500">
-              {errors.termsOfUseAccepted.message}
-            </p>
           )}
-          <div className="ml-5 mt-4 flex items-center">
-            <label className="flex items-center">
-              <Controller
-                name="privacyPolicyAccepted"
-                control={control}
-                defaultValue={false}
-                rules={{
-                  required: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="checkbox"
-                    className="mr-2"
-                  />
-                )}
-              />
-              <span>개인정보 수집 및 이용동의 (필수)</span>
-            </label>
-            <button
-              type="button"
-              className="ml-2 text-pal-purple underline"
-              onClick={() => alert('개인정보 수집 및 이용동의 내용')}
-            >
-              보기
-            </button>
-          </div>
-          {errors.privacyPolicyAccepted && (
-            <p className="ml-5 text-red-500">
-              {errors.privacyPolicyAccepted.message}
-            </p>
-          )}
-          {/* 회원가입 버튼 */}
-          <div className="flex justify-center gap-20">
-            <button
-              type="submit"
-              className={`my-6 w-full rounded p-2 text-white ${
-                isFormValid ? 'bg-pal-purple' : 'cursor-not-allowed bg-gray-400'
-              }`}
-              disabled={!isFormValid}
-            >
-              회원가입
-            </button>
-          </div>
-        </form>
-        {/*회원 여부 확인 */}
-        <div className="mt-4 text-center">
-          이미 회원이신가요?{' '}
-          <button
-            type="button"
-            className="text-pal-purple underline"
-            onClick={() => navigate('/signin')}
-          >
-            로그인
-          </button>
         </div>
-        {/* 성공 모달  */}
-        {showSuccessModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="rounded bg-white p-6">
-              <h3 className="mb-4 text-xl font-bold">{successMessage}</h3>
-              <button
-                onClick={() => {
-                  setShowSuccessModal(false);
-                  navigate('/signin');
-                }}
-                className="mt-4 rounded bg-pal-purple px-4 py-2 text-white"
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+    </ContentsLayout>
   );
 };
 

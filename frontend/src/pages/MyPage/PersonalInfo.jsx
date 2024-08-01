@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
+import ContentsLayout from '@layout/ContentsLayout';
 
 const PersonalInfo = () => {
   const queryClient = useQueryClient();
@@ -29,23 +30,25 @@ const PersonalInfo = () => {
   }, [userId]);
 
   return (
-    <div className="mx-16">
-      <label className="mb-10 font-semibold">개인정보</label>
-      <div>닉네임: {userInformation.nickname} </div>
-      <div>테스트용 userID: {userInformation.id}</div>
-      <div>
-        반려동물 이름:
-        {petData?.name ? petData.name : '현재 등록된 반려동물이 없습니다'}
+    <ContentsLayout>
+      <div className="mx-16">
+        <label className="font-semibold">개인정보</label>
+        <div className="mb-2 mt-6">닉네임: {userInformation.nickname} </div>
+        {/* <div>테스트용 userID: {userInformation.id}</div> */}
+        <div className="mt-2">
+          반려동물 이름:
+          {petData?.name ? petData.name : '현재 등록된 반려동물이 없습니다'}
+        </div>
+        <div className="flex content-end justify-center">
+          <button
+            type="button"
+            className="my-10 rounded border border-white p-2"
+          >
+            수정 - 근데 수정기능이 없는데?
+          </button>
+        </div>
       </div>
-      <div className="flex content-end justify-center">
-        <button
-          type="button"
-          className="my-10 rounded border border-white p-2"
-        >
-          수정
-        </button>
-      </div>
-    </div>
+    </ContentsLayout>
   );
 };
 

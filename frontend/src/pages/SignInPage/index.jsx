@@ -3,7 +3,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
-import logo from '../../assets/images/logo/logo.svg';
+import logo from '@assets/images/logo/logo.svg';
+import ContentsLayout from '@layout/ContentsLayout';
 
 const SigninModal = () => {
   const navigate = useNavigate();
@@ -75,12 +76,6 @@ const SigninModal = () => {
     }
   };
 
-  // const handleBackgroundClick = (e) => {
-  //   if (e.target === e.currentTarget) {
-  //     navigate('/');
-  //   }
-  // };
-
   const email = watch('email', '');
   const password = watch('password', '');
 
@@ -88,131 +83,118 @@ const SigninModal = () => {
   const isPasswordValid = validatePassword(password) === true;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      // onClick={handleBackgroundClick}
-    >
-      <div
-        className="w-1/2 rounded bg-white bg-opacity-60 p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="rounded-full border border-black bg-pal-purple p-1"
-            onClick={() => navigate(-1)}
-          >
-            ✖️
-          </button>
-        </div>
-        <div className="mb-10 flex justify-center">
-          <img
-            src={logo}
-            alt="logo_image"
-          />
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex items-center text-center">
-            <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
-              이메일
-            </label>
-            <div className="w-2/3">
-              <Controller
-                name="email"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '이메일을 입력해주세요.',
-                  validate: validateEmail,
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="email"
-                    className="w-full rounded border px-3 py-2 text-black"
-                    placeholder="이메일을 입력해주세요."
-                  />
-                )}
-              />
+    <ContentsLayout>
+      <div className="flex justify-center">
+        <div className="w-[500px] rounded bg-white bg-opacity-60 p-6">
+          <div className="mb-10 flex justify-center">
+            <img
+              src={logo}
+              alt="logo_image"
+            />
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex items-center text-center">
+              <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
+                이메일
+              </label>
+              <div className="w-2/3">
+                <Controller
+                  name="email"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '이메일을 입력해주세요.',
+                    validate: validateEmail,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="email"
+                      className="w-full rounded border px-3 py-2 text-black"
+                      placeholder="이메일을 입력해주세요."
+                    />
+                  )}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex">
-            <div className="w-1/3"></div>
-            {errors.email && (
-              <p className="my-2 w-2/3 text-start text-red-500">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+            <div className="flex">
+              <div className="w-1/3"></div>
+              {errors.email && (
+                <p className="my-2 w-2/3 text-start text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-          <div className="mt-5 flex items-center text-center">
-            <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
-              비밀번호
-            </label>
-            <div className="w-2/3">
-              <Controller
-                name="password"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '비밀번호를 입력해주세요.',
-                  validate: validatePassword,
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="password"
-                    className="w-full rounded border px-3 py-2 text-black"
-                    placeholder="비밀번호를 입력해주세요."
-                  />
-                )}
-              />
+            <div className="mt-5 flex items-center text-center">
+              <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
+                비밀번호
+              </label>
+              <div className="w-2/3">
+                <Controller
+                  name="password"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '비밀번호를 입력해주세요.',
+                    validate: validatePassword,
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="password"
+                      className="w-full rounded border px-3 py-2 text-black"
+                      placeholder="비밀번호를 입력해주세요."
+                    />
+                  )}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex">
-            <div className="w-1/3"></div>
-            {errors.password && (
-              <p className="my-2 text-start text-red-500">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-          <div className="flex justify-center gap-20">
+            <div className="flex">
+              <div className="w-1/3"></div>
+              {errors.password && (
+                <p className="my-2 text-start text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+            <div className="flex justify-center gap-20">
+              <button
+                type="submit"
+                className={`my-6 w-full rounded p-2 text-white ${
+                  isEmailValid && isPasswordValid
+                    ? 'bg-pal-purple'
+                    : 'cursor-not-allowed bg-gray-400'
+                }`}
+                disabled={!isEmailValid || !isPasswordValid}
+              >
+                로그인
+              </button>
+            </div>
+          </form>
+          <div className="mt-4 text-center">
+            <div>비밀번호를 잊어버리셨나요? </div>
             <button
-              type="submit"
-              className={`my-6 w-full rounded p-2 text-white ${
-                isEmailValid && isPasswordValid
-                  ? 'bg-pal-purple'
-                  : 'cursor-not-allowed bg-gray-400'
-              }`}
-              disabled={!isEmailValid || !isPasswordValid}
+              type="button"
+              className="text-pal-purple underline"
+              onClick={() => navigate('/find')}
             >
-              로그인
+              여기를 클릭하세요.
             </button>
           </div>
-        </form>
-        <div className="mt-4 text-center">
-          <div>비밀번호를 잊어버리셨나요? </div>
-          <button
-            type="button"
-            className="text-pal-purple underline"
-            onClick={() => navigate('/find')}
-          >
-            여기를 클릭하세요.
-          </button>
-        </div>
-        <div className="mt-4 text-center">
-          <div>아직 팰럭시의 계정이 없으신가요? </div>
-          <button
-            type="button"
-            className="text-pal-purple underline"
-            onClick={() => navigate('/signup')}
-          >
-            계정 생성하기
-          </button>
+          <div className="mt-4 text-center">
+            <div>아직 팰럭시의 계정이 없으신가요? </div>
+            <button
+              type="button"
+              className="text-pal-purple underline"
+              onClick={() => navigate('/signup')}
+            >
+              계정 생성하기
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </ContentsLayout>
   );
 };
 
