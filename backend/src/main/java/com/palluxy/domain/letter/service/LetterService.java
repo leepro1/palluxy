@@ -101,4 +101,8 @@ public class LetterService {
     return roomRepository.findById(roomId)
         .orElseThrow(() -> new NotFoundException("Room not found with id: " + roomId));
   }
+
+  public List<Letter> findLettersByRoomId(Long roomId) {
+    return letterRepository.findByRoom_RoomId(roomId);
+  }
 }

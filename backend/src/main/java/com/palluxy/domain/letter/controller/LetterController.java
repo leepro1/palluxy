@@ -24,6 +24,13 @@ public class LetterController {
     return CommonResponse.ok("정상적으로 편지가 조회되었습니다.", letters);
   }
 
+  @GetMapping("/room/{roomId}")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<?> getLettersByRoomId(@PathVariable("roomId") Long roomId) {
+    List<Letter> letters = letterService.findLettersByRoomId(roomId);
+    return CommonResponse.ok("정상적으로 편지가 조회되었습니다.", letters);
+  }
+
   @PostMapping("/first")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> writeFirstLetter(
