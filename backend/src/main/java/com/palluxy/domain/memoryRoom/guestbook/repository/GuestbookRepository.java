@@ -4,9 +4,9 @@ import com.palluxy.domain.memoryRoom.guestbook.entity.Guestbook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GuestbookRepository extends JpaRepository<Guestbook, Long> {
-  List<Guestbook> findByRoom_RoomId(Long roomId);
+  Optional<Guestbook> findByRoom_RoomId(Long roomId);  // Room ID로 Guestbook 찾기
 }
