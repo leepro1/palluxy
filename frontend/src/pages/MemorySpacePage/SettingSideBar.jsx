@@ -2,22 +2,36 @@ import MemorySideBarLayout from '@layout/MemorySideBarLayout';
 import Slider from '@components/Model/Slider';
 import GlobalBtn from '@components/GlobalBtn';
 
-import { useState } from 'react';
-import FileUploadModal from '@/components/Modal/FileUploadModal';
-import ImgRotationBtn from '../../components/Model/ImgRotationBtn';
+import { useState, useCallback } from 'react';
+import FileUploadModal from '@components/Modal/FileUploadModal';
+import ImgRotationBtn from '@components/Model/ImgRotationBtn';
+import { useModelPositionStore } from '@store/memorySpace';
 
 const SettingSideBar = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectFrame, setSelectFrame] = useState();
 
-  const handleModal = (frame) => {
-    if (isModalOpen) {
-      setModalOpen(false);
-    }
-    if (!isModalOpen) {
-      setSelectFrame(frame);
-      setModalOpen(true);
-    }
+  const position = useModelPositionStore((state) => state.position);
+  const rotation = useModelPositionStore((state) => state.rotation);
+
+  const handleModal = useCallback(
+    (frame) => {
+      if (isModalOpen) {
+        setModalOpen(false);
+      }
+      if (!isModalOpen) {
+        setSelectFrame(frame);
+        setModalOpen(true);
+      }
+    },
+    [isModalOpen],
+  );
+
+  const handlePositionSave = () => {
+    console.log(position);
+  };
+  const handleRotationSave = () => {
+    console.log(rotation);
   };
 
   return (
@@ -56,6 +70,9 @@ const SettingSideBar = () => {
             className="bg-white font-jamsilRegular text-sm"
             size={'sm'}
             text={'저장'}
+            onClick={() => {
+              handlePositionSave();
+            }}
           />
         </div>
         {/* 회전 변경 */}
@@ -91,6 +108,9 @@ const SettingSideBar = () => {
             className="bg-white font-jamsilRegular text-sm"
             size={'sm'}
             text={'저장'}
+            onClick={() => {
+              handleRotationSave();
+            }}
           />
         </div>
         {/* 액자 설정 */}
