@@ -37,6 +37,12 @@ public class RoomServiceImpl implements RoomService {
   @Override
   @Transactional
   public RoomDto createRoom(RoomDto roomDto) {
+    // 해당 사용자가 이미 Room을 가지고 있는지 확인
+    boolean roomExists = roomRepository.findByUserId(roomDto.getUserId()).isPresent();
+    if (roomExists) {
+      throw new IllegalStateException("Room already exists for this user");
+    }
+
     User user = userRepository.findById(roomDto.getUserId())
         .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
