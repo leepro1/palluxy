@@ -3,15 +3,13 @@ package com.palluxy.domain.pet.entity;
 import com.palluxy.domain.pet.dto.request.PetRegisterRequest;
 import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "pet")
