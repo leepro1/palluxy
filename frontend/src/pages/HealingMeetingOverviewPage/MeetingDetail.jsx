@@ -87,13 +87,23 @@ const MeetingDetail = () => {
         </button>
 
         <div className="mt-5 flex flex-col justify-center gap-5 md:flex-row">
-          <div className="w-full md:w-4/12">
-            <img
-              className="w-full rounded-lg"
-              src={defaultImage}
-              alt="Meeting"
-            />
-          </div>
+          {data.filePath === null ? (
+            <div className="w-full md:w-4/12">
+              <img
+                src={defaultImage}
+                alt="image"
+                className="w-full rounded-lg"
+              />
+            </div>
+          ) : (
+            <div className="w-full md:w-4/12">
+              <img
+                src={data.filePath}
+                alt="image"
+                className="w-full rounded-lg"
+              />
+            </div>
+          )}
           <div className="w-full rounded-lg bg-pal-lightwhite p-6 text-xl md:w-5/12">
             <p className="mb-2 font-semibold">{data.leaderNickname}</p>
             <p className="mb-4 text-3xl font-bold">{data.title}</p>
