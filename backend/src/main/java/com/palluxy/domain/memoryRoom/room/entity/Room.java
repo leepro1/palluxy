@@ -1,12 +1,16 @@
 package com.palluxy.domain.memoryRoom.room.entity;
 
 import com.palluxy.domain.memoryRoom.album.entity.Album;
+import com.palluxy.domain.memoryRoom.guestbook.entity.Guestbook;
+import com.palluxy.domain.memoryRoom.like.entity.Like;
+import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import com.palluxy.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Room 엔티티 클래스
@@ -31,6 +35,15 @@ public class Room {
 
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private Album album;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PetMeta> petMetas;
+
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Guestbook guestbook;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
