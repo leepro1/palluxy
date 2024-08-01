@@ -71,14 +71,27 @@ const RoomCanvas = () => {
 
   return (
     <div className="relative h-[617px] w-[1000px]">
-      <GlobalBtn
-        className="absolute right-2 top-2 z-50 bg-pal-purple text-white"
-        size={'md'}
-        text={'카메라 초기화'}
-        onClick={() => {
-          handleCameraReset();
-        }}
-      />
+      <p className="absolute left-0 top-4 z-50 px-10 font-jamsilRegular text-xl text-pal-purple">
+        추억공간 : {roomData.name}
+      </p>
+      <div className="absolute right-2 top-4 z-50 flex items-center gap-x-3">
+        <GlobalBtn
+          className="bg-pal-purple text-white"
+          size={'md'}
+          text={'펫 불러오기'}
+          onClick={() => {
+            handleCameraReset();
+          }}
+        />
+        <GlobalBtn
+          className="bg-pal-purple text-white"
+          size={'md'}
+          text={'카메라 초기화'}
+          onClick={() => {
+            handleCameraReset();
+          }}
+        />
+      </div>
       <Canvas flat>
         <CameraOption
           position={position}

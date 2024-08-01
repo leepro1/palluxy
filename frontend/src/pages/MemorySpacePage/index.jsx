@@ -59,19 +59,7 @@ const MemorySpacePage = () => {
     return (
       <ContentsLayout>
         <div className="flex">
-          <div className="flex grow flex-col">
-            <div className="flex w-[1000px] justify-end gap-x-10 py-7">
-              <GlobalBtn
-                className="bg-pal-purple text-white"
-                size={'md'}
-                text={'모델 생성'}
-              />
-              <GlobalBtn
-                className="bg-pal-purple text-white"
-                size={'md'}
-                text={'추억공간 생성'}
-              />
-            </div>
+          <div className="flex grow items-center">
             <RoomCanvas />
           </div>
           <div className="w-[310px] rounded-xl bg-pal-purple">
