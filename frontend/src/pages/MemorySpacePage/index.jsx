@@ -8,11 +8,12 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { fetchUserRoom } from '@api/memorySpace/roomApi';
+import NotFound from '@components/NotFound';
 
 const MemorySpacePage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  let { userId } = useParams();
+  const { userId } = useParams();
   const userData = queryClient.getQueryData(['userInfo']);
   const { isError, isLoading, isSuccess } = useQuery({
     queryKey: ['memorySpace'],
@@ -22,18 +23,19 @@ const MemorySpacePage = () => {
   });
 
   useEffect(() => {
-    if (isError && parseInt(userId) !== userData?.id) {
-      navigate('/404');
-    }
-  }, [isError, userId, userData?.id, navigate]);
+    return () => {
+      queryClient.removeQueries({ queryKey: ['memorySpace'] });
+    };
+  }, [userId]);
 
   if (isLoading) {
     return <Loading />;
   }
 
   if (isError) {
-    // console.log(userData);
-    // if (parseInt(userId) === userData.id) {
+    if (parseInt(userId) !== userData?.id) {
+      return <NotFound />;
+    }
     return (
       <ContentsLayout>
         <div className="flex h-full justify-center">
@@ -63,7 +65,7 @@ const MemorySpacePage = () => {
             <RoomCanvas />
           </div>
           <div className="w-[310px] rounded-xl bg-pal-purple">
-            <MemoerySideBar />
+            <MemoerySideBar userId={userId} />
           </div>
         </div>
       </ContentsLayout>

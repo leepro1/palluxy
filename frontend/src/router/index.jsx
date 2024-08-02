@@ -47,8 +47,8 @@ const routerInfo = [
             path: ':userId',
             children: [
               {
-                index: true,
-                // path: 'setting',
+                // index: true,
+                path: 'setting',
                 element: <SettingSideBar />,
               },
               {
@@ -56,7 +56,8 @@ const routerInfo = [
                 element: <MailboxSideBar />,
               },
               {
-                path: 'guest-box',
+                index: true,
+                // path: 'guest-box',
                 element: <GuestBoxSideBar />,
               },
             ],
