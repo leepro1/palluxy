@@ -12,6 +12,8 @@ import ResetPassword from '@components/ResetPassword';
 import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
 import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
 import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
+import AdminPage from '@pages/AdminPage';
+
 const routerInfo = [
   {
     path: '/',
@@ -62,6 +64,7 @@ const routerInfo = [
       { path: '/signup', element: <SignUp /> },
       { path: '/find', element: <FindPassword /> },
       { path: '/reset', element: <ResetPassword /> },
+      { path: '/admin', element: <AdminPage /> },
     ],
   },
 ];
