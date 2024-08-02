@@ -3,7 +3,7 @@ import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
 import UserVideoComponent from './UserVideoComponent';
-import ChatBox from '@/pages/HealingMeetingPage/ChatBox';
+import ChatMessageBox from '@/components/Chat/ChatMessageBox';
 import ConfirmModal from './ConfirmModal'; // 모달 컴포넌트 추가
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 import { useQueryClient } from '@tanstack/react-query';
@@ -42,6 +42,10 @@ const HealingMeetingPageContents = () => {
   const [role, setRole] = useState('SUBSCRIBER');
   const [data, setData] = useState(null);
   const OV = useRef(null);
+
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const scrollRef = useRef(null);
 
   const [showModal, setShowModal] = useState(false); // 모달 상태
 
@@ -162,6 +166,20 @@ const HealingMeetingPageContents = () => {
 
     newSession.on('exception', (exception) => {
       console.warn(exception);
+    });
+
+    newSession.on('signal:my-chat', (event) => {
+      if (event.from.connectionId !== newSession.connection.connectionId) {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    });
+
+    newSession.on('signal:my-chat', (event) => {
+      if (event.from.connectionId !== newSession.connection.connectionId) {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
     });
 
     try {
@@ -293,6 +311,37 @@ const HealingMeetingPageContents = () => {
     console.log(response);
     return response.data.result;
   };
+
+  const sendMessage = () => {
+    if (text.trim()) {
+      const newMessage = {
+        sender: myUserName,
+        content: text,
+        type: 'CHAT',
+        timestamp: new Date().toISOString(),
+      };
+      session
+        .signal({
+          data: JSON.stringify(newMessage),
+          to: [],
+          type: 'my-chat',
+        })
+        .then(() => {
+          console.log('Message successfully sent');
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setText('');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   return (
     <div className="container mx-auto">
@@ -527,7 +576,16 @@ const HealingMeetingPageContents = () => {
                 </div>
               </div>
             </div>
-            <ChatBox className="h-auto w-2/12" />
+            <div className="flex h-screen w-3/12">
+              <ChatMessageBox
+                messages={messages}
+                scrollRef={scrollRef}
+                myUserName={myUserName}
+                onSend={sendMessage}
+                text={text}
+                setText={setText}
+              />
+            </div>
           </div>
         </ContentsLayout>
       ) : null}
