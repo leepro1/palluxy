@@ -38,22 +38,35 @@ const HealingSessionPage = () => {
   const showingPageMin = Math.max(showingPage - 2, 1);
   const showingPageMax = Math.min(showingPage + 2, totalPage);
   const [data, setData] = useState(null);
+  const [datalength, setDatalength] = useState(0);
+  const [excludeClosed, setExcludeClosed] = useState(false); // 체크박스 상태 관리
+  const [searchKey, setSearchKey] = useState('leader'); // 검색 키 관리
+  const [searchValue, setSearchValue] = useState(''); // 검색 값 관리
+  const [searchTrigger, setSearchTrigger] = useState(0); // 검색 트리거 상태
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await instance.get(
-          `/api/group/accept/${pageIndexInt - 1}`,
-        );
+        let endpoint;
+        if (searchTrigger) {
+          endpoint = `/api/group/search?key=${searchKey}&value=${searchValue}&page=${pageIndexInt - 1}`;
+        } else {
+          endpoint = excludeClosed
+            ? `/api/group/available/${pageIndexInt - 1}`
+            : `/api/group/accept/${pageIndexInt - 1}`;
+        }
+
+        const response = await instance.get(endpoint);
         setTotalPage(Math.ceil(response.data.result.totalGroupCount / 9));
         setData(response.data.result.groups);
+        setDatalength(response.data.result.totalGroupCount);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchData();
-  }, [pageIndexInt]);
+  }, [pageIndexInt, excludeClosed, searchTrigger]); // 검색 트리거 추가
 
   const navigate = useNavigate();
 
@@ -82,6 +95,19 @@ const HealingSessionPage = () => {
     navigate(`/meetingoverview/detail/${index}`);
   };
 
+  const handleCheckboxChange = () => {
+    setExcludeClosed(!excludeClosed);
+    setShowingPage(1);
+    navigate(`/meetingoverview/1`);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchTrigger((prev) => prev + 1); // 검색 트리거 토글
+    setShowingPage(1);
+    navigate(`/meetingoverview/1`);
+  };
+
   return (
     <ContentsLayout>
       <ScrollRestoration />
@@ -91,12 +117,17 @@ const HealingSessionPage = () => {
             <select
               id="categories"
               className="block h-10 w-2/12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              value={searchKey}
+              onChange={(e) => setSearchKey(e.target.value)}
             >
               <option value="leader">방장</option>
-              <option value="meetingName">모임 이름</option>
+              <option value="title">모임 이름</option>
             </select>
 
-            <form className="mx-3 w-7/12">
+            <form
+              className="mx-3 w-7/12"
+              onSubmit={handleSearchSubmit}
+            >
               <label
                 htmlFor="default-search"
                 className="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -126,6 +157,8 @@ const HealingSessionPage = () => {
                   id="default-search"
                   className="block h-10 w-full rounded-lg border border-gray-300 bg-gray-50 p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                   placeholder="방장 혹은 모임 이름을 검색해보세요"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
                   required
                 />
                 <button
@@ -147,6 +180,8 @@ const HealingSessionPage = () => {
                   type="checkbox"
                   className="before:content[''] border-blue-gray-200 before:bg-blue-gray-500 peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border transition-all before:absolute before:left-2/4 before:top-2/4 before:block before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:rounded-full before:opacity-0 before:transition-opacity checked:border-gray-900 checked:bg-pal-purple checked:before:bg-gray-900 hover:before:opacity-10"
                   id="check"
+                  checked={excludeClosed}
+                  onChange={handleCheckboxChange}
                 />
                 <span className="pointer-events-none absolute left-2/4 top-2/4 -translate-x-2/4 -translate-y-2/4 text-white opacity-0 transition-opacity peer-checked:opacity-100">
                   <svg
@@ -159,9 +194,9 @@ const HealingSessionPage = () => {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M16.707 5.293a1 1 0 0 1 0 1.414l-8 8a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L8 12.586l7.293-7.293a1 1 0 0 1 1.414 0z"
                       clipRule="evenodd"
-                    ></path>
+                    />
                   </svg>
                 </span>
               </label>
@@ -180,63 +215,71 @@ const HealingSessionPage = () => {
             </div>
           </div>
         </div>
-        {/* Other code omitted for brevity */}
-        <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {data?.map((item, index) => (
-            <div
-              className="m-3 flex w-3/4 cursor-pointer flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
-              key={index}
-              onClick={() => handleImageClick(item.id)}
-            >
-              <div className="relative w-full rounded-md">
-                {item.filePath === null ? (
-                  <div className="mb-1 flex aspect-square w-full justify-center">
-                    <img
-                      src={defaultImage}
-                      alt="image"
-                      className="rounded-md"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
-                      <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
-                        신청하기
-                      </button>
+
+        {datalength ? (
+          <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {data?.map((item, index) => (
+              <div
+                className="m-3 flex w-3/4 cursor-pointer flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
+                key={index}
+                onClick={() => handleImageClick(item.id)}
+              >
+                <div className="relative w-full rounded-md">
+                  {item.filePath === null ? (
+                    <div className="mb-1 flex aspect-square w-full justify-center">
+                      <img
+                        src={defaultImage}
+                        alt="image"
+                        className="rounded-md"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                        <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
+                          신청하기
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="mb-1 flex aspect-square w-full justify-center">
-                    <img
-                      src={item.filePath}
-                      alt="image"
-                      className="rounded-md"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
-                      <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
-                        신청하기
-                      </button>
+                  ) : (
+                    <div className="mb-1 flex aspect-square w-full justify-center">
+                      <img
+                        src={item.filePath}
+                        alt="image"
+                        className="rounded-md"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                        <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
+                          신청하기
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-              <div className="w-full p-4 text-left">
-                <p className="mb-2 text-2xl font-semibold text-gray-900">
-                  {item.id} .{item.title}
-                </p>
-                <div className="flex flex-row gap-x-2 text-pal-purple">
-                  <span className="material-symbols-outlined">
-                    calendar_month
-                  </span>
-                  <p>{formatDateRange(item.startTime, item.endTime)}</p>
+                  )}
                 </div>
-                <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
-                  <span className="material-symbols-outlined">groups</span>
-                  <p>
-                    {item.maxCapacity - item.remainCapacity}/{item.maxCapacity}
+                <div className="w-full p-4 text-left">
+                  <p className="mb-2 text-2xl font-semibold text-gray-900">
+                    {item.title}
                   </p>
+                  <div className="flex flex-row gap-x-2 text-pal-purple">
+                    <span className="material-symbols-outlined">
+                      calendar_month
+                    </span>
+                    <p>{formatDateRange(item.startTime, item.endTime)}</p>
+                  </div>
+                  <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
+                    <span className="material-symbols-outlined">groups</span>
+                    <p>
+                      {item.maxCapacity - item.remainCapacity}/
+                      {item.maxCapacity}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-5xl">
+            아직 신청할 수 있는 모임이 없습니다! 새로운 모집 공고를 내보시는게
+            어떨까요?
+          </p>
+        )}
         <Pagination
           itemsPerPage={itemsPerPage}
           totalPage={totalPage}

@@ -32,6 +32,15 @@ public class GuestbookController {
     return CommonResponse.created("Guestbook entry created successfully");
   }
 
+  @GetMapping("/room/{roomId}")
+  @ResponseStatus(HttpStatus.OK)
+  @Operation(summary = "Get Guestbook by Room ID", description = "Room ID로 게스트북 항목을 검색합니다.")
+  public CommonResponse<GuestbookDto> getGuestbookByRoomId(
+      @Parameter(description = "Room ID", required = true) @PathVariable Long roomId) {
+    GuestbookDto guestbook = guestbookService.getGuestbookByRoomId(roomId);
+    return CommonResponse.ok("Guestbook retrieved successfully", guestbook);
+  }
+
   @GetMapping("/{guestbookId}")
   @ResponseStatus(HttpStatus.OK)
   @Operation(summary = "Get Guestbook Entry", description = "ID로 게스트북 항목을 검색합니다.")

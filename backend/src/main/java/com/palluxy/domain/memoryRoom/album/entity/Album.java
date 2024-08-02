@@ -22,5 +22,5 @@ public class Album {
     private Room room;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>(); // 필드 초기화
+    private List<Image> images = new ArrayList<>();
 }

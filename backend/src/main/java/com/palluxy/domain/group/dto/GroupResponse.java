@@ -3,6 +3,10 @@ package com.palluxy.domain.group.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.palluxy.domain.group.entity.Group;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.palluxy.domain.group.entity.GroupUser;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +23,12 @@ public class GroupResponse {
   private LocalDateTime endTime;
   private int maxCapacity;
   private int remainCapacity;
+  private List<Long> groupUserId;
 
   @Builder
   public GroupResponse(Long id, Long leaderId, String leaderNickname, String title, String description, String filePath,
-      LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainCapacity) {
+      LocalDateTime startTime, LocalDateTime endTime, int maxCapacity, int remainCapacity,
+                       List<Long> groupUserId) {
     this.id = id;
     this.leaderId = leaderId;
     this.leaderNickname = leaderNickname;
@@ -33,10 +39,11 @@ public class GroupResponse {
     this.endTime = endTime;
     this.maxCapacity = maxCapacity;
     this.remainCapacity = remainCapacity;
+    this.groupUserId = groupUserId;
   }
 
   public static GroupResponse of (Group group) {
-    return GroupResponse.builder()
+    GroupResponse response = GroupResponse.builder()
         .id(group.getId())
         .leaderId(group.getLeader().getId())
         .leaderNickname(group.getLeader().getNickname())
@@ -48,5 +55,13 @@ public class GroupResponse {
         .maxCapacity(group.getMaxCapacity())
         .remainCapacity(group.getRemainingCapacity())
         .build();
+
+    List<Long> groupUserId = new ArrayList<>();
+    for (GroupUser user : group.getGroupUser()) {
+      groupUserId.add(user.getId());
+    }
+
+    response.groupUserId = groupUserId;
+    return response;
   }
 }

@@ -54,6 +54,13 @@ public class GuestbookServiceImpl implements GuestbookService {
   }
 
   @Override
+  public GuestbookDto getGuestbookByRoomId(Long roomId) {
+    Guestbook guestbook = guestbookRepository.findByRoom_RoomId(roomId)
+        .orElseThrow(() -> new IllegalArgumentException("Guestbook not found for room id: " + roomId));
+    return new GuestbookDto(guestbook);
+  }
+
+  @Override
   public GuestbookDto updateGuestbook(Long guestbookId, Long userId, GuestbookDto guestbookDto) {
     Guestbook guestbook = guestbookRepository.findById(guestbookId)
         .orElseThrow(() -> new IllegalArgumentException("Guestbook entry not found"));
@@ -123,7 +130,10 @@ public class GuestbookServiceImpl implements GuestbookService {
 
     return guestbook.getComments().stream()
         .filter(comment -> !comment.isDeleted())
-        .map(CommentDto::new)
+        .map(comment -> {  // 닉네임을 가져와서 CommentDto 생성
+          User user = comment.getUser();
+          return new CommentDto(comment, user.getNickname());
+        })
         .collect(Collectors.toList());
   }
 }

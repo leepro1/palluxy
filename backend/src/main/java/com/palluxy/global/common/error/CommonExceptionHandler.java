@@ -29,4 +29,10 @@ public class CommonExceptionHandler {
         return CommonResponse.badRequest(e.getMessage());
     }
 
+    @ExceptionHandler({
+        NotAuthorityException.class
+    })
+    public CommonResponse<?> handleCommonForbiddenException(Exception e) {
+        return CommonResponse.forbidden(e.getMessage());
+    }
 }

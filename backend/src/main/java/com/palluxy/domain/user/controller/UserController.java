@@ -6,8 +6,10 @@ import com.palluxy.domain.user.dto.response.UserResponse;
 import com.palluxy.domain.user.exception.SignupFormatException;
 import com.palluxy.domain.user.service.UserService;
 import com.palluxy.global.common.data.CommonResponse;
-import com.palluxy.global.common.util.JWTUtil;
+import com.palluxy.global.common.error.NotAuthorityException;
+import com.palluxy.global.common.util.AuthUtil;
 import jakarta.validation.Valid;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -21,11 +23,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final JWTUtil jwtUtil;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<?> join(@Valid @RequestBody UserSignupRequest request, BindingResult bindingResult) throws Exception {
+    public CommonResponse<?> join(@Valid @RequestBody UserSignupRequest request,
+        BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
             throw new SignupFormatException();
         }
@@ -34,8 +36,10 @@ public class UserController {
     }
 
     @GetMapping("/user-info")
-    public CommonResponse<?> getUserInfo(@RequestHeader("access") String token) {
-        Long userId = jwtUtil.getUserId(token);
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> getUserInfo() {
+        Long userId = AuthUtil.checkAuthorityByUserId();
+
         UserResponse user = userService.getUserById(userId);
         return CommonResponse.ok("토큰으로 user 정보 조회", user);
     }
@@ -56,7 +60,8 @@ public class UserController {
 
     @PatchMapping("/reset-password")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> resetPassword(@Valid @RequestBody UserResetPasswordRequest request, BindingResult bindingResult) {
+    public CommonResponse<?> resetPassword(@Valid @RequestBody UserResetPasswordRequest request,
+        BindingResult bindingResult) {
         userService.resetPassword(request);
         return CommonResponse.ok("비밀번호 변경 성공");
     }
@@ -71,6 +76,12 @@ public class UserController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> getUserById(@PathVariable Long id) {
+        Long userId = AuthUtil.checkAuthorityByUserId();
+
+        if (!Objects.equals(userId, id)) {
+            throw new NotAuthorityException("권한이 없습니다.");
+        }
+
         UserResponse response = userService.getUserById(id);
         return CommonResponse.ok("유저조회 성공", response);
     }

@@ -112,6 +112,32 @@ public class PetMetaServiceImpl implements PetMetaService {
   }
 
   @Override
+  public PetMetaDto updatePetMetaPosition(Long petMetaId, double positionX, double positionY, double positionZ) {
+    PetMeta petMeta = petMetaRepository.findById(petMetaId)
+        .orElseThrow(() -> new IllegalArgumentException("PetMeta not found"));
+
+    petMeta.setPositionX(positionX);
+    petMeta.setPositionY(positionY);
+    petMeta.setPositionZ(positionZ);
+
+    petMeta = petMetaRepository.save(petMeta);
+    return new PetMetaDto(petMeta);
+  }
+
+  @Override
+  public PetMetaDto updatePetMetaRotation(Long petMetaId, double rotationX, double rotationY, double rotationZ) {
+    PetMeta petMeta = petMetaRepository.findById(petMetaId)
+        .orElseThrow(() -> new IllegalArgumentException("PetMeta not found"));
+
+    petMeta.setRotationX(rotationX);
+    petMeta.setRotationY(rotationY);
+    petMeta.setRotationZ(rotationZ);
+
+    petMeta = petMetaRepository.save(petMeta);
+    return new PetMetaDto(petMeta);
+  }
+
+  @Override
   public void deletePetMeta(Long petMetaId) {
     petMetaRepository.deleteById(petMetaId);
   }
