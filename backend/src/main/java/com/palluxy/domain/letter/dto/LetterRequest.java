@@ -5,6 +5,7 @@ import lombok.ToString;
 
 @Getter
 public class LetterRequest {
-  String title;
-  String content;
+  private String title;
+  private String content;
+  private Long roomId;
 }

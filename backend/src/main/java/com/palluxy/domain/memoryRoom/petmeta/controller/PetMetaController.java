@@ -130,6 +130,50 @@ public class PetMetaController {
     return CommonResponse.ok("PetMeta position and rotation updated successfully", updatedPetMeta);
   }
 
+
+  @Operation(summary = "PetMeta 위치 업데이트")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta의 위치가 성공적으로 업데이트되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
+      })
+  @PutMapping("/{petMetaId}/position")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<PetMetaDto> updatePetMetaPosition(
+      @PathVariable Long roomId,
+      @PathVariable Long petMetaId,
+      @RequestParam double positionX,
+      @RequestParam double positionY,
+      @RequestParam double positionZ) {
+    PetMetaDto updatedPetMeta =
+        petMetaService.updatePetMetaPosition(petMetaId, positionX, positionY, positionZ);
+    return CommonResponse.ok("PetMeta position updated successfully", updatedPetMeta);
+  }
+
+  @Operation(summary = "PetMeta 회전 업데이트")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "PetMeta의 회전이 성공적으로 업데이트되었습니다."),
+          @ApiResponse(responseCode = "404", description = "PetMeta를 찾을 수 없습니다.")
+      })
+  @PutMapping("/{petMetaId}/rotation")
+  @ResponseStatus(HttpStatus.OK)
+  public CommonResponse<PetMetaDto> updatePetMetaRotation(
+      @PathVariable Long roomId,
+      @PathVariable Long petMetaId,
+      @RequestParam double rotationX,
+      @RequestParam double rotationY,
+      @RequestParam double rotationZ) {
+    PetMetaDto updatedPetMeta =
+        petMetaService.updatePetMetaRotation(petMetaId, rotationX, rotationY, rotationZ);
+    return CommonResponse.ok("PetMeta rotation updated successfully", updatedPetMeta);
+  }
+
+
   @Operation(summary = "ID로 PetMeta 삭제")
   @ApiResponses(
       value = {

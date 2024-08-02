@@ -12,9 +12,18 @@ public interface PetMetaService {
   PetMetaDto getPetMetaById(Long petMetaId);
   List<PetMetaDto> getPetMetaByRoomId(Long roomId);
   PetMetaDto updatePetMeta(Long petMetaId, PetMetaDto petMetaDto);
+
   PetMetaDto updatePetMetaPositionRotation(Long petMetaId, double positionX, double positionY, double positionZ, double rotationX, double rotationY, double rotationZ);
+
+  PetMetaDto updatePetMetaPosition(Long petMetaId, double positionX, double positionY, double positionZ);
+
+  PetMetaDto updatePetMetaRotation(Long petMetaId, double rotationX, double rotationY, double rotationZ);
+
   void deletePetMeta(Long petMetaId);
+
   Mono<String> uploadImageToDjangoAndProcess(Long roomId, MultipartFile file);
+
   Mono<String> processWebhook(Long roomId, FilePart filePart);
+
   Mono<String> handleObjFileUpload(Long roomId, FilePart filePart);
 }

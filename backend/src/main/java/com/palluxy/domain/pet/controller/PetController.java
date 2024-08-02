@@ -6,6 +6,7 @@ import com.palluxy.domain.pet.dto.response.PetIdResponse;
 import com.palluxy.domain.pet.dto.response.PetResponse;
 import com.palluxy.domain.pet.service.PetService;
 import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.common.util.AuthUtil;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +43,12 @@ public class PetController {
         return CommonResponse.ok("반려동물 정보 조회 성공", response);
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> getPetIdByUserId(@PathVariable Long userId) {
+    public CommonResponse<?> getPetIdByUserId() {
+        Long userId = AuthUtil.checkAuthorityByUserId();
         PetIdResponse response = petService.findByUserId(userId);
-        return CommonResponse.ok("반려동물 정보 조회 성공", response);
+        return CommonResponse.ok("token으로 반려동물 정보 조회 성공", response);
     }
 
     @PutMapping("/{petId}")
@@ -56,4 +58,12 @@ public class PetController {
         petService.updatePet(petId, request);
         return CommonResponse.ok("반려동물 정보 수정 성공");
     }
+
+    @DeleteMapping("/{petId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> deletePet(@PathVariable Long petId) {
+        petService.deletePet(petId);
+        return CommonResponse.ok("반려동물 삭제 성공");
+    }
+
 }
