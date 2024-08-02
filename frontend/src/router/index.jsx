@@ -26,16 +26,11 @@ const routerInfo = [
       { index: true, element: <HomePage /> },
       {
         path: '/noticeboard',
-        children: [
-          {
-            path: ':pageIndex',
-            element: <NoticePage />,
-          },
-          {
-            path: 'detail/:noticeId',
-            element: <NoticeDetail />,
-          },
-        ],
+        element: <NoticePage />,
+      },
+      {
+        path: '/noticeboard/detail/:noticeId',
+        element: <NoticeDetail />,
       },
       { path: '/healingmeeting', element: <HealingMeetingPage /> },
       {
