@@ -28,12 +28,12 @@ const NoticeDetail = () => {
 
   return (
     <ContentsLayout>
-      <div className="mx-auto flex min-h-screen w-[90%] flex-col rounded bg-white">
+      <div className="mx-auto flex min-h-[500px] w-[80%] flex-col rounded bg-white bg-opacity-70">
         <div className="p-5 text-center font-jamsilBold text-3xl">
           {notice.title}
         </div>
         <div className="mx-auto w-[90%] border border-gray-200"></div>
-        <div className="mx-auto w-[90%] p-3 font-jamsilRegular">
+        <div className="mx-auto w-[90%] px-10 py-5 font-jamsilRegular">
           {notice.content}
         </div>
         <div className="mx-auto mb-5 mt-auto flex justify-center">

@@ -3,6 +3,7 @@ import MemorySpacePage from '@pages/MemorySpacePage';
 import MainLayout from '@layout/MainLayout';
 import NoticePage from '@pages/NoticePage';
 import NoticeDetail from '@pages/NoticePage/NoticeDetail';
+import CreateNotice from '@pages/NoticePage/CreateNotice';
 import HealingMeetingPage from '@pages/HealingMeetingPage';
 import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
 import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
@@ -24,14 +25,25 @@ const routerInfo = [
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      // {
+      //   path: '/noticeboard',
+      //   element: <NoticePage />,
+      // },
       {
         path: '/noticeboard',
-        element: <NoticePage />,
+        children: [
+          { index: true, element: <NoticePage /> },
+          {
+            path: ':pageNumber',
+            element: <NoticePage />,
+          },
+        ],
       },
       {
         path: '/noticeboard/detail/:noticeId',
         element: <NoticeDetail />,
       },
+      { path: '/noticeboard/create', element: <CreateNotice /> },
       { path: '/healingmeeting', element: <HealingMeetingPage /> },
       {
         path: '/meetingoverview',
