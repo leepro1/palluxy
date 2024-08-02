@@ -19,6 +19,8 @@ import AppliedMeetings from '@pages/MyPage/AppliedMeetings';
 import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
 import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
 import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
+import AdminPage from '@pages/AdminPage';
+
 const routerInfo = [
   {
     path: '/',
@@ -107,6 +109,7 @@ const routerInfo = [
           },
         ],
       },
+      { path: '/admin', element: <AdminPage /> },
     ],
   },
 ];

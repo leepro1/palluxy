@@ -73,8 +73,10 @@ const HealingMeetingPageContents = () => {
       }
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!userInfo) return;
       try {
         const response = await instance.get(`api/group/my/${userInfo.id}/0`);
         setData(response.data.result.groups);
@@ -83,7 +85,7 @@ const HealingMeetingPageContents = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -145,8 +147,9 @@ const HealingMeetingPageContents = () => {
   };
 
   const joinSession = async (id) => {
-    if (mySessionId === 'SessionA') {
+    if (mySessionId === null) {
       setMySessionId(id);
+      return;
     }
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
@@ -181,6 +184,7 @@ const HealingMeetingPageContents = () => {
 
     try {
       const token = await getToken(role, id);
+      console.log(token);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,
@@ -270,6 +274,7 @@ const HealingMeetingPageContents = () => {
 
   const getToken = async (role, id) => {
     const sessionId = await createSession(id);
+    console.log(sessionId);
     return await createToken(sessionId, role, id);
   };
 
@@ -277,7 +282,10 @@ const HealingMeetingPageContents = () => {
     const response = await instance.post(
       'api/sessions',
       {
-        customSessionId: sessionId,
+        params: {
+          customSessionId: String(sessionId),
+        },
+        // customSessio nId: sessionId,
         userId: userInfo.id,
         groupId: sessionId,
         approveKey: '123456',
