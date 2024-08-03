@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.pet.entity.Pet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
 
   private final LetterRepository letterRepository;
 
-  public void sendRequest(ClaudeRequest request, Long petId) {
+  public void sendRequest(ClaudeRequest request, Long petId, Room room) {
     JsonObject object = new JsonObject();
     object.addProperty("model", request.getModel());
     object.addProperty("max_tokens", request.getMaxTokens());
@@ -59,6 +60,7 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
               .content(content)
               .writer(Writer.PET)
               .petId(petId)
+                  .room(room)
               .openedAt(LocalDateTime.now().plusHours(6L))
               .build();
           letterRepository.saveAndFlush(letter);

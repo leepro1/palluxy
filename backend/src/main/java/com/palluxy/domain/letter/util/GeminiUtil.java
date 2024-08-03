@@ -7,11 +7,13 @@ import com.palluxy.domain.letter.dto.gemini.GeminiRequest;
 import com.palluxy.domain.letter.dto.gemini.GeminiResponse;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.repository.LetterRepository;
+import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.pet.entity.Pet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,7 +49,7 @@ public class GeminiUtil implements AIUtil<GeminiRequest> {
         return request;
     }
 
-        public void sendRequest(GeminiRequest request, Long petId) {
+        public void sendRequest(GeminiRequest request, Long petId, Room room) {
             JsonObject object = new JsonObject();
 
             JsonArray contents = new JsonArray();
@@ -58,24 +60,29 @@ public class GeminiUtil implements AIUtil<GeminiRequest> {
 
             String json = object.toString();
 
-            WebClient webClient =
-                    WebClient.builder()
-                            .baseUrl(API_URL)
-                            .defaultHeader("key", API_KEY)
-                            .build();
+            WebClient webClient = WebClient.builder()
+                    .baseUrl(API_URL)
+                    .build();
 
-            webClient.post().bodyValue(json).retrieve().bodyToMono(GeminiResponse.class).subscribe(
-                    response -> {
+
+            webClient.post()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("key", API_KEY)
+                            .build())
+                    .bodyValue(json)
+                    .retrieve()
+                    .bodyToMono(GeminiResponse.class)
+                    .subscribe(response -> {
                         String content = response.getText();
                         Letter letter = Letter.builder()
                                 .title("편지가 도착했어요")
                                 .content(content)
                                 .writer(Writer.PET)
                                 .petId(petId)
+                                .room(room)
                                 .openedAt(LocalDateTime.now().plusHours(6L))
                                 .build();
                         letterRepository.saveAndFlush(letter);
-                    }
-            );
+                    });
         }
 }

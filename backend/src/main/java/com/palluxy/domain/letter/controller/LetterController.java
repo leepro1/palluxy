@@ -50,7 +50,7 @@ public class LetterController {
       @RequestParam("roomId") Long roomId) {
     Letter letter = Letter.of(letterRequest, petId, letterService.getRoom(roomId));
     letterService.saveLetter(letter);
-    letterService.sendLetters(petId);
+    letterService.sendLetters(petId, roomId);
     return CommonResponse.ok("정상적으로 편지가 저장되었습니다.");
   }
 }

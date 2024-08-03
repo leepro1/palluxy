@@ -1,11 +1,9 @@
 package com.palluxy.domain.letter.dto.gemini;
 
 import com.google.gson.JsonObject;
-import lombok.Getter;
 
-@Getter
 public class Part {
-    private String text;
+    String text;
 
     public Part(String text) {
         this.text = text;
