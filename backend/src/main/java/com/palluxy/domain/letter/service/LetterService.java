@@ -1,12 +1,10 @@
 package com.palluxy.domain.letter.service;
 
-import com.palluxy.domain.letter.dto.AIRequest;
 import com.palluxy.domain.letter.dto.Writer;
-import com.palluxy.domain.letter.dto.ai.ClaudeRequest;
+import com.palluxy.domain.letter.dto.claude.ClaudeRequest;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.repository.LetterRepository;
 import com.palluxy.domain.letter.util.AIUtil;
-import com.palluxy.domain.letter.util.ClaudeUtil;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import java.text.MessageFormat;
