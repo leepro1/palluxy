@@ -1,25 +1,35 @@
+// home
 import HomePage from '@pages/HomePage';
-import MemorySpacePage from '@pages/MemorySpacePage';
 import MainLayout from '@layout/MainLayout';
-import NoticePage from '@pages/NoticePage';
+import NotFound from '@/components/NotFound';
+
+// admin
 import NoticeDetail from '@pages/NoticePage/NoticeDetail';
 import CreateNotice from '@pages/NoticePage/CreateNotice';
-import HealingMeetingPage from '@pages/HealingMeetingPage';
-import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
-import SettingSideBar from '@pages/MemorySpacePage/SettingSideBar';
-import MailboxSideBar from '@pages/MemorySpacePage/MailboxSideBar';
+import AdminPage from '@pages/AdminPage';
+import NoticePage from '@pages/NoticePage';
+
+// user
 import SignInPage from '@pages/SignInPage';
 import SignUpPage from '@pages/SignUpPage';
+import MyPage from '@pages/MyPage';
 import FindPasswordPage from '@pages/FindPasswordPage';
 import ResetPasswordPage from '@pages/ResetPasswordPage';
-import MyPage from '@pages/MyPage';
 import PersonalInfo from '@pages/MyPage/PersonalInfo';
+
+// memorySpace
+import MemorySpacePage from '@pages/MemorySpacePage';
+import SettingSideBar from '@pages/MemorySpacePage/SideBar/SettingSideBar';
+import MailboxSideBar from '@pages/MemorySpacePage/SideBar/MailboxSideBar';
+import GuestBoxSideBar from '@pages/MemorySpacePage/SideBar/GuestBoxSideBar';
+import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
+
+// healing Meeting
+import HealingMeetingPage from '@pages/HealingMeetingPage';
+import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
+import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
 import CreatedMeetings from '@pages/MyPage/CreatedMeetings';
 import AppliedMeetings from '@pages/MyPage/AppliedMeetings';
-import GuestBoxSideBar from '@pages/MemorySpacePage/GuestBoxSideBar';
-import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
-import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
-import AdminPage from '@pages/AdminPage';
 
 const routerInfo = [
   {
@@ -70,22 +80,29 @@ const routerInfo = [
         element: <MemorySpacePage />,
         children: [
           {
-            index: true,
-            // path: 'setting',
-            element: <SettingSideBar />,
-          },
-          {
-            path: 'mailbox',
-            element: <MailboxSideBar />,
-          },
-          {
-            path: 'guest-box',
-            element: <GuestBoxSideBar />,
+            path: ':userId',
+            children: [
+              {
+                // index: true,
+                path: 'setting',
+                element: <SettingSideBar />,
+              },
+              {
+                path: 'mailbox',
+                element: <MailboxSideBar />,
+              },
+              {
+                index: true,
+                // path: 'guest-box',
+                element: <GuestBoxSideBar />,
+              },
+            ],
           },
         ],
       },
       // { path: '/signin', element: <SigninPage /> },
       //   { path: '/community', element: <CommunityPage /> },
+      { path: '/404', element: <NotFound /> },
       { path: '/signin', element: <SignInPage /> },
       { path: '/signup', element: <SignUpPage /> },
       { path: '/find', element: <FindPasswordPage /> },

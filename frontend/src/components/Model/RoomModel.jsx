@@ -1,15 +1,14 @@
 import { useGLTF } from '@react-three/drei';
 import { FRAME_INDEX } from '@/constants/frameIndex';
 import convertTexture from '@/utils/convertTexture';
+import FrameTexture from '@components/Model/FrameTexture';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 const RoomModel = React.memo(({ data }) => {
   const { materials, scene } = useGLTF('/models/frameRoom.glb');
 
-  console.log('실행됨');
   data.forEach(async (frameData) => {
-    console.log(frameData.index);
     const matrialName = FRAME_INDEX[frameData.index];
     const texture = await convertTexture(frameData.url);
     if (texture) {
@@ -19,7 +18,19 @@ const RoomModel = React.memo(({ data }) => {
     }
   });
 
-  return <primitive object={scene} />;
+  return (
+    <primitive object={scene}>
+      {/* {data.map((frameData) => {
+        const matrialName = FRAME_INDEX[frameData.index];
+        console.log(frameData);
+        <FrameTexture
+          frameData={frameData}
+          materials={matrialName}
+          matrialName={matrialName}
+        />;
+      })} */}
+    </primitive>
+  );
 });
 
 RoomModel.displayName = 'RoomModel';

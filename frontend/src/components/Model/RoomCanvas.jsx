@@ -1,24 +1,28 @@
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { useState } from 'react';
 import { Environment } from '@react-three/drei';
-import SceneUpdater from '@components/Model/SceneUpadator';
 
 import { Vector3 } from 'three';
 
 import PalModel from '@components/Model/PalModel';
 import RooomModel from '@components/Model/RoomModel';
 import CameraOption from '@components/Model/CameraOption';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchAllFrameImage } from '@api/memorySpace/frameImageApi';
+import Loading from '@components/Loading';
+import GlobalBtn from '@components/GlobalBtn';
 
 const RoomCanvas = () => {
+  const queryClient = useQueryClient();
+
   const [position, setPosition] = useState(new Vector3(-100, 100, 100));
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
+  const roomData = queryClient.getQueryData(['memorySpace']);
 
-  const { data: frameImages, isSuccess } = useQuery({
+  const { data, isSuccess, isLoading } = useQuery({
     queryKey: ['palFrameImage'],
-    queryFn: fetchAllFrameImage,
-    staleTime: 60000,
+    queryFn: () => fetchAllFrameImage(roomData.roomId),
+    staleTime: 1000 * 60 * 10,
   });
 
   const handleModelClick = (event) => {
@@ -49,6 +53,10 @@ const RoomCanvas = () => {
       }
     }
   };
+  const handleCameraReset = () => {
+    setTarget({ x: 0, y: 0, z: 0 });
+    setPosition(new Vector3(-100, 100, 100));
+  };
 
   // frame 1 x: 20, y: 24, z: 28
   // frame 2 x: 20, y: 24, z: 4
@@ -56,8 +64,34 @@ const RoomCanvas = () => {
   // frame 4 x: 20, y: 24, z: -20
   // frame 5 x: -5, y: 24, z: -20
   // frame 6 x: -30, y: 24, z: -20
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <div className="h-[617px] w-[1000px]">
+    <div className="relative h-[617px] w-[1000px]">
+      <p className="absolute left-0 top-4 z-50 px-10 font-jamsilRegular text-xl text-pal-purple">
+        추억공간 : {roomData.name}
+      </p>
+      <div className="absolute right-2 top-4 z-50 flex items-center gap-x-3">
+        <GlobalBtn
+          className="bg-pal-purple text-white"
+          size={'md'}
+          text={'펫 불러오기'}
+          onClick={() => {
+            handleCameraReset();
+          }}
+        />
+        <GlobalBtn
+          className="bg-pal-purple text-white"
+          size={'md'}
+          text={'카메라 초기화'}
+          onClick={() => {
+            handleCameraReset();
+          }}
+        />
+      </div>
       <Canvas flat>
         <CameraOption
           position={position}
@@ -66,7 +100,7 @@ const RoomCanvas = () => {
         <ambientLight intensity={Math.PI / 2} />
         <group onClick={(e) => handleModelClick(e)}>
           {/* <SceneUpdater /> */}
-          <RooomModel data={isSuccess && frameImages} />
+          <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
             <PalModel />
           </mesh>

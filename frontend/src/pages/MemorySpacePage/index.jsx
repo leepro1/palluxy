@@ -2,38 +2,42 @@ import ContentsLayout from '@layout/ContentsLayout';
 
 import RoomCanvas from '@components/Model/RoomCanvas';
 import GlobalBtn from '@components/GlobalBtn';
+import Loading from '@components/Loading';
 import MemoerySideBar from '@pages/MemorySpacePage/MemorySideBar';
-
-import { useNavigate } from 'react-router-dom';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { fetchUserRoom } from '@api/memorySpace/roomApi';
+import NotFound from '@components/NotFound';
 
 const MemorySpacePage = () => {
-  // 임시변수
-  const isCreateSpace = false;
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  return (
-    <ContentsLayout>
-      {isCreateSpace ? (
-        <div className="flex">
-          <div className="flex grow flex-col">
-            <div className="flex w-[1000px] justify-end gap-x-10 py-7">
-              <GlobalBtn
-                className="bg-pal-purple text-white"
-                size={'md'}
-                text={'모델 생성'}
-              />
-              <GlobalBtn
-                className="bg-pal-purple text-white"
-                size={'md'}
-                text={'추억공간 생성'}
-              />
-            </div>
-            <RoomCanvas />
-          </div>
-          <div className="w-[310px] rounded-xl bg-pal-purple">
-            <MemoerySideBar />
-          </div>
-        </div>
-      ) : (
+  const { userId } = useParams();
+  const userData = queryClient.getQueryData(['userInfo']);
+  const { isError, isLoading, isSuccess } = useQuery({
+    queryKey: ['memorySpace'],
+    queryFn: () => fetchUserRoom(userId),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  });
+
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries({ queryKey: ['memorySpace'] });
+    };
+  }, [userId]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    if (parseInt(userId) !== userData?.id) {
+      return <NotFound />;
+    }
+    return (
+      <ContentsLayout>
         <div className="flex h-full justify-center">
           <div className="font-jamsilMedium text-white">
             <div className="flex flex-col items-center gap-y-6">
@@ -50,9 +54,23 @@ const MemorySpacePage = () => {
             </div>
           </div>
         </div>
-      )}
-    </ContentsLayout>
-  );
+      </ContentsLayout>
+    );
+  }
+  if (isSuccess) {
+    return (
+      <ContentsLayout>
+        <div className="flex">
+          <div className="flex grow items-center">
+            <RoomCanvas />
+          </div>
+          <div className="w-[310px] rounded-xl bg-pal-purple">
+            <MemoerySideBar userId={userId} />
+          </div>
+        </div>
+      </ContentsLayout>
+    );
+  }
 };
 
 export default MemorySpacePage;

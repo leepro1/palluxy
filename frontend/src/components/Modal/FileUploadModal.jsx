@@ -22,7 +22,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
         queryKey: ['palFrameImage'],
       });
       handler(false);
-      window.location.href = '/memorySpace';
+      // window.location.href = '/memorySpace';
     },
   });
   const { mutate: updateMutate } = useMutation({
@@ -34,7 +34,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
         queryKey: ['palFrameImage'],
       });
       handler(false);
-      window.location.href = '/memorySpace';
+      // window.location.href = '/memorySpace';
     },
   });
 
@@ -57,15 +57,21 @@ const FileUploadModal = ({ handler, selectFrame }) => {
     }
     const formData = new FormData();
     const frameData = queryClient.getQueryData(['palFrameImage']);
-    const selectData = frameData.find((frame) => frame.index === selectFrame);
+    const selectData = frameData.images.find(
+      (frame) => frame.index === selectFrame,
+    );
 
     formData.append('file', uploadImage);
     console.log(selectData);
     if (selectData) {
-      formData.append('index', selectFrame);
-      updateMutate({ data: formData, imageId: selectData.imageId });
+      updateMutate({
+        data: formData,
+        imageId: selectData.imageId,
+        albumId: frameData.albumId,
+      });
     } else {
-      fetchMutate({ data: formData });
+      formData.append('index', selectFrame);
+      fetchMutate({ data: formData, albumId: frameData.albumId });
     }
   };
 

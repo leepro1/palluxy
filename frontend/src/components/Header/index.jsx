@@ -2,8 +2,12 @@ import Logo from '@assets/images/logo/logo.svg';
 import { NavLink } from 'react-router-dom';
 import GlobalBtn from '@components/GlobalBtn';
 import ContentsLayout from '@layout/ContentsLayout';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Header = () => {
+  const queryClient = useQueryClient();
+
+  const userData = queryClient.getQueryData(['userInfo']);
   return (
     <ContentsLayout>
       <div className="flex h-[120px] items-center">
@@ -26,7 +30,11 @@ const Header = () => {
               <NavLink to={'/healingmeeting'}>치유모임</NavLink>
             </li>
             <li>
-              <NavLink to={'/memoryspace'}>추억공간</NavLink>
+              <NavLink
+                to={userData ? `/memoryspace/${userData.id}` : `/memoryspace`}
+              >
+                추억공간
+              </NavLink>
             </li>
             <li>
               <NavLink to={'/meetingoverview/1'}>치유모임 모아보기</NavLink>
