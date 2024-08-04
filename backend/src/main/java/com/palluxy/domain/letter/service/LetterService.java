@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LetterService {
 
-  private final AIUtil<GeminiRequest> aiUtil;
+  private final AIUtil<ClaudeRequest> aiUtil;
   private final LetterRepository letterRepository;
   private final PetRepository petRepository;
   private final RoomRepository roomRepository;  // RoomRepository 추가
