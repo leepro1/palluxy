@@ -38,11 +38,14 @@ const routerInfo = [
     path: '/',
     element: <MainLayout />,
     children: [
+      { path: '*', element: <NotFound /> },
       { index: true, element: <HomePage /> },
       // {
       //   path: '/noticeboard',
       //   element: <NoticePage />,
       // },
+
+      // notice
       {
         path: '/noticeboard',
         children: [
@@ -58,6 +61,8 @@ const routerInfo = [
         element: <NoticeDetail />,
       },
       { path: '/noticeboard/create', element: <CreateNotice /> },
+
+      // 치유 모임
       {
         path: '/healingmeeting',
         element: (
@@ -79,7 +84,9 @@ const routerInfo = [
           },
         ],
       },
-      //   { path: '/signin', element: <SigninPage /> },
+
+      // 추억공간
+
       {
         path: '/memoryspacecreate',
         element: (
@@ -96,26 +103,31 @@ const routerInfo = [
             path: ':userId',
             children: [
               {
-                // index: true,
                 path: 'setting',
-                element: <SettingSideBar />,
+                element: (
+                  <AuthGuard auth={true}>
+                    <SettingSideBar />
+                  </AuthGuard>
+                ),
               },
               {
                 path: 'mailbox',
-                element: <MailboxSideBar />,
+                element: (
+                  <AuthGuard auth={true}>
+                    <MailboxSideBar />
+                  </AuthGuard>
+                ),
               },
               {
                 index: true,
-                // path: 'guest-box',
                 element: <GuestBoxSideBar />,
               },
             ],
           },
         ],
       },
-      // { path: '/signin', element: <SigninPage /> },
-      //   { path: '/community', element: <CommunityPage /> },
-      { path: '/404', element: <NotFound /> },
+
+      // 유저
       {
         path: '/signin',
         element: (

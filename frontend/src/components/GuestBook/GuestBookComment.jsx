@@ -35,7 +35,7 @@ const GuestBookComment = ({ data }) => {
           <p>{data.content}</p>
         </div>
         <div className="flex justify-end py-2 text-xs">
-          {data.userId === userData.id && (
+          {data.userId === userData?.id && (
             <span
               className="material-symbols-outlined cursor-pointer"
               onClick={() => {

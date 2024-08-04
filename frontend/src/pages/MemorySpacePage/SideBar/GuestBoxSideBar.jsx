@@ -60,7 +60,6 @@ const GuestBoxSideBar = () => {
               .map((data) => (
                 <GuestBookComment
                   key={data.commentId}
-                  ownerId={userData.ownerId}
                   data={data}
                 />
               ))}
