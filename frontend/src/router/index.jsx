@@ -1,3 +1,5 @@
+// gaurd
+import AuthGuard from './AuthGuard';
 // home
 import HomePage from '@pages/HomePage';
 import MainLayout from '@layout/MainLayout';
@@ -36,11 +38,14 @@ const routerInfo = [
     path: '/',
     element: <MainLayout />,
     children: [
+      { path: '*', element: <NotFound /> },
       { index: true, element: <HomePage /> },
       // {
       //   path: '/noticeboard',
       //   element: <NoticePage />,
       // },
+
+      // notice
       {
         path: '/noticeboard',
         children: [
@@ -56,7 +61,16 @@ const routerInfo = [
         element: <NoticeDetail />,
       },
       { path: '/noticeboard/create', element: <CreateNotice /> },
-      { path: '/healingmeeting', element: <HealingMeetingPage /> },
+
+      // 치유 모임
+      {
+        path: '/healingmeeting',
+        element: (
+          <AuthGuard auth={true}>
+            <HealingMeetingPage />
+          </AuthGuard>
+        ),
+      },
       {
         path: '/meetingoverview',
         children: [
@@ -70,10 +84,16 @@ const routerInfo = [
           },
         ],
       },
-      //   { path: '/signin', element: <SigninPage /> },
+
+      // 추억공간
+
       {
         path: '/memoryspacecreate',
-        element: <MemorySpaceCreatePage />,
+        element: (
+          <AuthGuard auth={true}>
+            <MemorySpaceCreatePage />,
+          </AuthGuard>
+        ),
       },
       {
         path: '/memoryspace',
@@ -83,33 +103,57 @@ const routerInfo = [
             path: ':userId',
             children: [
               {
-                // index: true,
                 path: 'setting',
-                element: <SettingSideBar />,
+                element: (
+                  <AuthGuard auth={true}>
+                    <SettingSideBar />
+                  </AuthGuard>
+                ),
               },
               {
                 path: 'mailbox',
-                element: <MailboxSideBar />,
+                element: (
+                  <AuthGuard auth={true}>
+                    <MailboxSideBar />
+                  </AuthGuard>
+                ),
               },
               {
                 index: true,
-                // path: 'guest-box',
                 element: <GuestBoxSideBar />,
               },
             ],
           },
         ],
       },
-      // { path: '/signin', element: <SigninPage /> },
-      //   { path: '/community', element: <CommunityPage /> },
-      { path: '/404', element: <NotFound /> },
-      { path: '/signin', element: <SignInPage /> },
-      { path: '/signup', element: <SignUpPage /> },
+
+      // 유저
+      {
+        path: '/signin',
+        element: (
+          <AuthGuard auth={false}>
+            <SignInPage />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: '/signup',
+        element: (
+          <AuthGuard auth={false}>
+            <SignUpPage />
+          </AuthGuard>
+        ),
+      },
       { path: '/find', element: <FindPasswordPage /> },
       { path: '/reset', element: <ResetPasswordPage /> },
       {
         path: '/mypage',
-        element: <MyPage />,
+        element: (
+          <AuthGuard auth={true}>
+            <MyPage />
+          </AuthGuard>
+        ),
+
         children: [
           // { index: true, element: <PersonalInfo /> },
           {
@@ -126,7 +170,14 @@ const routerInfo = [
           },
         ],
       },
-      { path: '/admin', element: <AdminPage /> },
+      {
+        path: '/admin',
+        element: (
+          <AuthGuard auth={true}>
+            <AdminPage />
+          </AuthGuard>
+        ),
+      },
     ],
   },
 ];
