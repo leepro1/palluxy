@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import ContentsLayout from '@layout/ContentsLayout';
 import GlobalBtn from '@components/GlobalBtn';
 import { useQuery } from '@tanstack/react-query';
@@ -28,7 +29,7 @@ const MemorySpaceCreatePage = () => {
     register,
     formState: { errors },
     handleSubmit,
-    resetField,
+    // resetField,
   } = useForm({
     defaultValues: {
       name: '',
@@ -40,7 +41,7 @@ const MemorySpaceCreatePage = () => {
       relation: '',
     },
   });
-  const [isFormOpen, setFormOpen] = useState(false);
+  // const [isFormOpen, setFormOpen] = useState(false);
   const [isRoomCreate, setRoomCreate] = useState(false);
   const [isPetCreate, setPetCreate] = useState(false);
   const queryClient = useQueryClient();
@@ -468,6 +469,12 @@ const MemorySpaceCreatePage = () => {
       </div>
     </ContentsLayout>
   );
+};
+
+PersonalityCheckbox.propTypes = {
+  personality: PropTypes.object.isRequired,
+  checkboxName: PropTypes.string.isRequired,
+  register: PropTypes.func.isRequired,
 };
 
 export default MemorySpaceCreatePage;
