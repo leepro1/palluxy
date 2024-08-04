@@ -23,7 +23,7 @@ const Header = () => {
         {/* nav item */}
         <div className="mx-7 grow">
           <div className="block text-center md:hidden">
-            <p className="group relative flex cursor-pointer items-center justify-center gap-x-2 font-jamsilMedium text-white">
+            <div className="group relative flex cursor-pointer items-center justify-center gap-x-2 font-jamsilMedium text-white">
               <span className="material-symbols-outlined">menu</span>
               <span>See More</span>
               <div className="bg-pal- absolute -bottom-[168px] z-50 hidden w-full bg-pal-purple py-3 group-hover:block">
@@ -52,7 +52,7 @@ const Header = () => {
                   </li>
                 </ul>
               </div>
-            </p>
+            </div>
           </div>
           <ul className="hidden gap-x-16 font-jamsilMedium text-sm text-white md:flex md:text-xl">
             <li>
