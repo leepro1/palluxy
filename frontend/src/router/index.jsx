@@ -7,6 +7,7 @@ import NotFound from '@/components/NotFound';
 import NoticeDetail from '@pages/NoticePage/NoticeDetail';
 import CreateNotice from '@pages/NoticePage/CreateNotice';
 import AdminPage from '@pages/AdminPage';
+import NoticePage from '@pages/NoticePage';
 
 // user
 import SignInPage from '@pages/SignInPage';
@@ -18,7 +19,6 @@ import PersonalInfo from '@pages/MyPage/PersonalInfo';
 
 // memorySpace
 import MemorySpacePage from '@pages/MemorySpacePage';
-import NoticePage from '@pages/NoticePage';
 import SettingSideBar from '@pages/MemorySpacePage/SideBar/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/SideBar/MailboxSideBar';
 import GuestBoxSideBar from '@pages/MemorySpacePage/SideBar/GuestBoxSideBar';
