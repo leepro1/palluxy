@@ -30,7 +30,7 @@ public class PetService {
     }
 
     @Transactional
-    public Pet registerPet(PetRegisterRequest request) {
+    public void registerPet(PetRegisterRequest request) {
         List<Personality> personalities = request.personalities().stream()
             .map(p -> new Personality(p.id(), p.type()))
             .toList();
@@ -49,7 +49,7 @@ public class PetService {
             .lastAt(request.lastAt())
             .build();
 
-        return petRepository.save(pet);
+        petRepository.save(pet);
     }
 
     @Transactional
@@ -75,5 +75,11 @@ public class PetService {
         return petRepository.findByUserId(userid)
             .map(PetIdResponse::of)
             .orElseThrow(PetNotFoundException::new);
+    }
+
+    @Transactional
+    public void deletePet(Long petId) {
+        Pet pet = petRepository.findById(petId).orElseThrow(PetNotFoundException::new);
+        petRepository.delete(pet);
     }
 }

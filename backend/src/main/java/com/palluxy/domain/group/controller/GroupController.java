@@ -4,10 +4,9 @@ import com.palluxy.domain.group.dto.GroupRequest;
 import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
-import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.global.common.data.CommonResponse;
-import com.palluxy.global.common.data.Status;
+import com.palluxy.domain.group.dto.Status;
 import com.palluxy.global.config.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,14 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class GroupController {
 
   private final GroupService groupService;
-  private final GroupUtil groupUtil;
   private final FileStorageService fileStorageService;
 
   @GetMapping("/{status}/{page}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> getGroupsByStatus(@PathVariable("status") String status,
       @PathVariable("page") int page) {
-    Status statusEnum = groupUtil.convertToStatusType(status);
+    Status statusEnum = Status.of(status);
     Pageable pageable = PageRequest.of(page, 9);
     GroupResponses groups = groupService.findByStatus(statusEnum, pageable);
     return CommonResponse.ok("모든 그룹이 정상적으로 조회됨", groups);
@@ -82,7 +80,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> updateGroup(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
-    groupService.updateGroupByUser(groupId, groupRequest);
+    groupService.updateGroupInfo(groupId, groupRequest);
 
     return CommonResponse.ok("정상적으로 수정이 반영 되었음");
   }

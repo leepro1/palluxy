@@ -24,7 +24,7 @@ const Header = () => {
         <div className="mx-7 grow">
           <ul className="flex gap-x-16 font-jamsilMedium text-xl text-white">
             <li>
-              <NavLink to={'/'}>공지사항</NavLink>
+              <NavLink to={'/noticeboard'}>공지사항</NavLink>
             </li>
             <li>
               <NavLink to={'/healingmeeting'}>치유모임</NavLink>

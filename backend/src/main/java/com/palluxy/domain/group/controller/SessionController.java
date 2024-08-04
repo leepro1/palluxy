@@ -6,9 +6,10 @@ import com.palluxy.domain.group.entity.Action;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.domain.group.entity.GroupHistory;
 import com.palluxy.domain.group.entity.GroupUser;
+import com.palluxy.domain.group.service.GroupHistoryService;
 import com.palluxy.domain.group.service.GroupService;
+import com.palluxy.domain.group.service.GroupUserService;
 import com.palluxy.domain.group.service.OpenviduService;
-import com.palluxy.domain.group.util.GroupUtil;
 import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.domain.user.entity.User;
 import io.openvidu.java.client.Connection;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class
@@ -25,15 +25,16 @@ SessionController {
 
   private final OpenviduService openviduService;
   private final GroupService groupService;
-  private final GroupUtil groupUtil;
+  private final GroupUserService groupUserService;
+  private final GroupHistoryService groupHistoryService;
 
   @PostMapping("/api/sessions")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createSession(@RequestBody SessionRequest sessionRequest) {
     Group group = groupService.findById(sessionRequest.getGroupId());
-    groupUtil.validateApproveKey(group, sessionRequest.getApproveKey());
+    groupService.validateApproveKey(group, sessionRequest.getApproveKey());
     Session session = openviduService.createSession(sessionRequest.getParams());
-    groupService.createHistory(
+    groupHistoryService.createHistory(
         new GroupHistory(group.getLeader(), group, Action.CREATE));
 
     return CommonResponse.ok(
@@ -45,14 +46,14 @@ SessionController {
   public CommonResponse<?> createConnection(
       @PathVariable("sessionId") String sessionId,
       @RequestBody ConnectionRequest connectionRequest) {
-    GroupUser groupUser = groupService.findByGroupIdAndUserId(connectionRequest.getGroupId(),
+    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(connectionRequest.getGroupId(),
         connectionRequest.getUserId());
-    groupUtil.validateUser(groupUser);
+    groupService.validateUser(groupUser);
 
     Session session = openviduService.getSession(sessionId);
     Connection connection = openviduService.createConnection(session,
         connectionRequest.getParams());
-    groupService.createHistory(
+    groupHistoryService.createHistory(
         new GroupHistory(groupUser.getUser(), groupUser.getGroup(), Action.JOIN));
 
     return CommonResponse.ok(
@@ -80,20 +81,18 @@ SessionController {
     Connection connection = openviduService.getConnection(session, connectionId);
     openviduService.disconnection(session, connection);
 
-    GroupUser groupUser = groupService.findByGroupIdAndUserId(connectionRequest.getGroupId(),
+    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(connectionRequest.getGroupId(),
         connectionRequest.getUserId());
     Group group = groupUser.getGroup();
     User user = groupUser.getUser();
 
     if (connectionRequest.isBanned()) {
-      groupUser.setBanned(true);
-      groupService.saveAndFlushGroupUser(groupUser);
-      groupService.createHistory(new GroupHistory(user, group, Action.EXPEL));
-
+      groupUserService.updateIsBanned(groupUser);
+      groupHistoryService.createHistory(new GroupHistory(user, group, Action.EXPEL));
       return CommonResponse.ok("정상적으로 강퇴되었음");
     }
 
-    groupService.createHistory(new GroupHistory(user, group, Action.CLOSE));
+    groupHistoryService.createHistory(new GroupHistory(user, group, Action.CLOSE));
     return CommonResponse.ok("정상적으로 퇴장되었음");
   }
 }

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  my-server:
+    build: .
+    ports:
+      - 8081:8081
+    depends_on:
+      my-db:
+        condition: service_healthy
+      my-cache-server:
+        condition: service_healthy
+    entrypoint: ["java", "-jar", "/app.jar"]
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/ssafy_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=ssafy
+      - SPRING_REDIS_HOST=my-cache-server
+      - SPRING_REDIS_PORT=6379
+
+  my-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ssafy
+      MYSQL_DATABASE: ssafy_db
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 5s
+      retries: 10
+
+  my-cache-server:
+    image: redis
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10

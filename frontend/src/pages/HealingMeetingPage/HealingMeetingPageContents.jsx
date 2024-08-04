@@ -3,14 +3,32 @@ import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
 import UserVideoComponent from './UserVideoComponent';
-import ChatBox from '@/pages/HealingMeetingPage/ChatBox';
+import ChatMessageBox from '@/components/Chat/ChatMessageBox';
 import ConfirmModal from './ConfirmModal'; // 모달 컴포넌트 추가
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
+import { useQueryClient } from '@tanstack/react-query';
+import { instance } from '@/utils/axios';
 
-const APPLICATION_SERVER_URL = 'http://localhost:5000/';
+const formatDateRange = (startDate, endDate) => {
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const start = new Date(startDate).toLocaleString('ko-KR', options);
+  const end = new Date(endDate).toLocaleString('ko-KR', options);
+
+  return `${start.replace(',', '')}~${end.split(' ')[3]}`;
+};
 
 const HealingMeetingPageContents = () => {
-  const [mySessionId, setMySessionId] = useState('SessionA');
+  const queryClient = useQueryClient();
+  const userInfo = queryClient.getQueryData(['userInfo']);
+  const [mySessionId, setMySessionId] = useState(null);
   const [myUserName, setMyUserName] = useState(
     'Participant' + Math.floor(Math.random() * 100),
   );
@@ -22,9 +40,15 @@ const HealingMeetingPageContents = () => {
   const [isMike, setIsMike] = useState(true);
   const [isCamera, setIsCamera] = useState(true);
   const [role, setRole] = useState('SUBSCRIBER');
+  const [data, setData] = useState(null);
   const OV = useRef(null);
 
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const scrollRef = useRef(null);
+
   const [showModal, setShowModal] = useState(false); // 모달 상태
+
   const [targetSubscriber, setTargetSubscriber] = useState(null); // 강퇴 대상 상태
 
   const handleToggle = (kind) => {
@@ -49,6 +73,19 @@ const HealingMeetingPageContents = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!userInfo) return;
+      try {
+        const response = await instance.get(`api/group/my/${userInfo.id}/0`);
+        setData(response.data.result.groups);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, [userInfo]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -109,10 +146,15 @@ const HealingMeetingPageContents = () => {
     setTargetSubscriber(null);
   };
 
-  const joinSession = async () => {
+  const joinSession = async (id) => {
+    if (mySessionId === null) {
+      setMySessionId(id);
+      return;
+    }
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
     setSession(newSession);
+    console.log(newSession);
     newSession.on('streamCreated', (event) => {
       const subscriber = newSession.subscribe(event.stream, undefined);
       setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
@@ -126,8 +168,23 @@ const HealingMeetingPageContents = () => {
       console.warn(exception);
     });
 
+    newSession.on('signal:my-chat', (event) => {
+      if (event.from.connectionId !== newSession.connection.connectionId) {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    });
+
+    newSession.on('signal:my-chat', (event) => {
+      if (event.from.connectionId !== newSession.connection.connectionId) {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    });
+
     try {
-      const token = await getToken(role);
+      const token = await getToken(role, id);
+      console.log(token);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,
@@ -174,7 +231,7 @@ const HealingMeetingPageContents = () => {
     OV.current = null;
     setSession(undefined);
     setSubscribers([]);
-    setMySessionId('SessionA');
+    setMySessionId(null);
     setMyUserName('Participant' + Math.floor(Math.random() * 100));
     setMainStreamManager(undefined);
     setPublisher(undefined);
@@ -215,34 +272,76 @@ const HealingMeetingPageContents = () => {
     }
   }, [session, mainStreamManager, currentVideoDevice]);
 
-  const getToken = async (role) => {
-    const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId, role);
+  const getToken = async (role, id) => {
+    const sessionId = await createSession(id);
+    console.log(sessionId);
+    return await createToken(sessionId, role, id);
   };
 
   const createSession = async (sessionId) => {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + 'api/sessions',
-      { customSessionId: sessionId },
+    const response = await instance.post(
+      'api/sessions',
+      {
+        params: {
+          customSessionId: String(sessionId),
+        },
+        // customSessio nId: sessionId,
+        userId: userInfo.id,
+        groupId: sessionId,
+        approveKey: '123456',
+      },
       {
         headers: { 'Content-Type': 'application/json' },
       },
     );
+    console.log(response);
     return response.data;
   };
 
-  const createToken = async (sessionId, role) => {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
-      { role },
+  const createToken = async (sessionId, role, id) => {
+    console.log(sessionId);
+    console.log(id);
+    const response = await instance.post(
+      `api/sessions/${sessionId.result}/connections`,
+      { role, userId: userInfo.id, groupId: id },
       {
         headers: { 'Content-Type': 'application/json' },
       },
     );
-    return response.data;
+    console.log(response);
+    return response.data.result;
   };
 
-  const data = Array.from({ length: 4 }, (_, index) => `dummydata${index + 1}`);
+  const sendMessage = () => {
+    if (text.trim()) {
+      const newMessage = {
+        sender: myUserName,
+        content: text,
+        type: 'CHAT',
+        timestamp: new Date().toISOString(),
+      };
+      session
+        .signal({
+          data: JSON.stringify(newMessage),
+          to: [],
+          type: 'my-chat',
+        })
+        .then(() => {
+          console.log('Message successfully sent');
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setText('');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   return (
     <div className="container mx-auto">
@@ -278,26 +377,38 @@ const HealingMeetingPageContents = () => {
           </div>
 
           <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {data.map((item, index) => (
-              <form
-                className="m-3 flex w-3/4 flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
-                key={index}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  joinSession();
-                }}
-              >
-                <div className="relative w-full rounded-md">
-                  <div className="mb-1 flex w-full justify-center">
-                    <img
-                      src={defaultImage}
-                      alt="default"
-                      className="rounded-md"
-                    />
+            {data &&
+              data.map((item, index) => (
+                <form
+                  className="m-3 flex w-3/4 flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
+                  key={index}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    joinSession(item.id);
+                  }}
+                >
+                  <div className="relative w-full rounded-md">
+                    {item.filePath === null ? (
+                      <div className="mb-1 flex aspect-square w-full justify-center">
+                        <img
+                          src={defaultImage}
+                          alt="image"
+                          className="rounded-md"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mb-1 flex aspect-square w-full justify-center">
+                        <img
+                          src={item.filePath}
+                          alt="image"
+                          className="rounded-md"
+                        />
+                      </div>
+                    )}
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
                       <button
                         onClick={(e) => {
-                          changeSession(item);
+                          changeSession(item.id);
                         }}
                         type="submit"
                         className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite"
@@ -306,24 +417,26 @@ const HealingMeetingPageContents = () => {
                       </button>
                     </div>
                   </div>
-                </div>
-                <div className="w-full p-4 text-left">
-                  <p className="mb-2 text-2xl font-semibold text-gray-900">
-                    여기가 제목
-                  </p>
-                  <div className="flex flex-row gap-x-2 text-pal-purple">
-                    <span className="material-symbols-outlined">
-                      calendar_month
-                    </span>
-                    <p>2024.07.26 14:30~15:00</p>
+                  <div className="w-full p-4 text-left">
+                    <p className="mb-2 text-2xl font-semibold text-gray-900">
+                      {item.title}
+                    </p>
+                    <div className="flex flex-row gap-x-2 text-pal-purple">
+                      <span className="material-symbols-outlined">
+                        calendar_month
+                      </span>
+                      <p>{formatDateRange(item.startTime, item.endTime)}</p>
+                    </div>
+                    <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
+                      <span className="material-symbols-outlined">groups</span>
+                      <p>
+                        {item.maxCapacity - item.remainCapacity}/
+                        {item.maxCapacity}
+                      </p>
+                    </div>
                   </div>
-                  <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
-                    <span className="material-symbols-outlined">groups</span>
-                    <p>2/4</p>
-                  </div>
-                </div>
-              </form>
-            ))}
+                </form>
+              ))}
           </div>
         </ContentsLayout>
       ) : null}
@@ -461,16 +574,18 @@ const HealingMeetingPageContents = () => {
                   </span>
                   <span className="text-sm text-red-500">세션 나가기</span>
                 </div>
-                {/* <input
-                  className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
-                  type="button"
-                  id="buttonLeaveSession"
-                  onClick={leaveSession}
-                  value="세션 나가기"
-                /> */}
               </div>
             </div>
-            <ChatBox className="h-auto w-2/12" />
+            <div className="flex h-screen w-3/12">
+              <ChatMessageBox
+                messages={messages}
+                scrollRef={scrollRef}
+                myUserName={myUserName}
+                onSend={sendMessage}
+                text={text}
+                setText={setText}
+              />
+            </div>
           </div>
         </ContentsLayout>
       ) : null}

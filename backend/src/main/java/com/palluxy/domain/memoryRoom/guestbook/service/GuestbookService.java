@@ -11,6 +11,8 @@ public interface GuestbookService {
 
     GuestbookDto getGuestbookById(Long guestbookId);
 
+    GuestbookDto getGuestbookByRoomId(Long roomId);  // Room ID로 Guestbook 찾기 추가
+
     GuestbookDto updateGuestbook(Long guestbookId, Long userId, GuestbookDto guestbookDto);
 
     void addComment(Long guestbookId, Long userId, String content);
