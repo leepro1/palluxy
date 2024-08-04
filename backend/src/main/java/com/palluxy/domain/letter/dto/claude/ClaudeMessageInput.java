@@ -1,4 +1,4 @@
-package com.palluxy.domain.letter.dto.ai;
+package com.palluxy.domain.letter.dto.claude;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;

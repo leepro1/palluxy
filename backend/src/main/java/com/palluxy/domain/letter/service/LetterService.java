@@ -1,12 +1,11 @@
 package com.palluxy.domain.letter.service;
 
-import com.palluxy.domain.letter.dto.AIRequest;
 import com.palluxy.domain.letter.dto.Writer;
-import com.palluxy.domain.letter.dto.ai.ClaudeRequest;
+import com.palluxy.domain.letter.dto.claude.ClaudeRequest;
+import com.palluxy.domain.letter.dto.gemini.GeminiRequest;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.repository.LetterRepository;
 import com.palluxy.domain.letter.util.AIUtil;
-import com.palluxy.domain.letter.util.ClaudeUtil;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import java.text.MessageFormat;
@@ -41,10 +40,11 @@ public class LetterService {
     return letterRepository.findByPetIdAndOpenedAtBefore(petId, LocalDateTime.now());
   }
 
-  public void sendLetters(Long petId) {
+  public void sendLetters(Long petId, Long roomId) {
     List<Letter> letters = findByPetId(petId);
     Pet pet = getPet(petId);
-    aiUtil.sendRequest(aiUtil.getRequest(letters, pet), petId);
+    Room room = getRoom(roomId);
+    aiUtil.sendRequest(aiUtil.getRequest(letters, pet), petId, room);
   }
 
   public void saveFirstLetter(String relation, String petName, Long petId, Long roomId) {

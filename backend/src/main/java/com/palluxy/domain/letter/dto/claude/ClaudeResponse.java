@@ -1,6 +1,5 @@
-package com.palluxy.domain.letter.dto.ai;
+package com.palluxy.domain.letter.dto.claude;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
