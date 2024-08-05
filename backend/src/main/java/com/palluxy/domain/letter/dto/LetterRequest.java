@@ -1,11 +1,5 @@
 package com.palluxy.domain.letter.dto;
 
-import lombok.Getter;
-import lombok.ToString;
+public record LetterRequest(String title, String content, Long roomId) {
 
-@Getter
-public class LetterRequest {
-  private String title;
-  private String content;
-  private Long roomId;
 }

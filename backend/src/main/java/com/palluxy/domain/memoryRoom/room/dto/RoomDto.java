@@ -25,6 +25,8 @@ public class RoomDto {
     private int backgroundMusic;
     private int type;
     private int likeCount; // 좋아요 수 필드 추가
+    private boolean liked = false; // 기본값을 false로 설정
+
 
     private Long userId;
 

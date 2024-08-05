@@ -1,4 +1,7 @@
 package com.palluxy.domain.report.entity;
 
-public class Report {
+import com.palluxy.global.common.data.BaseEntity;
+
+public class Report extends BaseEntity {
+
 }

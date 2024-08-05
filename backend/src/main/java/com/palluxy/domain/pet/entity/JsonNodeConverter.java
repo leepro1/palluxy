@@ -25,7 +25,8 @@ public class JsonNodeConverter implements AttributeConverter<List<Personality>, 
     @Override
     public List<Personality> convertToEntityAttribute(String dbData) {
         try {
-            CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, Personality.class);
+            CollectionType listType = objectMapper.getTypeFactory()
+                .constructCollectionType(List.class, Personality.class);
             return objectMapper.readValue(dbData, listType);
         } catch (IOException e) {
             throw new RuntimeException("Failed to convert String to JSON attribute", e);
