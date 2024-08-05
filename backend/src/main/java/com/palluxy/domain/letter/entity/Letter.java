@@ -9,14 +9,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "idx_letter_room_id_and_opened_at", columnList = "room_id, opened_at"))
 public class Letter {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -41,7 +41,8 @@ public class Letter {
   private Room room;
 
   @Builder
-  public Letter(String title, String content, Writer writer, Long petId, LocalDateTime openedAt, Room room) {
+  public Letter(String title, String content, Writer writer, Long petId, LocalDateTime openedAt,
+      Room room) {
     this.title = title;
     this.content = content;
     this.writer = writer;

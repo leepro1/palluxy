@@ -28,7 +28,7 @@ public class LetterController {
   @GetMapping("/room/{roomId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> getLettersByRoomId(@PathVariable("roomId") Long roomId) {
-    List<Letter> letters = letterService.findLettersByRoomId(roomId);
+    List<Letter> letters = letterService.findLettersByRoomIdAndOpenedAtBefore(roomId);
     return CommonResponse.ok("정상적으로 편지가 조회되었습니다.", letters);
   }
 

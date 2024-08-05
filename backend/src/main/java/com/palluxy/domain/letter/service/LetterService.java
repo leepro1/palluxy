@@ -22,5 +22,5 @@ public interface LetterService {
 
   Room getRoom(Long roomId);
 
-  List<Letter> findLettersByRoomId(Long roomId);
+  List<Letter> findLettersByRoomIdAndOpenedAtBefore(Long roomId);
 }

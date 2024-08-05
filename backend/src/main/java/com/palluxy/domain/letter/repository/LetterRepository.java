@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface LetterRepository extends JpaRepository<Letter, Long> {
   List<Letter> findByPetIdAndOpenedAtBefore(Long petId, LocalDateTime now);
   List<Letter> findByPetId(Long petId);
-  List<Letter> findByRoom_RoomId(Long roomId);
+  List<Letter> findByRoom_RoomIdAndOpenedAtBefore(Long roomId, LocalDateTime now);
 
 }
