@@ -28,7 +28,7 @@ public record GroupResponse(
     public static GroupResponse of(Group group) {
         List<Long> groupUserIds = new ArrayList<>();
         for (GroupUser user : group.getGroupUser()) {
-            groupUserIds.add(user.getId());
+            groupUserIds.add(user.getUser().getId());
         }
 
         return GroupResponse.builder()
