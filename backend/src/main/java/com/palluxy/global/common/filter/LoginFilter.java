@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.palluxy.domain.user.dto.CustomUserDetails;
 import com.palluxy.domain.user.dto.request.LoginRequest;
 import com.palluxy.domain.user.dto.response.LoginUserResponse;
-import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.domain.user.service.RefreshServiceImpl;
 import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.global.common.util.CookieUtil;
 import com.palluxy.global.common.util.JWTUtil;
@@ -33,7 +33,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final RefreshService refreshService;
+    private final RefreshServiceImpl refreshService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,

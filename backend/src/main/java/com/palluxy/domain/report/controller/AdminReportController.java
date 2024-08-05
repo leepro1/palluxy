@@ -21,7 +21,8 @@ public class AdminReportController {
 
   @GetMapping("/report/room/{status}/{pageNumber}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> getRoomReportByStatus(@PathVariable("status") String strStatus, @PathVariable("pageNumber") int pageNumber) {
+  public CommonResponse<?> getRoomReportByStatus(@PathVariable("status") String strStatus,
+      @PathVariable("pageNumber") int pageNumber) {
     Status status = Status.of(strStatus);
     Pageable pageable = PageRequest.of(pageNumber, 10);
 
@@ -45,11 +46,13 @@ public class AdminReportController {
 
   @GetMapping("/report/guestbook/{status}/{pageNumber}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> getGuestRoomReportByStatus(@PathVariable("status") String strStatus, @PathVariable("pageNumber") int pageNumber) {
+  public CommonResponse<?> getGuestRoomReportByStatus(@PathVariable("status") String strStatus,
+      @PathVariable("pageNumber") int pageNumber) {
     Status status = Status.of(strStatus);
     Pageable pageable = PageRequest.of(pageNumber, 10);
 
-    ReportResponses<GuestBookReport> reports = reportService.findGuestBookReportByStatus(status, pageable);
+    ReportResponses<GuestBookReport> reports = reportService.findGuestBookReportByStatus(status,
+        pageable);
     return CommonResponse.ok("정상적으로 방명록 신고가 조회됨", reports);
   }
 
