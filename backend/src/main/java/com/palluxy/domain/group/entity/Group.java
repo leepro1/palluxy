@@ -17,7 +17,7 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Table(name = "`group`")
+@Table(name = "`group`", indexes = @Index(name = "idx_group_status", columnList = "status"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group {
 
@@ -39,7 +39,6 @@ public class Group {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime updatedAt;
 
-  @Setter
   @Enumerated(EnumType.STRING)
   private Status status;
 
@@ -84,5 +83,9 @@ public class Group {
   public void updateInfo(String title, String description) {
     this.title = title;
     this.description = description;
+  }
+
+  public void updateStatus(Status status, String key) {
+    this.status = status;
   }
 }

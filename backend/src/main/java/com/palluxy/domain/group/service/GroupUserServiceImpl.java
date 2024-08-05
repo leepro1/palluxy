@@ -26,7 +26,7 @@ public class GroupUserServiceImpl implements GroupUserService {
 
   public void createGroupUser(Group group, User user, boolean isLeader) {
     GroupUser groupUser = new GroupUser(group, user);
-    groupUser.setLeader(isLeader);
+    groupUser.updateIsLeader(isLeader);
     groupUserRepository.saveAndFlush(groupUser);
   }
 

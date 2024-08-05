@@ -4,7 +4,6 @@ import com.palluxy.domain.email.service.EmailService;
 import com.palluxy.domain.group.service.GroupService;
 import com.palluxy.domain.group.entity.Group;
 import com.palluxy.global.common.data.CommonResponse;
-import com.palluxy.domain.email.service.EmailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

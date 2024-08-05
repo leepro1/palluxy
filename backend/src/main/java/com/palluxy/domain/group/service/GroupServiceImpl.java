@@ -83,7 +83,7 @@ public class GroupServiceImpl implements GroupService {
         .filePath(filePath)
         .build();
 
-    group.setStatus(Status.WAIT);
+    group.updateStatus(Status.WAIT, null);
     groupRepository.saveAndFlush(group);
     groupUserService.createGroupUser(group, leader, true);
   }
@@ -101,7 +101,7 @@ public class GroupServiceImpl implements GroupService {
     GroupUser groupUser = groupUserService.findByGroupIdAndUserId(groupId, userId);
     Group group = findById(groupId);
     if (groupUser.isLeader()) {
-      group.setStatus(Status.CANCEL);
+      group.updateStatus(Status.CANCEL, null);
       return;
     }
 
@@ -130,10 +130,7 @@ public class GroupServiceImpl implements GroupService {
   }
 
   public void updateGroupStatus(Group group, Status status, String key) {
-    group.setStatus(status);
-    if (status == Status.ACCEPT) {
-      group.updateApproveKey(key);
-    }
+    group.updateStatus(status, key);
     groupRepository.saveAndFlush(group);
   }
 

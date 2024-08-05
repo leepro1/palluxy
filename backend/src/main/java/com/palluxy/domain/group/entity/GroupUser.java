@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "idx_group_user_group_id_and_user_id", columnList = "group_id, user_id"))
 public class GroupUser {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private boolean isLeader;
+  private boolean isLeader = false;
   @Setter
   private boolean isBanned;
   @CreationTimestamp
@@ -37,5 +37,9 @@ public class GroupUser {
   public GroupUser(Group group, User user) {
     this.group = group;
     this.user = user;
+  }
+
+  public void updateIsLeader(boolean isLeader) {
+    this.isLeader = isLeader;
   }
 }
