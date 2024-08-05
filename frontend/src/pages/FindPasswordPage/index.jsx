@@ -40,24 +40,20 @@ const FindPasswordModal = () => {
     }
   };
 
-  const handleBackgroundClick = (e) => {
-    if (e.target === e.currentTarget) {
-      navigate(-1);
-    }
-  };
+  // const handleBackgroundClick = (e) => {
+  //   if (e.target === e.currentTarget) {
+  //     navigate(-1);
+  //   }
+  // };
 
   const sendResetVerificationCode = async (email) => {
     try {
-      const response = await fetch('http://localhost:8080/api/email/code', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ type: 'password', email }),
+      const response = await instance.post('/api/email/code', {
+        type: 'password',
+        email,
       });
-      if (!response.ok) {
-        const responseData = await response.json();
-        throw new Error(responseData.message || '이메일 전송에 실패했습니다.');
+      if (response.status !== 200) {
+        throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
       }
 
       setResetVerificationCodeSent(true);
@@ -68,63 +64,6 @@ const FindPasswordModal = () => {
 
   const email = watch('email', '');
   const isEmailValid = validateEmail(email) == true;
-
-  // const FindPasswordModal = () => {
-  //   const navigate = useNavigate();
-  //   const queryClient = useQueryClient();
-  //   const [successMessage, setSuccessMessage] = useState('');
-
-  //   const {
-  //     handleSubmit,
-  //     control,
-  //     watch,
-  //     formState: { errors },
-  //     setError,
-  //   } = useForm({ mode: 'onChange' });
-
-  //   const validateEmail = (email) => {
-  //     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //     return emailPattern.test(email) || '이메일의 형태를 갖추어야 합니다.';
-  //   };
-
-  //   const sendResetVerificationCode = async (payload) => {
-  //     try {
-  //       const response = await instance.post('/api/email/code', payload);
-
-  //       if (response.status !== 200) {
-  //         throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
-  //       }
-
-  //       return response.data;
-  //     } catch (error) {
-  //       console.error('이메일 전송 실패', error);
-  //       // throw error;
-  //     }
-  //   };
-
-  //   const { mutate: sendResetEmail } = useMutation({
-  //     mutationFn: sendResetVerificationCode,
-  //     onSuccess: async (data) => {
-  //       setSuccessMessage(
-  //         '성공적으로 이메일을 발송했습니다.\n 전송되기까지 시간이 소요될 수 있으니 기다려주세요!',
-  //       );
-  //       queryClient.invalidateQueries('emailVerification');
-  //     },
-  //     onError: (error) => {
-  //       setError('email', {
-  //         type: 'manual',
-  //         message: error.message,
-  //       });
-  //     },
-  //   });
-
-  //   const onSubmit = (data) => {
-  //     try {
-  //       sendResetEmail({ type: 'password', email: data.email });
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
 
   return (
     <ContentsLayout>
