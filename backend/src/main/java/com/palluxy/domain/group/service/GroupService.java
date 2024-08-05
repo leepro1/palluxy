@@ -1,189 +1,39 @@
 package com.palluxy.domain.group.service;
 
 import com.palluxy.domain.group.dto.GroupRequest;
-import com.palluxy.domain.group.dto.GroupResponse;
 import com.palluxy.domain.group.dto.GroupResponses;
 import com.palluxy.domain.group.entity.Group;
-import com.palluxy.domain.group.entity.GroupUser;
 import com.palluxy.domain.group.dto.Status;
-import com.palluxy.domain.group.exception.ValidateException;
-import com.palluxy.domain.user.entity.*;
-import com.palluxy.global.common.error.NotFoundException;
-import com.palluxy.domain.group.repository.GroupRepository;
-import com.palluxy.domain.user.repository.UserRepository;
-
-import java.util.ArrayList;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import com.palluxy.domain.group.entity.GroupUser;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+public interface GroupService {
 
-@Service
-@RequiredArgsConstructor
-public class GroupService {
+  GroupResponses findByStatus(Status status, Pageable pageable);
 
-  private final GroupRepository groupRepository;
-  private final GroupUserService groupUserService;
-  private final UserRepository userRepository;
-  private final Random random = new Random();
+  GroupResponses findAvailableGroups(Pageable pageable);
 
-  public GroupResponses findByStatus(Status status, Pageable pageable) {
-    Page<Group> groupPage = groupRepository.findByStatus(status, pageable);
-    return getGroupResponses(groupPage);
-  }
+  Group findById(Long groupId);
 
-  public GroupResponses findAvailableGroups(Pageable pageable) {
-    Page<Group> groupPage = groupRepository.findAvailableGroup(pageable);
-    return getGroupResponses(groupPage);
-  }
+  GroupResponses searchByKey(String key, String value, Pageable pageable);
 
-  public Group findById(Long groupId) {
-    Optional<Group> findGroup = groupRepository.findById(groupId);
-    if (findGroup.isEmpty()) {
-      throw new NotFoundException("그룹");
-    }
+  void createGroup(GroupRequest groupRequest, String filePath);
 
-    return findGroup.get();
-  }
+  Group approveGroup(Long groupId);
 
-  public GroupResponses findGroupsByUserId(Long userId, Pageable pageable) {
-    Page<Group> groupPage = groupRepository.findGroupsByUserId(userId, pageable);
-    return getGroupResponses(groupPage);
-  }
+  void rejectGroup(Long groupId);
 
-  public GroupResponses searchByKey(String key, String value, Pageable pageable) {
-    Page<Group> groupPage = null;
-    switch (key) {
-      case "title":
-        groupPage = groupRepository.findByTitleContaining(value, pageable);
-        break;
-      case "leader":
-        groupPage = groupRepository.findByLeaderContaining(value, pageable);
-        break;
-    }
+  void updateGroupInfo(Long groupId, GroupRequest groupRequest);
 
-    return getGroupResponses(groupPage);
-  }
+  void createJoin(Long groupId, Long userId);
 
-  public void createGroup(GroupRequest groupRequest, String filePath) {
-    Optional<User> leader = userRepository.findById(groupRequest.getLeaderId());
-    if (leader.isEmpty()) {
-      throw new NotFoundException("유저");
-    }
+  void cancelJoin(Long groupId, Long userId);
 
-    Group group = Group.builder()
-            .title(groupRequest.getTitle())
-            .description(groupRequest.getDescription())
-            .startTime(groupRequest.getStartTime())
-            .endTime(groupRequest.getEndTime())
-            .maxCapacity(groupRequest.getMaxCapacity())
-            .remainingCapacity(groupRequest.getMaxCapacity() - 1)
-            .leader(leader.get())
-            .filePath(filePath)
-            .build();
+  GroupResponses findGroupsByUserId(Long userId, Pageable pageable);
 
-    group.setStatus(Status.WAIT);
-    groupRepository.saveAndFlush(group);
-    groupUserService.createGroupUser(group, leader.get(), true);
-  }
+  String getUserEmail(Long userId);
 
-  public void createJoin(Long groupId, Long userId) {
-    Group group = findById(groupId);
-    Optional<User> user = userRepository.findById(userId);
-    if (user.isEmpty()) {
-      throw new NotFoundException("유저");
-    }
-    groupUserService.createGroupUser(group, user.get(), false);
+  void validateApproveKey(Group group, String approveKey);
 
-    group.updateCapacity(group.getRemainingCapacity() - 1);
-    groupRepository.saveAndFlush(group);
-  }
-
-  public void cancelJoin(Long groupId, Long userId) {
-    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(groupId, userId);
-    Group group = findById(groupId);
-    if (groupUser.isLeader()) {
-      group.setStatus(Status.CANCEL);
-      return;
-    }
-
-    groupUserService.delete(groupUser);
-    group.updateCapacity(group.getRemainingCapacity() + 1);
-    groupRepository.saveAndFlush(group);
-  }
-
-  public void updateGroupInfo(Long groupId, GroupRequest request) {
-    Group group = findById(groupId);
-    group.updateInfo(request.getTitle(), request.getDescription());
-    groupRepository.saveAndFlush(group);
-  }
-
-  public Group approveGroup(Long groupId) {
-    Group group = findById(groupId);
-    String key = generateKey();
-    updateGroupStatus(group, Status.ACCEPT, key);
-
-    return group;
-  }
-
-  public void rejectGroup(Long groupId) {
-    Group group = findById(groupId);
-    updateGroupStatus(group, Status.REJECT, null);
-  }
-
-  public void updateGroupStatus(Group group, Status status, String key) {
-    group.setStatus(status);
-    if (status == Status.ACCEPT) {
-      group.updateApproveKey(key);
-    }
-    groupRepository.saveAndFlush(group);
-  }
-
-  public String generateKey() {
-    StringBuilder key = new StringBuilder();
-    for (int i = 0; i < 6; i++) {
-      boolean isNumber = random.nextBoolean();
-
-      int origin = isNumber ? '0' : 'A';
-      int bound = (isNumber ? '9' : 'Z') + 1;
-
-      key.append((char) random.nextInt(origin, bound));
-    }
-
-    return key.toString();
-  }
-
-  public String getUserEmail(Long userId) {
-    Optional<User> user = userRepository.findById(userId);
-    if (!user.isPresent()) {
-      throw new NotFoundException("User");
-    }
-
-    return user.get().getEmail();
-  }
-
-  public void validateApproveKey(Group group, String approveKey) {
-    if (group.getStatus() != Status.ACCEPT || !group.getApproveKey().equals(approveKey)) {
-      throw new ValidateException("인증키가 유효하지 않음");
-    }
-  }
-
-  public void validateUser(GroupUser groupUser) {
-    if (groupUser.isBanned()) {
-      throw new ValidateException("강퇴당한 유저는 재입장 할 수 없음");
-    }
-  }
-
-  public GroupResponses getGroupResponses(Page<Group> groupPage) {
-    List<GroupResponse> groups = new ArrayList<>();
-    for (Group group : groupPage) {
-      groups.add(GroupResponse.of(group));
-    }
-
-    return new GroupResponses(groups, groupPage.getTotalElements());
-  }
+  void validateUser(GroupUser groupUser);
 }

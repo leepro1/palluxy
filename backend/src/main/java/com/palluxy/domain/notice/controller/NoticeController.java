@@ -1,12 +1,10 @@
 package com.palluxy.domain.notice.controller;
 
 import com.palluxy.domain.notice.dto.NoticeRequest;
-import com.palluxy.domain.notice.dto.NoticeDto;
 import com.palluxy.domain.notice.dto.NoticeResponse;
 import com.palluxy.domain.notice.entity.Notice;
 import com.palluxy.domain.notice.service.NoticeService;
 import com.palluxy.global.common.data.CommonResponse;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +43,8 @@ public class NoticeController {
 
   @PatchMapping("/detail/{noticeId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> updateNotice(@PathVariable("noticeId") Long noticeId, @RequestBody NoticeRequest noticeRequest) {
+  public CommonResponse<?> updateNotice(@PathVariable("noticeId") Long noticeId,
+      @RequestBody NoticeRequest noticeRequest) {
     noticeService.updateNotice(noticeId, noticeRequest);
     return CommonResponse.ok("공지사항이 정상적으로 수정되었음");
   }

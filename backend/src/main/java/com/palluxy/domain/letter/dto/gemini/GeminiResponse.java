@@ -8,42 +8,48 @@ import java.util.List;
 @ToString
 @Getter
 public class GeminiResponse {
-    List<Candidate> candidates;
-    UsageMetadata usageMetadata;
 
-    @Getter
-    static class Candidate {
-        Content content;
-        String finishReason;
-        int index;
-        List<SafetyRating> safetyRatings;
-    }
+  List<Candidate> candidates;
+  UsageMetadata usageMetadata;
 
-    @Getter
-    static class Content {
-        List<Part> parts;
-        String role;
-    }
+  @Getter
+  static class Candidate {
 
-    @Getter
-    static class Part {
-        String text;
-    }
+    Content content;
+    String finishReason;
+    int index;
+    List<SafetyRating> safetyRatings;
+  }
 
-    @Getter
-    static class SafetyRating {
-        String category;
-        String probability;
-    }
+  @Getter
+  static class Content {
 
-    @Getter
-    static class UsageMetadata {
-        int promptTokenCount;
-        int candidatesTokenCount;
-        int totalTokenCount;
-    }
+    List<Part> parts;
+    String role;
+  }
 
-    public String getText() {
-        return candidates.get(0).content.parts.get(0).text;
-    }
+  @Getter
+  static class Part {
+
+    String text;
+  }
+
+  @Getter
+  static class SafetyRating {
+
+    String category;
+    String probability;
+  }
+
+  @Getter
+  static class UsageMetadata {
+
+    int promptTokenCount;
+    int candidatesTokenCount;
+    int totalTokenCount;
+  }
+
+  public String getText() {
+    return candidates.get(0).content.parts.get(0).text;
+  }
 }
