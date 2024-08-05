@@ -12,17 +12,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
-  Page<Group> findByStatus(Status status, Pageable pageable);
+    Page<Group> findByStatus(Status status, Pageable pageable);
 
-  Page<Group> findByTitleContaining(String title, Pageable pageable);
+    Page<Group> findByTitleContaining(String title, Pageable pageable);
 
-  @Query(
-      "SELECT g FROM Group g WHERE g.leader.id IN (SELECT u.id FROM User u WHERE u.nickname LIKE %:nickname%)")
-  Page<Group> findByLeaderContaining(@Param("nickname") String nickname, Pageable pageable);
+    @Query(
+        "SELECT g FROM Group g WHERE g.leader.id IN (SELECT u.id FROM User u WHERE u.nickname LIKE %:nickname%)")
+    Page<Group> findByLeaderContaining(@Param("nickname") String nickname, Pageable pageable);
 
-  @Query("SELECT g FROM Group g WHERE g.status = 'ACCEPT' AND g.remainingCapacity > 0 AND g.startTime > CURRENT_TIMESTAMP")
-  Page<Group> findAvailableGroup(Pageable pageable);
+    @Query("SELECT g FROM Group g WHERE g.status = 'ACCEPT' AND g.remainingCapacity > 0 AND g.startTime > CURRENT_TIMESTAMP")
+    Page<Group> findAvailableGroup(Pageable pageable);
 
-  @Query("SELECT g FROM Group g JOIN g.groupUser gu WHERE gu.user.id = :userId")
-  Page<Group> findGroupsByUserId(@Param("userId") Long userId, Pageable pageable);
+    @Query("SELECT g FROM Group g JOIN g.groupUser gu WHERE gu.user.id = :userId")
+    Page<Group> findGroupsByUserId(@Param("userId") Long userId, Pageable pageable);
 }

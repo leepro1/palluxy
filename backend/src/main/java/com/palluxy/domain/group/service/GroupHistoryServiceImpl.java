@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GroupHistoryServiceImpl implements GroupHistoryService {
 
-  private final GroupHistoryRepository groupHistoryRepository;
+    private final GroupHistoryRepository groupHistoryRepository;
 
-  public void createHistory(GroupHistory groupHistory) {
-    groupHistoryRepository.saveAndFlush(groupHistory);
-  }
+    public void createHistory(GroupHistory groupHistory) {
+        groupHistoryRepository.saveAndFlush(groupHistory);
+    }
 }

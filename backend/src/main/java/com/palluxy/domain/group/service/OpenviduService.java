@@ -7,15 +7,15 @@ import java.util.Map;
 
 public interface OpenviduService {
 
-  Session createSession(Map<String, Object> params);
+    Session createSession(Map<String, Object> params);
 
-  Session getSession(String sessionId);
+    Session getSession(String sessionId);
 
-  Connection getConnection(Session session, String connectionId);
+    Connection getConnection(Session session, String connectionId);
 
-  Connection createConnection(Session session, Map<String, Object> params);
+    Connection createConnection(Session session, Map<String, Object> params);
 
-  void closeSession(Session session);
+    void closeSession(Session session);
 
-  void disconnection(Session session, Connection connection);
+    void disconnection(Session session, Connection connection);
 }

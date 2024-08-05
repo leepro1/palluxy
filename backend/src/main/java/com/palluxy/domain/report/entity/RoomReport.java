@@ -16,42 +16,40 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RoomReport extends Report{
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private Long roomId;
+public class RoomReport extends Report {
 
-  private String description;
-  private Status status;
-  @CreationTimestamp
-  private LocalDateTime createdAt;
-  private Long reportFrom;
-  private Long reportTo;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long roomId;
 
-  @Builder
-  public RoomReport(Long id, String description, Status status, LocalDateTime createdAt,
-      Long reportFrom, Long reportTo, Long roomId) {
-    this.id = id;
-    this.description = description;
-    this.status = status;
-    this.createdAt = createdAt;
-    this.reportFrom = reportFrom;
-    this.reportTo = reportTo;
-    this.roomId = roomId;
-  }
+    private String description;
+    private Status status;
+    private Long reportFrom;
+    private Long reportTo;
 
-  public static RoomReport of (RoomReportRequest roomReportRequest) {
-    return RoomReport.builder()
-        .description(roomReportRequest.getDescription())
-        .status(Status.WAIT)
-        .reportFrom(roomReportRequest.getReportFrom())
-        .reportTo(roomReportRequest.getReportTo())
-        .roomId(roomReportRequest.getRoomId())
-        .build();
-  }
+    @Builder
+    public RoomReport(Long id, String description, Status status,
+        Long reportFrom, Long reportTo, Long roomId) {
+        this.id = id;
+        this.description = description;
+        this.status = status;
+        this.reportFrom = reportFrom;
+        this.reportTo = reportTo;
+        this.roomId = roomId;
+    }
 
-  public void updateStatus(Status status) {
-    this.status = status;
-  }
+    public static RoomReport of(RoomReportRequest roomReportRequest) {
+        return RoomReport.builder()
+            .description(roomReportRequest.description())
+            .status(Status.WAIT)
+            .reportFrom(roomReportRequest.reportFrom())
+            .reportTo(roomReportRequest.reportTo())
+            .roomId(roomReportRequest.roomId())
+            .build();
+    }
+
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }

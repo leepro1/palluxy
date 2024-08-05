@@ -4,5 +4,5 @@ import com.palluxy.domain.group.entity.GroupHistory;
 
 public interface GroupHistoryService {
 
-  void createHistory(GroupHistory groupHistory);
+    void createHistory(GroupHistory groupHistory);
 }

@@ -8,19 +8,19 @@ import java.util.List;
 
 public interface UserService {
 
-  void signup(UserSignupRequest request);
+    void signup(UserSignupRequest request);
 
-  void duplicateEmail(String email);
+    void duplicateEmail(String email);
 
-  void duplicateNickname(String nickname);
+    void duplicateNickname(String nickname);
 
-  void resetPassword(UserResetPasswordRequest request);
+    void resetPassword(UserResetPasswordRequest request);
 
-  List<UserResponse> getUsers();
+    List<UserResponse> getUsers();
 
-  UserResponse getUserById(Long id);
+    UserResponse getUserById(Long id);
 
-  UserResponse getUserByEmail(String email);
+    UserResponse getUserByEmail(String email);
 
-  UserResponse getUserByNickname(String nickname);
+    UserResponse getUserByNickname(String nickname);
 }

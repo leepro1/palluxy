@@ -1,6 +1,7 @@
 package com.palluxy.domain.notice.entity;
 
 import com.palluxy.domain.notice.dto.NoticeRequest;
+import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,34 +18,32 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notice {
+public class Notice extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String title;
-  @Column(columnDefinition = "TEXT")
-  private String content;
-  @CreationTimestamp
-  private LocalDateTime createdAt;
-  @UpdateTimestamp
-  private LocalDateTime updatedAt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    @Column(columnDefinition = "TEXT")
+    private String content;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
-  @Builder
-  public Notice(String title, String content) {
-    this.title = title;
-    this.content = content;
-  }
+    @Builder
+    public Notice(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
-  public static Notice of(NoticeRequest noticeRequest) {
-    return Notice.builder()
-        .title(noticeRequest.getTitle())
-        .content(noticeRequest.getContent())
-        .build();
-  }
+    public static Notice of(NoticeRequest noticeRequest) {
+        return Notice.builder()
+            .title(noticeRequest.title())
+            .content(noticeRequest.content())
+            .build();
+    }
 
-  public void updateInfo(NoticeRequest noticeRequest) {
-    this.title = noticeRequest.getTitle();
-    this.content = noticeRequest.getContent();
-  }
+    public void updateInfo(NoticeRequest noticeRequest) {
+        this.title = noticeRequest.title();
+        this.content = noticeRequest.content();
+    }
 }
