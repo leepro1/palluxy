@@ -70,15 +70,15 @@ public class GroupServiceImpl implements GroupService {
   }
 
   public void createGroup(GroupRequest groupRequest, String filePath) {
-    User leader = getUser(groupRequest.getLeaderId());
+    User leader = getUser(groupRequest.leaderId());
 
     Group group = Group.builder()
-        .title(groupRequest.getTitle())
-        .description(groupRequest.getDescription())
-        .startTime(groupRequest.getStartTime())
-        .endTime(groupRequest.getEndTime())
-        .maxCapacity(groupRequest.getMaxCapacity())
-        .remainingCapacity(groupRequest.getMaxCapacity() - 1)
+        .title(groupRequest.title())
+        .description(groupRequest.description())
+        .startTime(groupRequest.startTime())
+        .endTime(groupRequest.endTime())
+        .maxCapacity(groupRequest.maxCapacity())
+        .remainingCapacity(groupRequest.maxCapacity() - 1)
         .leader(leader)
         .filePath(filePath)
         .build();
@@ -112,7 +112,7 @@ public class GroupServiceImpl implements GroupService {
 
   public void updateGroupInfo(Long groupId, GroupRequest request) {
     Group group = findById(groupId);
-    group.updateInfo(request.getTitle(), request.getDescription());
+    group.updateInfo(request.title(), request.description());
     groupRepository.saveAndFlush(group);
   }
 

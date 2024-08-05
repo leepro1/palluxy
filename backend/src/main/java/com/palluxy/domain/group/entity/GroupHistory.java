@@ -1,6 +1,7 @@
 package com.palluxy.domain.group.entity;
 
 import com.palluxy.domain.user.entity.User;
+import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,15 +15,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GroupHistory {
+public class GroupHistory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @Enumerated(EnumType.STRING)
   private Action action;
-  @CreationTimestamp
-  private LocalDateTime createdAt;
 
   @ManyToOne
   @JoinColumn(name = "user_id")

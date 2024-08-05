@@ -16,7 +16,8 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GuestBookReport extends Report{
+public class GuestBookReport extends Report {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -25,32 +26,29 @@ public class GuestBookReport extends Report{
 
   private String description;
   private Status status;
-  @CreationTimestamp
-  private LocalDateTime createdAt;
   private Long reportFrom;
   private Long reportTo;
 
   @Builder
-  public GuestBookReport(Long id, String description, Status status, LocalDateTime createdAt,
+  public GuestBookReport(Long id, String description, Status status,
       Long reportFrom, Long reportTo, Long guestBooKId, Long commentId) {
     this.id = id;
     this.description = description;
     this.status = status;
-    this.createdAt = createdAt;
     this.reportFrom = reportFrom;
     this.reportTo = reportTo;
     this.guestBooKId = guestBooKId;
     this.commentId = commentId;
   }
 
-  public static GuestBookReport of (GuestBookReportRequest guestBookReportRequest) {
+  public static GuestBookReport of(GuestBookReportRequest guestBookReportRequest) {
     return GuestBookReport.builder()
-        .description(guestBookReportRequest.getDescription())
+        .description(guestBookReportRequest.description())
         .status(Status.WAIT)
-        .reportFrom(guestBookReportRequest.getReportFrom())
-        .reportTo(guestBookReportRequest.getReportTo())
-        .commentId(guestBookReportRequest.getCommentId())
-        .guestBooKId(guestBookReportRequest.getGuestBookId())
+        .reportFrom(guestBookReportRequest.reportFrom())
+        .reportTo(guestBookReportRequest.reportTo())
+        .commentId(guestBookReportRequest.commentId())
+        .guestBooKId(guestBookReportRequest.guestBookId())
         .build();
   }
 

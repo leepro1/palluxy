@@ -3,6 +3,7 @@ package com.palluxy.domain.letter.entity;
 import com.palluxy.domain.letter.dto.LetterRequest;
 import com.palluxy.domain.letter.dto.Writer;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
+import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = @Index(name = "idx_letter_room_id_and_opened_at", columnList = "room_id, opened_at"))
-public class Letter {
+public class Letter extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +29,6 @@ public class Letter {
 
   @Enumerated(EnumType.STRING)
   private Writer writer;
-
-  @CreationTimestamp
-  private LocalDateTime createdAt;
 
   private LocalDateTime openedAt;
 
@@ -54,8 +52,8 @@ public class Letter {
   public static Letter of(LetterRequest request, Long petId, Room room) {
     return Letter.builder()
         .petId(petId)
-        .title(request.getTitle())
-        .content(request.getContent())
+        .title(request.title())
+        .content(request.content())
         .writer(Writer.USER)
         .openedAt(LocalDateTime.now())
         .room(room)

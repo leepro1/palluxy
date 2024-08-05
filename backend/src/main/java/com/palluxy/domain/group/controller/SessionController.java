@@ -31,9 +31,9 @@ SessionController {
   @PostMapping("/api/sessions")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createSession(@RequestBody SessionRequest sessionRequest) {
-    Group group = groupService.findById(sessionRequest.getGroupId());
-    groupService.validateApproveKey(group, sessionRequest.getApproveKey());
-    Session session = openviduService.createSession(sessionRequest.getParams());
+    Group group = groupService.findById(sessionRequest.groupId());
+    groupService.validateApproveKey(group, sessionRequest.approveKey());
+    Session session = openviduService.createSession(sessionRequest.params());
     groupHistoryService.createHistory(
         new GroupHistory(group.getLeader(), group, Action.CREATE));
 
@@ -46,13 +46,13 @@ SessionController {
   public CommonResponse<?> createConnection(
       @PathVariable("sessionId") String sessionId,
       @RequestBody ConnectionRequest connectionRequest) {
-    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(connectionRequest.getGroupId(),
-        connectionRequest.getUserId());
+    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(connectionRequest.groupId(),
+        connectionRequest.userId());
     groupService.validateUser(groupUser);
 
     Session session = openviduService.getSession(sessionId);
     Connection connection = openviduService.createConnection(session,
-        connectionRequest.getParams());
+        connectionRequest.params());
     groupHistoryService.createHistory(
         new GroupHistory(groupUser.getUser(), groupUser.getGroup(), Action.JOIN));
 
@@ -81,8 +81,8 @@ SessionController {
     Connection connection = openviduService.getConnection(session, connectionId);
     openviduService.disconnection(session, connection);
 
-    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(connectionRequest.getGroupId(),
-        connectionRequest.getUserId());
+    GroupUser groupUser = groupUserService.findByGroupIdAndUserId(connectionRequest.groupId(),
+        connectionRequest.userId());
     Group group = groupUser.getGroup();
     User user = groupUser.getUser();
 

@@ -60,10 +60,10 @@ public class GroupController {
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<?> createGroup(@ModelAttribute GroupRequest groupRequest) {
 
-    if (groupRequest.getFile() != null) {
+    if (groupRequest.file() != null) {
       try {
         String folderName = "groups/";
-        String fileName = fileStorageService.storeFile(groupRequest.getFile(), folderName);
+        String fileName = fileStorageService.storeFile(groupRequest.file(), folderName);
         String filePath = fileStorageService.getFileUrl(fileName);
         groupService.createGroup(groupRequest, filePath);
       } catch (Exception e) {
@@ -89,7 +89,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.CREATED)
   public CommonResponse<?> createJoin(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
-    groupService.createJoin(groupId, groupRequest.getUserId());
+    groupService.createJoin(groupId, groupRequest.userId());
     return CommonResponse.created("모임 참가 신청 완료");
   }
 
@@ -97,7 +97,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> cancelJoin(
       @PathVariable("groupId") Long groupId, @RequestBody GroupRequest groupRequest) {
-    groupService.cancelJoin(groupId, groupRequest.getUserId());
+    groupService.cancelJoin(groupId, groupRequest.userId());
     return CommonResponse.ok("모임 참가 신청 취소 완료");
   }
 

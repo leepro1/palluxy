@@ -35,7 +35,7 @@ public class GroupUserServiceImpl implements GroupUserService {
   }
 
   public void updateIsBanned(GroupUser groupUser) {
-    groupUser.setBanned(true);
+    groupUser.updateIsBanned(true);
     groupUserRepository.saveAndFlush(groupUser);
   }
 }

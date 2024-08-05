@@ -1,9 +1,5 @@
 package com.palluxy.domain.notice.dto;
 
-import lombok.Getter;
+public record NoticeRequest(String title, String content) {
 
-@Getter
-public class NoticeRequest {
-  private String title;
-  private String content;
 }

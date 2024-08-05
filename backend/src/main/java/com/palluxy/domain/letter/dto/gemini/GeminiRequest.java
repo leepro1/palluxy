@@ -35,4 +35,19 @@ public class GeminiRequest extends AIRequest {
       return object;
     }
   }
+
+  static class Part {
+
+    String text;
+
+    public Part(String text) {
+      this.text = text;
+    }
+
+    public JsonObject toJsonObject() {
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("text", text);
+      return jsonObject;
+    }
+  }
 }

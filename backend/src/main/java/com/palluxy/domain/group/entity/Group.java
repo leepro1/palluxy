@@ -3,6 +3,7 @@ package com.palluxy.domain.group.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.group.dto.Status;
+import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,7 +20,7 @@ import java.util.Set;
 @Getter
 @Table(name = "`group`", indexes = @Index(name = "idx_group_status", columnList = "status"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Group {
+public class Group extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +32,7 @@ public class Group {
   private LocalDateTime startTime;
   private LocalDateTime endTime;
 
-  @CreationTimestamp
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-  private LocalDateTime createdAt;
-
   @UpdateTimestamp
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime updatedAt;
 
   @Enumerated(EnumType.STRING)
@@ -55,7 +51,7 @@ public class Group {
 
   @Builder
   public Group(Long id, String title, String description, String filePath, LocalDateTime startTime,
-      LocalDateTime endTime, LocalDateTime createdAt, LocalDateTime updatedAt,
+      LocalDateTime endTime, LocalDateTime updatedAt,
       String approveKey, int maxCapacity, int remainingCapacity, User leader
   ) {
     this.id = id;
@@ -64,7 +60,6 @@ public class Group {
     this.filePath = filePath;
     this.startTime = startTime;
     this.endTime = endTime;
-    this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.approveKey = approveKey;
     this.maxCapacity = maxCapacity;

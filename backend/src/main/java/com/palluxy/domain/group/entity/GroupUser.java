@@ -1,6 +1,7 @@
 package com.palluxy.domain.group.entity;
 
 import com.palluxy.domain.user.entity.User;
+import com.palluxy.global.common.data.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,16 +16,13 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = @Index(name = "idx_group_user_group_id_and_user_id", columnList = "group_id, user_id"))
-public class GroupUser {
+public class GroupUser extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private boolean isLeader = false;
-  @Setter
   private boolean isBanned;
-  @CreationTimestamp
-  private LocalDateTime createdAt;
 
   @ManyToOne
   @JoinColumn(name = "group_id")
@@ -41,5 +39,9 @@ public class GroupUser {
 
   public void updateIsLeader(boolean isLeader) {
     this.isLeader = isLeader;
+  }
+
+  public void updateIsBanned(boolean isBanned) {
+    this.isBanned = isBanned;
   }
 }

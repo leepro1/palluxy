@@ -54,7 +54,7 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
 
     webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
         response -> {
-          String content = response.getContent().get(0).getText();
+          String content = response.getText();
           Letter letter = Letter.builder()
               .title("편지가 도착했어요")
               .content(content)
