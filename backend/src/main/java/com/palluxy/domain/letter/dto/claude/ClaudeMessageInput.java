@@ -5,20 +5,22 @@ import lombok.Getter;
 
 @Getter
 public class ClaudeMessageInput {
-  private ClaudeRole role;
-  private String content;
 
-  public ClaudeMessageInput() {}
+    private ClaudeRole role;
+    private String content;
 
-  public ClaudeMessageInput(ClaudeRole role, String content) {
-    this.role = role;
-    this.content = content;
-  }
+    public ClaudeMessageInput() {
+    }
 
-  public JsonObject toJsonObject() {
-    JsonObject object = new JsonObject();
-    object.addProperty("role", role.toString());
-    object.addProperty("content", content);
-    return object;
-  }
+    public ClaudeMessageInput(ClaudeRole role, String content) {
+        this.role = role;
+        this.content = content;
+    }
+
+    public JsonObject toJsonObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty("role", role.toString());
+        object.addProperty("content", content);
+        return object;
+    }
 }

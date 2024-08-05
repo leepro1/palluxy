@@ -12,15 +12,15 @@ public record ClaudeResponse(
     String stop_sequence,
     ClaudeUsage claudeUsage) {
 
-  public String getText() {
-    return this.content.get(0).text;
-  }
+    public String getText() {
+        return this.content.get(0).text;
+    }
 
-  record ClaudeUsage(int input_tokens, int output_tokens) {
+    record ClaudeUsage(int input_tokens, int output_tokens) {
 
-  }
+    }
 
-  record ClaudeMessageOutput(String text, String type) {
+    record ClaudeMessageOutput(String text, String type) {
 
-  }
+    }
 }

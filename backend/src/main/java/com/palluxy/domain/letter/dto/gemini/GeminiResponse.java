@@ -6,38 +6,38 @@ public record GeminiResponse(List<Candidate> candidates,
                              UsageMetadata usageMetadata) {
 
 
-  public String getText() {
-    return candidates.get(0).content.parts.get(0).text;
-  }
+    public String getText() {
+        return candidates.get(0).content.parts.get(0).text;
+    }
 
-  record Candidate(
-      Content content,
-      String finishReason,
-      int index,
-      List<SafetyRating> safetyRatings) {
+    record Candidate(
+        Content content,
+        String finishReason,
+        int index,
+        List<SafetyRating> safetyRatings) {
 
-  }
+    }
 
-  record Content(
-      List<Part> parts,
-      String role) {
+    record Content(
+        List<Part> parts,
+        String role) {
 
-  }
+    }
 
-  record Part(String text) {
+    record Part(String text) {
 
-  }
+    }
 
-  record SafetyRating(
-      String category,
-      String probability) {
+    record SafetyRating(
+        String category,
+        String probability) {
 
-  }
+    }
 
-  record UsageMetadata(
-      int promptTokenCount,
-      int candidatesTokenCount,
-      int totalTokenCount) {
+    record UsageMetadata(
+        int promptTokenCount,
+        int candidatesTokenCount,
+        int totalTokenCount) {
 
-  }
+    }
 }

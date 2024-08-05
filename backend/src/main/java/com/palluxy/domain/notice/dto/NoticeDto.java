@@ -6,10 +6,10 @@ import lombok.Builder;
 @Builder
 public record NoticeDto(Long id, String title) {
 
-  public static NoticeDto of(Notice notice) {
-    return NoticeDto.builder()
-        .id(notice.getId())
-        .title(notice.getTitle())
-        .build();
-  }
+    public static NoticeDto of(Notice notice) {
+        return NoticeDto.builder()
+            .id(notice.getId())
+            .title(notice.getTitle())
+            .build();
+    }
 }

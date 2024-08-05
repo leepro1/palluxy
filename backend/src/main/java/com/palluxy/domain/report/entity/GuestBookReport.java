@@ -18,41 +18,41 @@ import org.hibernate.annotations.CreationTimestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GuestBookReport extends Report {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private Long guestBooKId;
-  private Long commentId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long guestBooKId;
+    private Long commentId;
 
-  private String description;
-  private Status status;
-  private Long reportFrom;
-  private Long reportTo;
+    private String description;
+    private Status status;
+    private Long reportFrom;
+    private Long reportTo;
 
-  @Builder
-  public GuestBookReport(Long id, String description, Status status,
-      Long reportFrom, Long reportTo, Long guestBooKId, Long commentId) {
-    this.id = id;
-    this.description = description;
-    this.status = status;
-    this.reportFrom = reportFrom;
-    this.reportTo = reportTo;
-    this.guestBooKId = guestBooKId;
-    this.commentId = commentId;
-  }
+    @Builder
+    public GuestBookReport(Long id, String description, Status status,
+        Long reportFrom, Long reportTo, Long guestBooKId, Long commentId) {
+        this.id = id;
+        this.description = description;
+        this.status = status;
+        this.reportFrom = reportFrom;
+        this.reportTo = reportTo;
+        this.guestBooKId = guestBooKId;
+        this.commentId = commentId;
+    }
 
-  public static GuestBookReport of(GuestBookReportRequest guestBookReportRequest) {
-    return GuestBookReport.builder()
-        .description(guestBookReportRequest.description())
-        .status(Status.WAIT)
-        .reportFrom(guestBookReportRequest.reportFrom())
-        .reportTo(guestBookReportRequest.reportTo())
-        .commentId(guestBookReportRequest.commentId())
-        .guestBooKId(guestBookReportRequest.guestBookId())
-        .build();
-  }
+    public static GuestBookReport of(GuestBookReportRequest guestBookReportRequest) {
+        return GuestBookReport.builder()
+            .description(guestBookReportRequest.description())
+            .status(Status.WAIT)
+            .reportFrom(guestBookReportRequest.reportFrom())
+            .reportTo(guestBookReportRequest.reportTo())
+            .commentId(guestBookReportRequest.commentId())
+            .guestBooKId(guestBookReportRequest.guestBookId())
+            .build();
+    }
 
-  public void updateStatus(Status status) {
-    this.status = status;
-  }
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }

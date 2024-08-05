@@ -10,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
@@ -18,45 +17,45 @@ import org.hibernate.annotations.CreationTimestamp;
 @Table(indexes = @Index(name = "idx_letter_room_id_and_opened_at", columnList = "room_id, opened_at"))
 public class Letter extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String title;
+    private String title;
 
-  @Column(columnDefinition = "TEXT")
-  private String content;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-  @Enumerated(EnumType.STRING)
-  private Writer writer;
+    @Enumerated(EnumType.STRING)
+    private Writer writer;
 
-  private LocalDateTime openedAt;
+    private LocalDateTime openedAt;
 
-  private Long petId;
+    private Long petId;
 
-  @ManyToOne
-  @JoinColumn(name = "room_id")
-  private Room room;
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
-  @Builder
-  public Letter(String title, String content, Writer writer, Long petId, LocalDateTime openedAt,
-      Room room) {
-    this.title = title;
-    this.content = content;
-    this.writer = writer;
-    this.petId = petId;
-    this.openedAt = openedAt;
-    this.room = room;
-  }
+    @Builder
+    public Letter(String title, String content, Writer writer, Long petId, LocalDateTime openedAt,
+        Room room) {
+        this.title = title;
+        this.content = content;
+        this.writer = writer;
+        this.petId = petId;
+        this.openedAt = openedAt;
+        this.room = room;
+    }
 
-  public static Letter of(LetterRequest request, Long petId, Room room) {
-    return Letter.builder()
-        .petId(petId)
-        .title(request.title())
-        .content(request.content())
-        .writer(Writer.USER)
-        .openedAt(LocalDateTime.now())
-        .room(room)
-        .build();
-  }
+    public static Letter of(LetterRequest request, Long petId, Room room) {
+        return Letter.builder()
+            .petId(petId)
+            .title(request.title())
+            .content(request.content())
+            .writer(Writer.USER)
+            .openedAt(LocalDateTime.now())
+            .room(room)
+            .build();
+    }
 }

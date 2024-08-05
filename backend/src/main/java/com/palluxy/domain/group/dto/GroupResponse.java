@@ -25,25 +25,25 @@ public record GroupResponse(
     int remainCapacity,
     List<Long> groupUserId) {
 
-  public static GroupResponse of(Group group) {
-    List<Long> groupUserIds = new ArrayList<>();
-    for (GroupUser user : group.getGroupUser()) {
-      groupUserIds.add(user.getId());
+    public static GroupResponse of(Group group) {
+        List<Long> groupUserIds = new ArrayList<>();
+        for (GroupUser user : group.getGroupUser()) {
+            groupUserIds.add(user.getId());
+        }
+
+        return GroupResponse.builder()
+            .id(group.getId())
+            .leaderId(group.getLeader().getId())
+            .leaderNickname(group.getLeader().getNickname())
+            .title(group.getTitle())
+            .description(group.getDescription())
+            .filePath(group.getFilePath())
+            .startTime(group.getStartTime())
+            .endTime(group.getEndTime())
+            .maxCapacity(group.getMaxCapacity())
+            .remainCapacity(group.getRemainingCapacity())
+            .groupUserId(groupUserIds)
+            .build();
+
     }
-
-    return GroupResponse.builder()
-        .id(group.getId())
-        .leaderId(group.getLeader().getId())
-        .leaderNickname(group.getLeader().getNickname())
-        .title(group.getTitle())
-        .description(group.getDescription())
-        .filePath(group.getFilePath())
-        .startTime(group.getStartTime())
-        .endTime(group.getEndTime())
-        .maxCapacity(group.getMaxCapacity())
-        .remainCapacity(group.getRemainingCapacity())
-        .groupUserId(groupUserIds)
-        .build();
-
-  }
 }

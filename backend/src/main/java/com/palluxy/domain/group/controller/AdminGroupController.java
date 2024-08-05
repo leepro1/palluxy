@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminGroupController {
 
-  private final GroupService groupService;
-  private final EmailService emailService;
+    private final GroupService groupService;
+    private final EmailService emailService;
 
-  @PatchMapping("/accept/{groupId}")
-  @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> approveGroup(@PathVariable("groupId") Long groupId) {
-    Group group = groupService.approveGroup(groupId);
-    String to = groupService.getUserEmail(group.getLeader().getId());
-    emailService.sendVerificationCode("group", to, group.getApproveKey(), group.getTitle());
-    return CommonResponse.ok("그룹이 정상적으로 승인되었음");
+    @PatchMapping("/accept/{groupId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> approveGroup(@PathVariable("groupId") Long groupId) {
+        Group group = groupService.approveGroup(groupId);
+        String to = groupService.getUserEmail(group.getLeader().getId());
+        emailService.sendVerificationCode("group", to, group.getApproveKey(), group.getTitle());
+        return CommonResponse.ok("그룹이 정상적으로 승인되었음");
 
-  }
+    }
 
-  @PatchMapping("/reject/{groupId}")
-  @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<?> rejectGroup(@PathVariable("groupId") Long groupId) {
-    groupService.rejectGroup(groupId);
-    return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
-  }
+    @PatchMapping("/reject/{groupId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> rejectGroup(@PathVariable("groupId") Long groupId) {
+        groupService.rejectGroup(groupId);
+        return CommonResponse.ok("그룹이 정상적으로 승인거부되었음");
+    }
 }

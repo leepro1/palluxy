@@ -18,30 +18,30 @@ import java.time.LocalDateTime;
 @Table(indexes = @Index(name = "idx_group_user_group_id_and_user_id", columnList = "group_id, user_id"))
 public class GroupUser extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private boolean isLeader = false;
-  private boolean isBanned;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private boolean isLeader = false;
+    private boolean isBanned;
 
-  @ManyToOne
-  @JoinColumn(name = "group_id")
-  private Group group;
-  @ManyToOne
-  @JoinColumn(name = "user_id")
-  private User user;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-  @Builder
-  public GroupUser(Group group, User user) {
-    this.group = group;
-    this.user = user;
-  }
+    @Builder
+    public GroupUser(Group group, User user) {
+        this.group = group;
+        this.user = user;
+    }
 
-  public void updateIsLeader(boolean isLeader) {
-    this.isLeader = isLeader;
-  }
+    public void updateIsLeader(boolean isLeader) {
+        this.isLeader = isLeader;
+    }
 
-  public void updateIsBanned(boolean isBanned) {
-    this.isBanned = isBanned;
-  }
+    public void updateIsBanned(boolean isBanned) {
+        this.isBanned = isBanned;
+    }
 }

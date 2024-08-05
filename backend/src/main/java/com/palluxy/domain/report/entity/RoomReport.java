@@ -18,38 +18,38 @@ import org.hibernate.annotations.CreationTimestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoomReport extends Report {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private Long roomId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long roomId;
 
-  private String description;
-  private Status status;
-  private Long reportFrom;
-  private Long reportTo;
+    private String description;
+    private Status status;
+    private Long reportFrom;
+    private Long reportTo;
 
-  @Builder
-  public RoomReport(Long id, String description, Status status,
-      Long reportFrom, Long reportTo, Long roomId) {
-    this.id = id;
-    this.description = description;
-    this.status = status;
-    this.reportFrom = reportFrom;
-    this.reportTo = reportTo;
-    this.roomId = roomId;
-  }
+    @Builder
+    public RoomReport(Long id, String description, Status status,
+        Long reportFrom, Long reportTo, Long roomId) {
+        this.id = id;
+        this.description = description;
+        this.status = status;
+        this.reportFrom = reportFrom;
+        this.reportTo = reportTo;
+        this.roomId = roomId;
+    }
 
-  public static RoomReport of(RoomReportRequest roomReportRequest) {
-    return RoomReport.builder()
-        .description(roomReportRequest.description())
-        .status(Status.WAIT)
-        .reportFrom(roomReportRequest.reportFrom())
-        .reportTo(roomReportRequest.reportTo())
-        .roomId(roomReportRequest.roomId())
-        .build();
-  }
+    public static RoomReport of(RoomReportRequest roomReportRequest) {
+        return RoomReport.builder()
+            .description(roomReportRequest.description())
+            .status(Status.WAIT)
+            .reportFrom(roomReportRequest.reportFrom())
+            .reportTo(roomReportRequest.reportTo())
+            .roomId(roomReportRequest.roomId())
+            .build();
+    }
 
-  public void updateStatus(Status status) {
-    this.status = status;
-  }
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }

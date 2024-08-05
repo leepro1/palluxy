@@ -6,9 +6,14 @@ import com.palluxy.domain.notice.entity.Notice;
 import org.springframework.data.domain.Pageable;
 
 public interface NoticeService {
-  NoticeResponse getNotices(Pageable pageable);
-  void createNotice(Notice notice);
-  void updateNotice(Long noticeId, NoticeRequest noticeRequest);
-  void deleteNotice(Long noticeId);
-  Notice getNoticeById(Long noticeId);
+
+    NoticeResponse getNotices(Pageable pageable);
+
+    void createNotice(Notice notice);
+
+    void updateNotice(Long noticeId, NoticeRequest noticeRequest);
+
+    void deleteNotice(Long noticeId);
+
+    Notice getNoticeById(Long noticeId);
 }
