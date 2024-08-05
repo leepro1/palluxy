@@ -90,6 +90,10 @@ public class GroupServiceImpl implements GroupService {
 
     public void createJoin(Long groupId, Long userId) {
         Group group = findById(groupId);
+        if (group.getRemainingCapacity() <= 0) {
+            throw new ValidateException("이미 모집 마감되었습니다.");
+        }
+
         User user = getUser(userId);
         groupUserService.createGroupUser(group, user, false);
 
