@@ -71,4 +71,12 @@ public class RoomController {
         roomService.deleteRoom(roomId);
         return CommonResponse.ok("Room deleted successfully");
     }
+
+
+    @GetMapping("/recommend/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<List<RoomDto>> getRecommendedRooms(@PathVariable Long userId) {
+        List<RoomDto> recommendedRooms = roomService.getRandomRoomsWithLikeStatus(userId, 3);
+        return CommonResponse.ok("Recommended rooms retrieved successfully", recommendedRooms);
+    }
 }
