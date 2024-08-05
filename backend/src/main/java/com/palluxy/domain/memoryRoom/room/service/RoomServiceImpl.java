@@ -121,12 +121,19 @@ public class RoomServiceImpl implements RoomService {
   @Override
   public List<RoomDto> getRandomRoomsWithLikeStatus(Long userId, int count) {
     List<Room> allRooms = roomRepository.findAll();
+
+    // 내 방 제외하기
+    allRooms = allRooms.stream()
+        .filter(room -> !room.getUser().getId().equals(userId))
+        .collect(Collectors.toList());
+
     Collections.shuffle(allRooms);
 
     return allRooms.stream()
         .limit(count)
         .map(room -> {
           RoomDto roomDto = new RoomDto(room);
+          // 특정 유저가 해당 방을 좋아요 했는지 여부를 DTO에 설정
           roomDto.setLiked(likeRepository.findByRoom_RoomIdAndUser_Id(room.getRoomId(), userId).isPresent());
           return roomDto;
         })
