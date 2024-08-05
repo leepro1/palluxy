@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-public class
-SessionController {
+@RequestMapping("/api/sessions")
+public class SessionController {
 
   private final OpenviduService openviduService;
   private final GroupService groupService;
   private final GroupUserService groupUserService;
   private final GroupHistoryService groupHistoryService;
 
-  @PostMapping("/api/sessions")
+  @PostMapping("")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createSession(@RequestBody SessionRequest sessionRequest) {
     Group group = groupService.findById(sessionRequest.groupId());
@@ -41,7 +41,7 @@ SessionController {
         "Session successfully created and sessionId ready to be used", session.getSessionId());
   }
 
-  @PostMapping("/api/sessions/{sessionId}/connections")
+  @PostMapping("/{sessionId}/connections")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> createConnection(
       @PathVariable("sessionId") String sessionId,
@@ -61,7 +61,7 @@ SessionController {
         connection.getToken());
   }
 
-  @PostMapping("/api/sessions/{sessionId}")
+  @PostMapping("/{sessionId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> closeSession(@PathVariable("sessionId") String sessionId) {
     Session session = openviduService.getSession(sessionId);
@@ -71,7 +71,7 @@ SessionController {
         "The Session has been successfully closed. Every participant will have received the proper events in OpenVidu Browser: streamDestroyed, connectionDestroyed and sessionDisconnected, all of them with \"reason\" property set to \"sessionClosedByServer\". Depending on the order of eviction of the users, some of them will receive more events than the others: the first user evicted will only receive the events related to himself, last one will receive every possible event");
   }
 
-  @PostMapping("/api/sessions/{sessionId}/connection/{connectionId}")
+  @PostMapping("/{sessionId}/connection/{connectionId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> disconnect(
       @PathVariable("sessionId") String sessionId,

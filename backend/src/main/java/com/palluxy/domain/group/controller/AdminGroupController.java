@@ -16,7 +16,7 @@ public class AdminGroupController {
   private final GroupService groupService;
   private final EmailService emailService;
 
-  @PatchMapping("/group/accept/{groupId}")
+  @PatchMapping("/accept/{groupId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> approveGroup(@PathVariable("groupId") Long groupId) {
     Group group = groupService.approveGroup(groupId);
@@ -26,7 +26,7 @@ public class AdminGroupController {
 
   }
 
-  @PatchMapping("/group/reject/{groupId}")
+  @PatchMapping("/reject/{groupId}")
   @ResponseStatus(HttpStatus.OK)
   public CommonResponse<?> rejectGroup(@PathVariable("groupId") Long groupId) {
     groupService.rejectGroup(groupId);
