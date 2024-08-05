@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const RoomModel = React.memo(({ data }) => {
-  const { materials, scene } = useGLTF('/models/frameRoom.glb');
+  const { materials, scene } = useGLTF('/models/postitem.glb');
 
   data.forEach(async (frameData) => {
     const matrialName = FRAME_INDEX[frameData.index];

@@ -71,7 +71,7 @@ const RoomCanvas = () => {
 
   return (
     <div className="relative h-[617px] w-[1000px]">
-      <p className="absolute left-0 top-4 z-50 px-10 font-jamsilRegular text-xl text-pal-purple">
+      <p className="absolute left-0 top-4 z-50 px-10 font-jamsilRegular text-xl text-pal-purple text-white">
         추억공간 : {roomData.name}
       </p>
       <div className="absolute right-2 top-4 z-50 flex items-center gap-x-3">
@@ -105,12 +105,12 @@ const RoomCanvas = () => {
             <PalModel />
           </mesh>
         </group>
-        <Environment
-          preset="city"
+        {/* <Environment
+          preset="sunset"
           background="only"
-          backgroundBlurriness="1"
+          backgroundBlurriness="0.1"
           blur={1}
-        />
+        /> */}
       </Canvas>
     </div>
   );

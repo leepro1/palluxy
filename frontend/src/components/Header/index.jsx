@@ -50,6 +50,9 @@ const Header = () => {
                       치유모임 모아보기
                     </NavLink>
                   </li>
+                  <li>
+                    <NavLink to={'/memoryspaceoverview'}>치유공간 탐방</NavLink>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -70,6 +73,9 @@ const Header = () => {
             </li>
             <li>
               <NavLink to={'/meetingoverview/1'}>치유모임 모아보기</NavLink>
+            </li>
+            <li>
+              <NavLink to={'/memoryspaceoverview'}>치유공간 탐방</NavLink>
             </li>
           </ul>
         </div>

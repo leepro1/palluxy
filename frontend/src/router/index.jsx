@@ -25,6 +25,7 @@ import SettingSideBar from '@pages/MemorySpacePage/SideBar/SettingSideBar';
 import MailboxSideBar from '@pages/MemorySpacePage/SideBar/MailboxSideBar';
 import GuestBoxSideBar from '@pages/MemorySpacePage/SideBar/GuestBoxSideBar';
 import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
+import MemorySpaceOverviewPage from '@pages/MemorySpaceOverviewPage';
 
 // healing Meeting
 import HealingMeetingPage from '@pages/HealingMeetingPage';
@@ -87,6 +88,10 @@ const routerInfo = [
 
       // 추억공간
 
+      {
+        path: '/memoryspaceoverview',
+        element: <MemorySpaceOverviewPage />,
+      },
       {
         path: '/memoryspacecreate',
         element: (
