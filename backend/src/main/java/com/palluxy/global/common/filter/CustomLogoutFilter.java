@@ -1,7 +1,7 @@
 package com.palluxy.global.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.domain.user.service.RefreshServiceImpl;
 import com.palluxy.global.common.data.CommonResponse;
 import com.palluxy.global.common.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,7 +20,7 @@ import org.springframework.web.filter.GenericFilterBean;
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
-    private final RefreshService refreshService;
+    private final RefreshServiceImpl refreshService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,

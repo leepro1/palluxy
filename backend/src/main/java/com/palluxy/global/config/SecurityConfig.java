@@ -1,6 +1,6 @@
 package com.palluxy.global.config;
 
-import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.domain.user.service.RefreshServiceImpl;
 import com.palluxy.global.common.error.CustomAuthenticationEntryPoint;
 import com.palluxy.global.common.error.CustomAccessDeniedHandler;
 import com.palluxy.global.common.filter.CustomLogoutFilter;
@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final RefreshService refreshService;
+    private final RefreshServiceImpl refreshService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 

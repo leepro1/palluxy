@@ -30,7 +30,8 @@ public class ReportController {
 
   @PostMapping("/comment")
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<?> createCommentReport(@RequestBody GuestBookReportRequest guestBookReportRequest) {
+  public CommonResponse<?> createCommentReport(
+      @RequestBody GuestBookReportRequest guestBookReportRequest) {
     reportService.createGuestBookReport(GuestBookReport.of(guestBookReportRequest));
     return CommonResponse.created("방명록 신고가 정상적으로 생성되었음");
   }

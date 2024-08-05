@@ -3,6 +3,7 @@ package com.palluxy.domain.letter.controller;
 import com.palluxy.domain.letter.dto.LetterRequest;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.service.LetterService;
+import com.palluxy.domain.letter.service.LetterServiceImpl;
 import com.palluxy.global.common.data.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
