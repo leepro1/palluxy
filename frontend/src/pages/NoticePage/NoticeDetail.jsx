@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ContentsLayout from '@layout/ContentsLayout';
 import { instance } from '@/utils/axios';
+import Loading from '@components/Loading';
 import GlobalBtn from '@components/GlobalBtn';
 
 const NoticeDetail = () => {
@@ -23,7 +24,11 @@ const NoticeDetail = () => {
   }, [noticeId]);
 
   if (!notice) {
-    return <div>로딩 중...</div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
 
   return (

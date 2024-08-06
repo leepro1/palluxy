@@ -19,19 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ReportController {
 
-  private final ReportService reportService;
+    private final ReportService reportService;
 
-  @PostMapping("/room")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<?> createRoomReport(@RequestBody RoomReportRequest roomReportRequest) {
-    reportService.createRoomReport(RoomReport.of(roomReportRequest));
-    return CommonResponse.created("추억공간 신고가 정상적으로 생성되었음");
-  }
+    @PostMapping("/room")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommonResponse<?> createRoomReport(@RequestBody RoomReportRequest roomReportRequest) {
+        reportService.createRoomReport(RoomReport.of(roomReportRequest));
+        return CommonResponse.created("추억공간 신고가 정상적으로 생성되었음");
+    }
 
-  @PostMapping("/comment")
-  @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<?> createCommentReport(@RequestBody GuestBookReportRequest guestBookReportRequest) {
-    reportService.createGuestBookReport(GuestBookReport.of(guestBookReportRequest));
-    return CommonResponse.created("방명록 신고가 정상적으로 생성되었음");
-  }
+    @PostMapping("/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommonResponse<?> createCommentReport(
+        @RequestBody GuestBookReportRequest guestBookReportRequest) {
+        reportService.createGuestBookReport(GuestBookReport.of(guestBookReportRequest));
+        return CommonResponse.created("방명록 신고가 정상적으로 생성되었음");
+    }
 }

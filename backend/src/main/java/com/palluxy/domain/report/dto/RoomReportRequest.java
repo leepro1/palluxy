@@ -1,11 +1,9 @@
 package com.palluxy.domain.report.dto;
 
-import lombok.Getter;
+public record RoomReportRequest(
+    String description,
+    Long reportFrom,
+    Long reportTo,
+    Long roomId) {
 
-@Getter
-public class RoomReportRequest {
-  private String description;
-  private Long reportFrom;
-  private Long reportTo;
-  private Long roomId;
 }

@@ -4,6 +4,7 @@ import com.palluxy.domain.user.exception.RefreshTokenNullException;
 import com.palluxy.domain.user.exception.RefreshTokenExpiredException;
 import com.palluxy.domain.user.exception.InvalidRefreshTokenException;
 import com.palluxy.domain.user.service.RefreshService;
+import com.palluxy.domain.user.service.RefreshServiceImpl;
 import com.palluxy.global.common.util.CookieUtil;
 import com.palluxy.global.common.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;

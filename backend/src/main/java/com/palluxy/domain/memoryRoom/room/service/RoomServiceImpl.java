@@ -4,11 +4,13 @@ import com.palluxy.domain.memoryRoom.album.dto.AlbumDto;
 import com.palluxy.domain.memoryRoom.album.service.AlbumService;
 import com.palluxy.domain.memoryRoom.guestbook.dto.GuestbookDto;
 import com.palluxy.domain.memoryRoom.guestbook.service.GuestbookService;
+import com.palluxy.domain.memoryRoom.like.repository.LikeRepository;
 import com.palluxy.domain.memoryRoom.room.dto.RoomDto;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import com.palluxy.domain.user.entity.User;
 import com.palluxy.domain.user.repository.UserRepository;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,10 @@ public class RoomServiceImpl implements RoomService {
 
   @Autowired
   private GuestbookService guestbookService;
+
+  @Autowired
+  private LikeRepository likeRepository;
+
 
   @Override
   @Transactional
@@ -109,5 +115,28 @@ public class RoomServiceImpl implements RoomService {
         .orElseThrow(() -> new IllegalArgumentException("Room not found"));
     room.setThumbnailUrl(thumbnailUrl);
     roomRepository.save(room);
+  }
+
+
+  @Override
+  public List<RoomDto> getRandomRoomsWithLikeStatus(Long userId, int count) {
+    List<Room> allRooms = roomRepository.findAll();
+
+    // 내 방 제외하기
+    allRooms = allRooms.stream()
+        .filter(room -> !room.getUser().getId().equals(userId))
+        .collect(Collectors.toList());
+
+    Collections.shuffle(allRooms);
+
+    return allRooms.stream()
+        .limit(count)
+        .map(room -> {
+          RoomDto roomDto = new RoomDto(room);
+          // 특정 유저가 해당 방을 좋아요 했는지 여부를 DTO에 설정
+          roomDto.setLiked(likeRepository.findByRoom_RoomIdAndUser_Id(room.getRoomId(), userId).isPresent());
+          return roomDto;
+        })
+        .collect(Collectors.toList());
   }
 }

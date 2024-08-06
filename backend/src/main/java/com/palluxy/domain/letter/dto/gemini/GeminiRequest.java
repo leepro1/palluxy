@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 public class GeminiRequest extends AIRequest {
+
     private List<Content> contents;
 
     public GeminiRequest() {
@@ -23,6 +24,7 @@ public class GeminiRequest extends AIRequest {
     }
 
     public static class Content {
+
         Part parts;
         String role;
 
@@ -31,6 +33,21 @@ public class GeminiRequest extends AIRequest {
             object.add("parts", parts.toJsonObject());
             object.addProperty("role", role);
             return object;
+        }
+    }
+
+    static class Part {
+
+        String text;
+
+        public Part(String text) {
+            this.text = text;
+        }
+
+        public JsonObject toJsonObject() {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("text", text);
+            return jsonObject;
         }
     }
 }

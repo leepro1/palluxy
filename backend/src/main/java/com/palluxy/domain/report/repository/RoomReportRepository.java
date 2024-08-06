@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RoomReportRepository extends JpaRepository<RoomReport, Long> {
+
     Page<RoomReport> findByStatus(Status status, Pageable pageable);
 }

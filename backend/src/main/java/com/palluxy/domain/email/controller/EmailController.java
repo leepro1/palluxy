@@ -20,7 +20,8 @@ public class EmailController {
 
     @PostMapping("/code")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> sendCode(@Valid @RequestBody EmailRequest request, BindingResult bindingResult) {
+    public CommonResponse<?> sendCode(@Valid @RequestBody EmailRequest request,
+        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new SignupFormatException();
         }
@@ -40,7 +41,8 @@ public class EmailController {
 
     @PostMapping("/verify")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> verifyCode(@Valid @RequestBody EmailVerifyRequest request, BindingResult bindingResult) {
+    public CommonResponse<?> verifyCode(@Valid @RequestBody EmailVerifyRequest request,
+        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new SignupFormatException();
         }
