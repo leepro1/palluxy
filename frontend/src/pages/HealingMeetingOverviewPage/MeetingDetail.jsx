@@ -5,6 +5,7 @@ import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 import { ScrollRestoration } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
+
 const formatDateRange = (startDate, endDate) => {
   const options = {
     year: 'numeric',
@@ -20,27 +21,36 @@ const formatDateRange = (startDate, endDate) => {
 
   return `${start.replace(',', '')}~${end.split(' ')[3]}`;
 };
+
 const MeetingDetail = () => {
   const queryClient = useQueryClient();
   const userInfo = queryClient.getQueryData(['userInfo']);
   const { meetingId } = useParams();
   const meetingIdInt = parseInt(meetingId, 10);
   const [data, setData] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [notification, setNotification] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const response = await instance.get(`api/group/detail/${meetingIdInt}`);
+      setData(response.data.result);
+      setTitle(response.data.result.title);
+      setDescription(response.data.result.description);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await instance.get(`api/group/detail/${meetingIdInt}`);
-        console.log(response);
-        console.log(response.data.result);
-        setData(response.data.result);
-        console.log(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
     fetchData();
-  }, []);
+  }, [meetingIdInt]);
+
   const navigate = useNavigate();
+
   const handleSubmitButton = async () => {
     const postData = {
       userId: userInfo.id,
@@ -52,12 +62,114 @@ const MeetingDetail = () => {
         postData,
       );
       console.log(response.data);
+      fetchData(); // 데이터 다시 불러오기
+      setNotification('성공적으로 신청됐습니다');
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000); // 3초 후에 메시지 사라지게 하기
+    } catch (err) {
+      console.error(err);
+      setNotification('에러 발생, 잠시 후에 시도해 보세요');
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+    }
+  };
+
+  const handleCancelButton = async () => {
+    const postData = {
+      userId: userInfo.id,
+    };
+
+    try {
+      const response = await instance.delete(
+        `/api/group/detail/${meetingIdInt}/join`,
+        { data: postData },
+      );
+      console.log(response.data);
+      setNotification('성공적으로 취소됐습니다');
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+      fetchData(); // 데이터 다시 불러오기
+    } catch (err) {
+      console.error(err);
+      setNotification('에러 발생, 잠시 후에 시도해 보세요');
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+    }
+  };
+
+  const handleEditButton = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = async () => {
+    const patchData = {
+      title,
+      description,
+    };
+
+    try {
+      const response = await instance.patch(
+        `/api/group/detail/${meetingIdInt}`,
+        patchData,
+      );
+      setData((prevData) => ({
+        ...prevData,
+        title: patchData.title,
+        description: patchData.description,
+      }));
+      setIsModalOpen(false);
     } catch (err) {
       console.error(err);
     }
   };
+
   const handleBackButton = () => {
     navigate(-1);
+  };
+
+  const renderButton = () => {
+    if (!userInfo) {
+      return <p>로그인 후 신청해 주세요 </p>; // 로그인이 되어있지 않을 때
+    }
+    if (data.remainCapacity === 0) {
+      return <p>이미 마감된 공고입니다</p>;
+    }
+    if (userInfo.id === data.leaderId) {
+      return (
+        <button
+          onClick={handleEditButton}
+          className="w-full rounded-lg bg-pal-purple px-5 py-2 text-pal-lightwhite transition-colors duration-200 hover:bg-purple-950"
+        >
+          모임 수정
+        </button>
+      );
+    }
+    if (data.groupUserId?.includes(userInfo.id)) {
+      return (
+        <button
+          onClick={handleCancelButton}
+          className="w-full rounded-lg bg-pal-purple px-5 py-2 text-pal-lightwhite transition-colors duration-200 hover:bg-purple-950"
+        >
+          신청 취소
+        </button>
+      );
+    }
+    return (
+      <button
+        onClick={handleSubmitButton}
+        className="w-full rounded-lg bg-pal-purple px-5 py-2 text-pal-lightwhite transition-colors duration-200 hover:bg-purple-950"
+      >
+        신청하기
+      </button>
+    );
   };
 
   return (
@@ -67,7 +179,7 @@ const MeetingDetail = () => {
         <button
           type="button"
           onClick={handleBackButton}
-          className="flex items-center justify-center gap-x-2 rounded-lg bg-pal-purple px-5 py-2 text-sm text-pal-lightwhite transition-colors duration-200 hover:bg-purple-900"
+          className="flex items-center justify-center gap-x-2 rounded-lg bg-pal-purple px-5 py-2 text-sm text-pal-lightwhite transition-colors duration-200 hover:bg-purple-950"
         >
           <svg
             className="h-5 w-5 rtl:rotate-180"
@@ -118,17 +230,53 @@ const MeetingDetail = () => {
               <span className="material-symbols-outlined">calendar_month</span>
               <p>{formatDateRange(data.startTime, data.endTime)}</p>
             </div>
-            <button
-              onClick={() => {
-                handleSubmitButton();
-              }}
-              className="w-full rounded-lg bg-pal-purple px-5 py-2 text-pal-lightwhite transition-colors duration-200 hover:bg-purple-900"
-            >
-              신청하기
-            </button>
+            {renderButton()}
           </div>
         </div>
       </div>
+      {showNotification && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 transform rounded bg-pal-purple p-4 text-white shadow-lg">
+          {notification}
+        </div>
+      )}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-lg bg-white p-8 shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold">모임 수정</h2>
+            <label className="mb-2 block">
+              제목:
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded border border-gray-300 p-2"
+              />
+            </label>
+            <label className="mb-4 block">
+              상세 설명:
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded border border-gray-300 p-2"
+              />
+            </label>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="rounded bg-gray-300 px-4 py-2"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleModalSubmit}
+                className="rounded bg-pal-purple px-4 py-2 text-white"
+              >
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ContentsLayout>
   );
 };

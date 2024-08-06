@@ -8,6 +8,8 @@ import ConfirmModal from './ConfirmModal'; // 모달 컴포넌트 추가
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
+import EntranceModal from './EntranceModal';
+import { useQuery } from '@tanstack/react-query';
 
 const formatDateRange = (startDate, endDate) => {
   const options = {
@@ -24,14 +26,34 @@ const formatDateRange = (startDate, endDate) => {
 
   return `${start.replace(',', '')}~${end.split(' ')[3]}`;
 };
+const fetchGroupData = async (userId) => {
+  const { data } = await instance.get(`api/group/my/available/${userId}`);
+  return data.result.groups;
+};
+const fetchUserByAccess = async () => {
+  const access = sessionStorage.getItem('access');
+  if (!access) return null;
+  const res = await instance.get('/api/users/user-info');
+  console.log('fet');
+  return res.data.result;
+};
 
 const HealingMeetingPageContents = () => {
   const queryClient = useQueryClient();
   const userInfo = queryClient.getQueryData(['userInfo']);
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['groupData', userInfo?.id],
+    queryFn: async () => {
+      const data = await queryClient.ensureQueryData({
+        queryKey: ['userInfo'],
+        queryFn: fetchUserByAccess,
+      });
+      return fetchGroupData(data.id);
+    },
+  });
+
   const [mySessionId, setMySessionId] = useState(null);
-  const [myUserName, setMyUserName] = useState(
-    'Participant' + Math.floor(Math.random() * 100),
-  );
+  const myUserName = userInfo?.nickname;
   const [session, setSession] = useState(undefined);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
@@ -39,16 +61,17 @@ const HealingMeetingPageContents = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(undefined);
   const [isMike, setIsMike] = useState(true);
   const [isCamera, setIsCamera] = useState(true);
-  const [role, setRole] = useState('SUBSCRIBER');
-  const [data, setData] = useState(null);
+  const role = 'PUBLISHER';
+  // const [data, setData] = useState(null);
   const OV = useRef(null);
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const scrollRef = useRef(null);
 
   const [showModal, setShowModal] = useState(false); // 모달 상태
-
+  const [entranceModal, setEntranceModal] = useState(false);
   const [targetSubscriber, setTargetSubscriber] = useState(null); // 강퇴 대상 상태
 
   const handleToggle = (kind) => {
@@ -74,18 +97,18 @@ const HealingMeetingPageContents = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!userInfo) return;
-      try {
-        const response = await instance.get(`api/group/my/${userInfo.id}/0`);
-        setData(response.data.result.groups);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
-  }, [userInfo]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     // if (!userInfo) return;
+  //     try {
+  //       const response = await instance.get(`api/group/my/${userInfo.id}/0`);
+  //       setData(response.data.result.groups);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [userInfo]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -98,18 +121,16 @@ const HealingMeetingPageContents = () => {
     };
   }, []);
 
-  const handleChangeSessionId = (e) => {
-    setMySessionId(e.target.value);
+  const confirmEntrance = () => {
+    setEntranceModal(true);
   };
-
-  const handleChangeUserName = (e) => {
-    setMyUserName(e.target.value);
+  const handleEntrance = () => {
+    setEntranceModal(false);
+    joinSession();
   };
-
-  const handleMainVideoStream = (stream) => {
-    if (mainStreamManager !== stream) {
-      setMainStreamManager(stream);
-    }
+  const cancelEntrance = () => {
+    setEntranceModal(false);
+    setMySessionId(null);
   };
 
   const deleteSubscriber = (streamManager) => {
@@ -127,28 +148,13 @@ const HealingMeetingPageContents = () => {
     setShowModal(true); // 모달 표시
   };
 
-  const handleRemoveUser = () => {
-    if (targetSubscriber && session) {
-      session
-        .forceDisconnect({ connectionId: targetSubscriber })
-        .then(() => {
-          console.log(
-            `User with connectionId ${targetSubscriber} disconnected`,
-          );
-          setShowModal(false); // 모달 숨기기
-        })
-        .catch((error) => console.error('Error disconnecting user:', error));
-    }
-  };
-
   const cancelRemoveUser = () => {
     setShowModal(false); // 모달 숨기기
     setTargetSubscriber(null);
   };
 
-  const joinSession = async (id) => {
+  const joinSession = async () => {
     if (mySessionId === null) {
-      setMySessionId(id);
       return;
     }
     OV.current = new OpenVidu();
@@ -167,6 +173,9 @@ const HealingMeetingPageContents = () => {
     newSession.on('exception', (exception) => {
       console.warn(exception);
     });
+    newSession.on('publisherStartSpeaking', (event) => {
+      setActiveSpeaker(event.connection.connectionId);
+    });
 
     newSession.on('signal:my-chat', (event) => {
       if (event.from.connectionId !== newSession.connection.connectionId) {
@@ -183,7 +192,7 @@ const HealingMeetingPageContents = () => {
     });
 
     try {
-      const token = await getToken(role, id);
+      const token = await getToken(role, mySessionId);
       console.log(token);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
@@ -232,7 +241,6 @@ const HealingMeetingPageContents = () => {
     setSession(undefined);
     setSubscribers([]);
     setMySessionId(null);
-    setMyUserName('Participant' + Math.floor(Math.random() * 100));
     setMainStreamManager(undefined);
     setPublisher(undefined);
     setIsMike(true);
@@ -299,8 +307,6 @@ const HealingMeetingPageContents = () => {
   };
 
   const createToken = async (sessionId, role, id) => {
-    console.log(sessionId);
-    console.log(id);
     const response = await instance.post(
       `api/sessions/${sessionId.result}/connections`,
       { role, userId: userInfo.id, groupId: id },
@@ -347,35 +353,6 @@ const HealingMeetingPageContents = () => {
     <div className="container mx-auto">
       {session === undefined ? (
         <ContentsLayout>
-          <div>
-            <label className="mb-2 block text-sm font-bold text-gray-700">
-              사용자id:
-            </label>
-            <input
-              className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-              type="text"
-              id="userName"
-              value={myUserName}
-              onChange={handleChangeUserName}
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-bold text-gray-700">
-              역할 선택:
-            </label>
-            <select
-              className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="SUBSCRIBER">SUBSCRIBER</option>
-              <option value="PUBLISHER">PUBLISHER</option>
-              <option value="MODERATOR">MODERATOR</option>
-            </select>
-          </div>
-
           <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
             {data &&
               data.map((item, index) => (
@@ -384,7 +361,8 @@ const HealingMeetingPageContents = () => {
                   key={index}
                   onClick={(e) => {
                     e.preventDefault();
-                    joinSession(item.id);
+                    changeSession(item.id);
+                    confirmEntrance();
                   }}
                 >
                   <div className="relative w-full rounded-md">
@@ -407,11 +385,8 @@ const HealingMeetingPageContents = () => {
                     )}
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
                       <button
-                        onClick={(e) => {
-                          changeSession(item.id);
-                        }}
                         type="submit"
-                        className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite"
+                        className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite hover:bg-purple-950"
                       >
                         모임 입장
                       </button>
@@ -465,7 +440,12 @@ const HealingMeetingPageContents = () => {
                       className="group flex w-1/2 flex-col items-center border-2 border-solid border-gray-900 p-8"
                     >
                       <span>{sub.id}</span>
-                      <UserVideoComponent streamManager={sub} />
+                      <UserVideoComponent
+                        streamManager={sub}
+                        isActive={
+                          sub.stream.connection.connectionId === activeSpeaker
+                        }
+                      />
                       <div className="items-center">
                         {role === 'MODERATOR' && (
                           <div className="mt-2 hidden flex-col items-center group-hover:flex">
@@ -591,11 +571,12 @@ const HealingMeetingPageContents = () => {
       ) : null}
 
       {/* 확인 모달 */}
-      <ConfirmModal
-        show={showModal}
-        message="정말로 내보내시겠습니까?"
-        onConfirm={handleRemoveUser}
-        onCancel={cancelRemoveUser}
+
+      <EntranceModal
+        show={entranceModal}
+        message="정말 입장하시겠습니까?"
+        onConfirm={handleEntrance}
+        onCancel={cancelEntrance}
       />
     </div>
   );

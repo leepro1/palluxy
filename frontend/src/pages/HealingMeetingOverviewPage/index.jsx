@@ -43,7 +43,13 @@ const HealingSessionPage = () => {
   const [searchKey, setSearchKey] = useState('leader'); // 검색 키 관리
   const [searchValue, setSearchValue] = useState(''); // 검색 값 관리
   const [searchTrigger, setSearchTrigger] = useState(0); // 검색 트리거 상태
-
+  const [notification, setNotification] = useState(null);
+  const [showNotification, setShowNotification] = useState(false);
+  const showNotificationMessage = (message) => {
+    setNotification(message);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 3000); // 3초 후에 알림 사라짐
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -233,7 +239,7 @@ const HealingSessionPage = () => {
                         className="rounded-md"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
-                        <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
+                        <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite hover:bg-purple-950">
                           신청하기
                         </button>
                       </div>
@@ -246,7 +252,7 @@ const HealingSessionPage = () => {
                         className="rounded-md"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
-                        <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite">
+                        <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite hover:bg-purple-950">
                           신청하기
                         </button>
                       </div>
@@ -291,8 +297,18 @@ const HealingSessionPage = () => {
           showingPageMin={showingPageMin}
           pageIndexInt={pageIndexInt}
         />
-        {isModalOpen && <MakeSession removeModal={closeModal} />}
+        {isModalOpen && (
+          <MakeSession
+            removeModal={closeModal}
+            onSessionCreated={showNotificationMessage}
+          />
+        )}
       </div>
+      {showNotification && (
+        <div className="fixed bottom-0 left-0 right-0 mx-4 mb-4 w-full rounded-lg bg-pal-purple px-4 py-2 text-center text-pal-lightwhite shadow-lg">
+          {notification}
+        </div>
+      )}
     </ContentsLayout>
   );
 };

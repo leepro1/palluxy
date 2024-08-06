@@ -171,7 +171,7 @@ const routerInfo = [
         ],
       },
       {
-        path: '/admin',
+        path: '/admin/:pageIndex',
         element: (
           <AuthGuard auth={true}>
             <AdminPage />
