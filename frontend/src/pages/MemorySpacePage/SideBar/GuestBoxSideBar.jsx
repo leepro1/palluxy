@@ -8,17 +8,16 @@ import {
   fetchGuestbookComment,
   postGuestboxComment,
 } from '@api/memorySpace/guestBookApi';
-import { useParams } from 'react-router-dom';
 
 const GuestBoxSideBar = () => {
   const { register, handleSubmit, resetField } = useForm();
   const queryClient = useQueryClient();
-  const { userId } = useParams();
   const userData = queryClient.getQueryData(['userInfo']);
+  const roomData = queryClient.getQueryData(['memorySpace']);
 
   const { data: guestBookData, isSuccess } = useQuery({
     queryKey: ['guestBook'],
-    queryFn: () => fetchGuestbookComment(userId),
+    queryFn: () => fetchGuestbookComment(roomData.roomId),
     staleTime: 1000 * 60 * 5,
   });
 

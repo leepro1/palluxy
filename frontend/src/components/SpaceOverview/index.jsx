@@ -16,7 +16,7 @@ const SpaceOverview = ({ data }) => {
       queryClient.setQueryData(
         ['roomOverview'],
         roomOverviewData.map((item) =>
-          item.id === data.id ? { ...item, liked: !data.liked } : item,
+          item.roomId === data.roomId ? { ...item, liked: !data.liked } : item,
         ),
       );
     },
@@ -27,7 +27,7 @@ const SpaceOverview = ({ data }) => {
       queryClient.setQueryData(
         ['roomOverview'],
         roomOverviewData.map((item) =>
-          item.id === data.id ? { ...item, liked: !data.liked } : item,
+          item.roomId === data.roomId ? { ...item, liked: !data.liked } : item,
         ),
       );
     },
