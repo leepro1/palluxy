@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,22 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%bpj=j=!2^wu337^^82r04q31=$h49=p0&96&5rl0d43!-fb%0'
 
+
+SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['34.47.73.129', '34.64.174.163']
-
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(',')
+print(ALLOWED_HOSTS)
 # AWS S3 setting
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-AWS_ACCESS_KEY_ID = 'AKIA6MT6ZNKHCF2B3DN3'
-AWS_SECRET_ACCESS_KEY = 'o/8sQmcE/OdrfEE6vWxpx8fj/BHInW+MSJrawr5Y'
-AWS_STORAGE_BUCKET_NAME = 'palluxytest-resdstone'
-AWS_S3_REGION_NAME = 'ap-northeast-2'  # e.g., 'us-west-2'
-SPRING_SERVER_URL = 'http://localhost:8080/api/rooms/petmeta/upload-obj'
+AWS_ACCESS_KEY_ID =os.getenv("AWS_ACCESS_KEY_ID") 
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY") 
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME") 
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME") 
+SPRING_SERVER_URL = os.getenv("SPRING_SERVER_URL") 
 
 # Application definition
 
