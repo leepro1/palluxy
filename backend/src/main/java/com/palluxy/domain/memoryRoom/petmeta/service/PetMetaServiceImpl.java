@@ -43,7 +43,7 @@ public class PetMetaServiceImpl implements PetMetaService {
   private final String bucketName = "palluxytest-resdstone";
 
   public PetMetaServiceImpl(WebClient.Builder webClientBuilder) {
-    this.webClient = webClientBuilder.baseUrl("http://127.0.0.1:8000").build();
+    this.webClient = webClientBuilder.baseUrl("http://35.241.111.176/").build();
   }
 
   @Override
