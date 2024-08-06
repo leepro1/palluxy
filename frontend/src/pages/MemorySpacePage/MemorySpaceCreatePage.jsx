@@ -506,7 +506,7 @@ const MemorySpaceCreatePage = () => {
 PersonalityCheckbox.propTypes = {
   personality: PropTypes.object.isRequired,
   checkboxName: PropTypes.string.isRequired,
-  register: PropTypes.func.isRequired,
+  register: PropTypes.object.isRequired,
 };
 
 export default MemorySpaceCreatePage;
