@@ -101,7 +101,7 @@ public class GroupController {
         return CommonResponse.ok("모임 참가 신청 취소 완료");
     }
 
-    @GetMapping("/my/{userId}/{page}")
+    @GetMapping("/my/all/{userId}/{page}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> getMyGroups(@PathVariable("userId") Long userId,
         @PathVariable("page") int page) {
