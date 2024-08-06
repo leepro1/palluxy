@@ -1,43 +1,84 @@
-import ChatBox from '@/pages/HealingMeetingPage/ChatBox';
-import { useEffect, useCallback, useState, useRef } from 'react';
-import axios from 'axios';
-import '@/pages/HealingMeetingPage/HealingMeetingPageContents.css';
-import UserVideoComponent from './UserVideoComponent';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
+import UserVideoComponent from './UserVideoComponent';
+import ChatMessageBox from '@/components/Chat/ChatMessageBox';
+import ConfirmModal from './ConfirmModal'; // 모달 컴포넌트 추가
+import defaultImage from '@assets/images/healingMeetingOverview/default.png';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { instance } from '@/utils/axios';
+import EntranceModal from './EntranceModal';
 
-const APPLICATION_SERVER_URL = 'http://localhost:5000/';
+const formatDateRange = (startDate, endDate) => {
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const start = new Date(startDate).toLocaleString('ko-KR', options);
+  const end = new Date(endDate).toLocaleString('ko-KR', options);
+
+  return `${start.replace(',', '')}~${end.split(' ')[3]}`;
+};
+
+const fetchGroupData = async (userId) => {
+  const { data } = await instance.get(`api/group/my/${userId}/0`);
+  return data.result.groups;
+};
 
 const HealingMeetingPageContents = () => {
-  const [mySessionId, setMySessionId] = useState('SessionA'); // 세션 ID 상태
-  const [myUserName, setMyUserName] = useState(
-    'Participant' + Math.floor(Math.random() * 100),
-  ); // 랜덤한 사용자 이름 상태
-  const [session, setSession] = useState(undefined); // 세션 상태
-  const [mainStreamManager, setMainStreamManager] = useState(undefined); // 메인 스트림 관리자 상태
-  const [publisher, setPublisher] = useState(undefined); // 발행자 상태
-  const [subscribers, setSubscribers] = useState([]); // 구독자 리스트 상태
-  const [currentVideoDevice, setCurrentVideoDevice] = useState(undefined); // 현재 비디오 장치 상태
-  const OV = useRef(null); // OpenVidu 객체 참조
-  const [isMike, setIsMike] = useState(true); // 마이크 상태
-  const [isCamera, setIsCamera] = useState(true); // 카메라 상태
-  const [role, setRole] = useState('SUBSCRIBER'); // 사용자 역할 상태, 기본은 SUBSCRIBER
+  const queryClient = useQueryClient();
+  const userInfo = queryClient.getQueryData('userInfo');
+
+  const {
+    data,
+    isLoading: dataLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['groupData', userInfo?.id],
+    queryFn: () => fetchGroupData(userInfo.id),
+    enabled: !!userInfo,
+  });
+
+  const [mySessionId, setMySessionId] = useState(null);
+  const myUserName = userInfo?.nickname;
+  const [session, setSession] = useState(undefined);
+  const [mainStreamManager, setMainStreamManager] = useState(undefined);
+  const [publisher, setPublisher] = useState(undefined);
+  const [subscribers, setSubscribers] = useState([]);
+  const [currentVideoDevice, setCurrentVideoDevice] = useState(undefined);
+  const [isMike, setIsMike] = useState(true);
+  const [isCamera, setIsCamera] = useState(true);
+  const [role, setRole] = useState('PUBLISHER');
+  const OV = useRef(null);
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
+
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const scrollRef = useRef(null);
+
+  const [showModal, setShowModal] = useState(false); // 모달 상태
+  const [entranceModal, setEntranceModal] = useState(false);
+  const [targetSubscriber, setTargetSubscriber] = useState(null); // 강퇴 대상 상태
 
   const handleToggle = (kind) => {
     if (publisher) {
-      // 발행자가 있는 경우
       switch (kind) {
         case 'camera':
           setIsCamera((prevState) => {
-            const newState = !prevState; // 카메라 상태를 반전
-            publisher.publishVideo(newState); // 카메라 상태를 발행자에 반영
+            const newState = !prevState;
+            publisher.publishVideo(newState);
             return newState;
           });
           break;
         case 'mike':
           setIsMike((prevState) => {
-            const newState = !prevState; // 마이크 상태를 반전
-            publisher.publishAudio(newState); // 마이크 상태를 발행자에 반영
+            const newState = !prevState;
+            publisher.publishAudio(newState);
             return newState;
           });
           break;
@@ -49,7 +90,7 @@ const HealingMeetingPageContents = () => {
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      leaveSession(); // 페이지를 떠날 때 세션을 떠남
+      leaveSession();
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -59,48 +100,100 @@ const HealingMeetingPageContents = () => {
   }, []);
 
   const handleChangeSessionId = (e) => {
-    setMySessionId(e.target.value); // 세션 ID 변경 핸들러
+    setMySessionId(e.target.value);
   };
 
-  const handleChangeUserName = (e) => {
-    setMyUserName(e.target.value); // 사용자 이름 변경 핸들러
+  const confirmEntrance = () => {
+    setEntranceModal(true);
+  };
+  const handleEntrance = () => {
+    setEntranceModal(false);
+    joinSession();
+  };
+  const cancelEntrance = () => {
+    setEntranceModal(false);
+    setMySessionId(null);
   };
 
   const handleMainVideoStream = (stream) => {
     if (mainStreamManager !== stream) {
-      setMainStreamManager(stream); // 메인 비디오 스트림 설정
+      setMainStreamManager(stream);
     }
   };
 
   const deleteSubscriber = (streamManager) => {
-    setSubscribers(
-      (prevSubscribers) =>
-        prevSubscribers.filter((sub) => sub !== streamManager), // 구독자 리스트에서 스트림 삭제
+    setSubscribers((prevSubscribers) =>
+      prevSubscribers.filter((sub) => sub !== streamManager),
     );
   };
 
+  const changeSession = (sessionId) => {
+    setMySessionId(sessionId);
+  };
+
+  const confirmRemoveUser = (connectionId) => {
+    setTargetSubscriber(connectionId);
+    setShowModal(true); // 모달 표시
+  };
+
+  const handleRemoveUser = () => {
+    if (targetSubscriber && session) {
+      console.log(targetSubscriber);
+      console.log(role);
+      console.log(mySessionId);
+      console.log(session);
+      instance
+        .post(`api/sessions/${mySessionId}/connection/${targetSubscriber}`)
+        .then(() => {
+          console.log(
+            `User with connectionId ${targetSubscriber} disconnected`,
+          );
+          setShowModal(false); // 모달 숨기기
+        })
+        .catch((error) => console.error('Error disconnecting user:', error));
+    }
+  };
+
+  const cancelRemoveUser = () => {
+    setShowModal(false); // 모달 숨기기
+    setTargetSubscriber(null);
+  };
+
   const joinSession = async () => {
-    OV.current = new OpenVidu(); // OpenVidu 객체 생성
-    const newSession = OV.current.initSession(); // 새 세션 초기화
-
-    setSession(newSession); // 세션 상태 업데이트
-
+    if (mySessionId === null) {
+      return;
+    }
+    OV.current = new OpenVidu();
+    const newSession = OV.current.initSession();
+    setSession(newSession);
+    console.log(newSession);
     newSession.on('streamCreated', (event) => {
-      const subscriber = newSession.subscribe(event.stream, undefined); // 새 스트림을 구독
-      setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]); // 구독자 리스트에 추가
+      const subscriber = newSession.subscribe(event.stream, undefined);
+      setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
     });
 
     newSession.on('streamDestroyed', (event) => {
-      deleteSubscriber(event.stream.streamManager); // 스트림이 삭제될 때 구독자 리스트에서 제거
+      deleteSubscriber(event.stream.streamManager);
     });
 
     newSession.on('exception', (exception) => {
-      console.warn(exception); // 예외 발생 시 경고
+      console.warn(exception);
+    });
+    newSession.on('publisherStartSpeaking', (event) => {
+      setActiveSpeaker(event.connection.connectionId);
+    });
+
+    newSession.on('signal:my-chat', (event) => {
+      if (event.from.connectionId !== newSession.connection.connectionId) {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
     });
 
     try {
-      const token = await getToken(role); // 역할을 기반으로 토큰 생성
-      await newSession.connect(token, { clientData: myUserName }); // 세션에 연결
+      const token = await getToken(role, mySessionId);
+      console.log(token);
+      await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,
         videoSource: undefined,
@@ -112,12 +205,12 @@ const HealingMeetingPageContents = () => {
         mirror: false,
       });
 
-      newSession.publish(newPublisher); // 발행자 세션에 발행
+      newSession.publish(newPublisher);
 
-      const devices = await OV.current.getDevices(); // 장치 목록 가져오기
+      const devices = await OV.current.getDevices();
       const videoDevices = devices.filter(
         (device) => device.kind === 'videoinput',
-      ); // 비디오 입력 장치 필터링
+      );
       const currentVideoDeviceId = newPublisher.stream
         .getMediaStream()
         .getVideoTracks()[0]
@@ -126,28 +219,27 @@ const HealingMeetingPageContents = () => {
         (device) => device.deviceId === currentVideoDeviceId,
       );
 
-      setCurrentVideoDevice(currentVideoDevice); // 현재 비디오 장치 설정
-      setMainStreamManager(newPublisher); // 메인 스트림 관리자 설정
-      setPublisher(newPublisher); // 발행자 설정
+      setCurrentVideoDevice(currentVideoDevice);
+      setMainStreamManager(newPublisher);
+      setPublisher(newPublisher);
     } catch (error) {
       console.log(
         'There was an error connecting to the session:',
         error.code,
         error.message,
-      ); // 세션 연결 에러
+      );
     }
   };
 
   const leaveSession = useCallback(() => {
     if (session) {
-      session.disconnect(); // 세션 연결 해제
+      session.disconnect();
     }
 
     OV.current = null;
-    setSession(undefined); // 상태 초기화
+    setSession(undefined);
     setSubscribers([]);
-    setMySessionId('SessionA');
-    setMyUserName('Participant' + Math.floor(Math.random() * 100));
+    setMySessionId(null);
     setMainStreamManager(undefined);
     setPublisher(undefined);
     setIsMike(true);
@@ -156,7 +248,7 @@ const HealingMeetingPageContents = () => {
 
   const switchCamera = useCallback(async () => {
     try {
-      const devices = await OV.current.getDevices(); // 장치 목록 가져오기
+      const devices = await OV.current.getDevices();
       const videoDevices = devices.filter(
         (device) => device.kind === 'videoinput',
       );
@@ -169,244 +261,77 @@ const HealingMeetingPageContents = () => {
         if (newVideoDevice) {
           const newPublisher = OV.current.initPublisher(undefined, {
             videoSource: newVideoDevice.deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
+            audioSource: undefined,
+            publishAudio: isMike,
+            publishVideo: isCamera,
+            mirror: false,
           });
 
-          await session.unpublish(mainStreamManager); // 기존 발행자 취소
-          await session.publish(newPublisher); // 새 발행자 설정
+          await session.unpublish(publisher);
+          await session.publish(newPublisher);
 
-          setCurrentVideoDevice(newVideoDevice); // 현재 비디오 장치 업데이트
-          setMainStreamManager(newPublisher); // 메인 스트림 관리자 업데이트
-          setPublisher(newPublisher); // 발행자 업데이트
+          setCurrentVideoDevice(newVideoDevice);
+          setPublisher(newPublisher);
+          setMainStreamManager(newPublisher);
         }
       }
-    } catch (e) {
-      console.error(e); // 에러 처리
+    } catch (error) {
+      console.error('Error switching camera:', error);
     }
-  }, [session, mainStreamManager, currentVideoDevice]);
+  }, [currentVideoDevice, isMike, isCamera, publisher, session]);
 
-  const getToken = async (role) => {
-    const sessionId = await createSession(mySessionId); // 세션 생성
-    return await createToken(sessionId, role); // 역할 기반 토큰 생성
-  };
-
-  const createSession = async (sessionId) => {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + 'api/sessions',
-      { customSessionId: sessionId },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    return response.data; // 세션 ID 반환
-  };
-
-  const createToken = async (sessionId, role) => {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
-      { role }, // 역할 전달
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    return response.data; // 토큰 반환
-  };
   return (
-    <div className="container mx-auto">
-      {/* 사용자의 세션이 없을때(세션정보를 입력하기 전) */}
-      {session === undefined ? (
+    <ContentsLayout>
+      {/* 여기에 추가적인 컴포넌트들을 배치하세요 */}
+      <div>
+        <h1>Healing Meeting Page</h1>
         <div>
-          <div
-            id="join-dialog"
-            className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md"
-          >
-            <h1 className="mb-4 text-2xl font-bold">사용자와 세션 정보 입력</h1>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault(); // 기본 폼 제출 동작 방지
-                joinSession(); // 세션 참가
-              }}
-            >
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  사용자id:
-                </label>
-                <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  type="text"
-                  id="userName"
-                  value={myUserName}
-                  onChange={handleChangeUserName}
-                  required
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  세션id:
-                </label>
-                <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  type="text"
-                  id="sessionId"
-                  value={mySessionId}
-                  onChange={handleChangeSessionId}
-                  required
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  역할 선택:
-                </label>
-                <select
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  id="role"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <option value="SUBSCRIBER">SUBSCRIBER</option>
-                  <option value="PUBLISHER">PUBLISHER</option>
-                  <option value="MODERATOR">MODERATOR</option>
-                </select>
-              </div>
-              <div className="flex items-center justify-center">
-                <input
-                  className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
-                  type="submit"
-                  value="JOIN"
-                />
-              </div>
-            </form>
-          </div>
+          <input
+            type="text"
+            value={mySessionId || ''}
+            onChange={handleChangeSessionId}
+            placeholder="Session ID"
+          />
+          <button onClick={confirmEntrance}>Enter</button>
         </div>
-      ) : null}
-      {/* 사용자의 세션이 있을때(join한 후) */}
-      {session !== undefined ? (
-        <ContentsLayout>
-          <div className="flex flex-row">
-            <div className="relative flex h-screen w-10/12 flex-col">
-              {/* 헤더 */}
-              <div className="flex h-16 w-full items-center justify-center bg-gray-900">
-                <p className="text-2xl text-white">
-                  치유모임 이름 {mySessionId}
-                </p>
-              </div>
-              {/* 비디오 */}
-              <div className="flex grow bg-black">
-                <div className="flex grow flex-wrap">
-                  {publisher !== undefined ? (
-                    <div
-                      className="relative w-1/2 border-2 border-solid border-gray-900 p-6"
-                      onClick={() => handleMainVideoStream(publisher)}
-                    >
-                      <UserVideoComponent streamManager={publisher} />
-                    </div>
-                  ) : null}
-                  {subscribers.map((sub, i) => (
-                    <div
-                      key={sub.id}
-                      className="w-1/2 border-2 border-solid border-gray-900 p-6"
-                      onClick={() => handleMainVideoStream(sub)}
-                    >
-                      <span>{sub.id}</span>
-                      <UserVideoComponent streamManager={sub} />
-                    </div>
-                  ))}
-                </div>
-                {/* <ChatBox className="w-2/12" /> */}
-              </div>
-              {/* 푸터 */}
-              <div className="flex h-20 w-full items-center justify-between bg-gray-800 px-4">
-                <input
-                  className="focus:shadow-outline rounded bg-gray-800 px-4 py-2 font-bold text-gray-800"
-                  type="button"
-                  id="buttonLeaveSession"
-                  value="가나 다라마"
-                />
-                <div className="flex flex-1 items-center justify-center gap-x-10">
-                  {isCamera === true ? (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-white"
-                        id="buttonToggleCamera"
-                        onClick={() => {
-                          handleToggle('camera');
-                        }}
-                      >
-                        hangout_video
-                      </span>
-                      <span className="text-sm text-white">비디오 켜짐</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
-                        id="buttonToggleCamera"
-                        onClick={() => {
-                          handleToggle('camera');
-                        }}
-                      >
-                        hangout_video_off
-                      </span>
-                      <span className="text-sm text-red-500">비디오 꺼짐</span>
-                    </div>
-                  )}
-                  {isMike === true ? (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-white"
-                        id="buttonToggleMike"
-                        onClick={() => {
-                          handleToggle('mike');
-                        }}
-                      >
-                        mic
-                      </span>
-                      <span className="text-sm text-white">마이크 켜짐</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
-                        id="buttonToggleMike"
-                        onClick={() => {
-                          handleToggle('mike');
-                        }}
-                      >
-                        mic_off
-                      </span>
-                      <span className="text-sm text-red-500">마이크 꺼짐</span>
-                    </div>
-                  )}
-                  <div className="flex flex-col items-center">
-                    <span
-                      className="material-symbols-outlined cursor-pointer text-5xl text-white"
-                      id="buttonSwitchCamera"
-                      onClick={() => {
-                        switchCamera();
-                      }}
-                    >
-                      party_mode
-                    </span>
-                    <span className="text-sm text-white">카메라 바꾸기</span>
-                  </div>
-                </div>
-                <input
-                  className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
-                  type="button"
-                  id="buttonLeaveSession"
-                  onClick={leaveSession}
-                  value="세션 나가기"
-                />
+        <div>
+          {session && (
+            <div>
+              <UserVideoComponent streamManager={mainStreamManager} />
+              <div>
+                <button onClick={() => handleToggle('camera')}>
+                  {isCamera ? 'Turn off Camera' : 'Turn on Camera'}
+                </button>
+                <button onClick={() => handleToggle('mike')}>
+                  {isMike ? 'Mute' : 'Unmute'}
+                </button>
+                <button onClick={switchCamera}>Switch Camera</button>
+                <button onClick={leaveSession}>Leave Session</button>
               </div>
             </div>
-            <ChatBox className="h-auto w-2/12" />
-          </div>
-        </ContentsLayout>
-      ) : null}
-    </div>
+          )}
+        </div>
+        {showModal && (
+          <ConfirmModal
+            onConfirm={handleRemoveUser}
+            onCancel={cancelRemoveUser}
+          />
+        )}
+        {entranceModal && (
+          <EntranceModal
+            onConfirm={handleEntrance}
+            onCancel={cancelEntrance}
+          />
+        )}
+        <ChatMessageBox
+          messages={messages}
+          text={text}
+          setText={setText}
+          handleSendMessage={handleSendMessage}
+          scrollRef={scrollRef}
+        />
+      </div>
+    </ContentsLayout>
   );
 };
 
