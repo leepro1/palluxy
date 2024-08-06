@@ -44,16 +44,16 @@ class RunModelAPIView(APIView):
         if not os.path.exists(output_file):
             return Response({"error": "Output file not found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # # 스프링 서버로 obj 파일 전송
-        # spring_server_url = f'{settings.SPRING_SERVER_URL}/api/rooms/{roomId}/petmeta/webhook' # 스프링 서버 URL은 settings.py에 정의
-        # try:
-        #     with open(output_file, 'rb') as f:
-        #         files = {'file': (f'{image.name}.obj', f, 'application/octet-stream')}
-        #         response = requests.post(spring_server_url, files=files)
-        #         if response.status_code != 200:
-        #             return Response({"error": "Failed to upload obj file to Spring server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        # except Exception as e:
-        #     return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # 스프링 서버로 obj 파일 전송
+        spring_server_url = f'{settings.SPRING_SERVER_URL}/api/rooms/{roomId}/petmeta/webhook' # 스프링 서버 URL은 settings.py에 정의
+        try:
+            with open(output_file, 'rb') as f:
+                files = {'file': (f'{image.name}.obj', f, 'application/octet-stream')}
+                response = requests.post(spring_server_url, files=files)
+                if response.status_code != 200:
+                    return Response({"error": "Failed to upload obj file to Spring server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # 이미지 파일과 obj 파일 삭제
         try:
