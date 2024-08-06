@@ -8,19 +8,19 @@ import java.util.List;
 
 public interface LetterService {
 
-  void saveLetter(Letter letter);
+    void saveLetter(Letter letter);
 
-  List<Letter> findByPetId(Long petId);
+    List<Letter> findByPetId(Long petId);
 
-  List<Letter> findByPetIdAndOpenedAtBefore(Long petId);
+    List<Letter> findByPetIdAndOpenedAtBefore(Long petId);
 
-  void sendLetters(Long petId, Long roomId);
+    void sendLetters(Long petId, Long roomId);
 
-  void saveFirstLetter(String relation, String petName, Long petId, Long roomId);
+    void saveFirstLetter(String relation, String petName, Long petId, Long roomId);
 
-  Pet getPet(Long petId);
+    Pet getPet(Long petId);
 
-  Room getRoom(Long roomId);
+    Room getRoom(Long roomId);
 
-  List<Letter> findLettersByRoomId(Long roomId);
+    List<Letter> findLettersByRoomIdAndOpenedAtBefore(Long roomId);
 }

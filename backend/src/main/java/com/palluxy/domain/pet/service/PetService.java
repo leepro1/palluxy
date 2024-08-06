@@ -10,15 +10,15 @@ import java.util.List;
 
 public interface PetService {
 
-  List<PersonalityResponse> getAllPersonalities();
+    List<PersonalityResponse> getAllPersonalities();
 
-  void registerPet(PetRegisterRequest request);
+    void registerPet(PetRegisterRequest request);
 
-  Pet updatePet(Long petId, PetRegisterRequest request);
+    Pet updatePet(Long petId, PetRegisterRequest request);
 
-  PetResponse findById(Long id);
+    PetResponse findById(Long id);
 
-  PetIdResponse findByUserId(Long userId);
+    PetIdResponse findByUserId(Long userId);
 
-  void deletePet(Long petId);
+    void deletePet(Long petId);
 }

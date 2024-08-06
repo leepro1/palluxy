@@ -25,75 +25,75 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class ClaudeUtil implements AIUtil<ClaudeRequest> {
 
-  @Value("${claude.api.key}")
-  private String API_KEY;
-  @Value("${claude.api.url}")
-  private String API_URL;
+    @Value("${claude.api.key}")
+    private String API_KEY;
+    @Value("${claude.api.url}")
+    private String API_URL;
 
-  private final LetterRepository letterRepository;
+    private final LetterRepository letterRepository;
 
-  public void sendRequest(ClaudeRequest request, Long petId, Room room) {
-    JsonObject object = new JsonObject();
-    object.addProperty("model", request.getModel());
-    object.addProperty("max_tokens", request.getMaxTokens());
+    public void sendRequest(ClaudeRequest request, Long petId, Room room) {
+        JsonObject object = new JsonObject();
+        object.addProperty("model", request.getModel());
+        object.addProperty("max_tokens", request.getMaxTokens());
 
-    JsonArray messages = new JsonArray();
-    for (ClaudeMessageInput messageInput : request.getMessageInputs()) {
-      messages.add(messageInput.toJsonObject());
-    }
-    object.add("messages", messages);
-
-    String json = object.toString();
-    WebClient webClient =
-        WebClient.builder()
-            .baseUrl(API_URL)
-            .defaultHeader("x-api-key", API_KEY)
-            .defaultHeader("anthropic-version", "2023-06-01")
-            .defaultHeader("content-type", "application/json")
-            .build();
-
-    webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
-        response -> {
-          String content = response.getContent().get(0).getText();
-          Letter letter = Letter.builder()
-              .title("편지가 도착했어요")
-              .content(content)
-              .writer(Writer.PET)
-              .petId(petId)
-                  .room(room)
-              .openedAt(LocalDateTime.now().plusHours(6L))
-              .build();
-          letterRepository.saveAndFlush(letter);
+        JsonArray messages = new JsonArray();
+        for (ClaudeMessageInput messageInput : request.getMessageInputs()) {
+            messages.add(messageInput.toJsonObject());
         }
-    );
-  }
+        object.add("messages", messages);
 
-  public ClaudeRequest getRequest(List<Letter> letters, Pet pet) {
-    ClaudeRequest claudeRequest = new ClaudeRequest();
+        String json = object.toString();
+        WebClient webClient =
+            WebClient.builder()
+                .baseUrl(API_URL)
+                .defaultHeader("x-api-key", API_KEY)
+                .defaultHeader("anthropic-version", "2023-06-01")
+                .defaultHeader("content-type", "application/json")
+                .build();
 
-    List<ClaudeMessageInput> messageInputs = new ArrayList<>();
-    messageInputs.add(new ClaudeMessageInput(ClaudeRole.USER, Prompt.getPrompt()));
-    for (int i = 0; i < letters.size(); i++) {
-      Letter letter = letters.get(i);
-
-      ClaudeRole role = ClaudeRole.USER;
-      if (letter.getWriter().equals(Writer.PET)) {
-        role = ClaudeRole.ASSISTANT;
-      }
-
-      String content = letter.getContent();
-      if (i == letters.size() - 1) {
-        String data = pet.toString();
-        content = String.format(
-            "%s \n\n 답장 작성에 참고할 반려동물의 데이터는 다음과 같습니다. 아래의 데이터를 참고해서, 편지만을 작성해서 답변해주세요. \n\n %s",
-            content, data);
-      }
-
-      messageInputs.add(new ClaudeMessageInput(role, content));
+        webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
+            response -> {
+                String content = response.getText();
+                Letter letter = Letter.builder()
+                    .title("편지가 도착했어요")
+                    .content(content)
+                    .writer(Writer.PET)
+                    .petId(petId)
+                    .room(room)
+                    .openedAt(LocalDateTime.now())
+                    .build();
+                letterRepository.saveAndFlush(letter);
+            }
+        );
     }
 
-    claudeRequest.setMessageInputs(messageInputs);
+    public ClaudeRequest getRequest(List<Letter> letters, Pet pet) {
+        ClaudeRequest claudeRequest = new ClaudeRequest();
 
-    return claudeRequest;
-  }
+        List<ClaudeMessageInput> messageInputs = new ArrayList<>();
+        messageInputs.add(new ClaudeMessageInput(ClaudeRole.USER, Prompt.getPrompt()));
+        for (int i = 0; i < letters.size(); i++) {
+            Letter letter = letters.get(i);
+
+            ClaudeRole role = ClaudeRole.USER;
+            if (letter.getWriter().equals(Writer.PET)) {
+                role = ClaudeRole.ASSISTANT;
+            }
+
+            String content = letter.getContent();
+            if (i == letters.size() - 1) {
+                String data = pet.toString();
+                content = String.format(
+                    "%s \n\n 답장 작성에 참고할 반려동물의 데이터는 다음과 같습니다. 아래의 데이터를 참고해서, 편지만을 작성해서 답변해주세요. \n\n %s",
+                    content, data);
+            }
+
+            messageInputs.add(new ClaudeMessageInput(role, content));
+        }
+
+        claudeRequest.setMessageInputs(messageInputs);
+
+        return claudeRequest;
+    }
 }

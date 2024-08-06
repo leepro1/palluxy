@@ -116,7 +116,7 @@ const SignupModal = () => {
 
   const registerUser = async (data) => {
     console.log('유저 등록', data);
-    const response = await fetch('http://localhost:8080/api/users', {
+    const response = await fetch('http://localhost:8081/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const SignupModal = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/users/check-email/${email}`,
+        `http://localhost:8081/api/users/check-email/${email}`,
         {
           method: 'GET',
         },
@@ -167,6 +167,7 @@ const SignupModal = () => {
           message: '사용 가능한 이메일입니다.',
         });
         setIsEmailChecked(true);
+        setVerificationCodeSent(false);
       }
     } catch (error) {
       setError('email', {
@@ -178,7 +179,7 @@ const SignupModal = () => {
 
   const sendVerificationCode = async (email) => {
     try {
-      const response = await fetch('http://localhost:8080/api/email/code', {
+      const response = await fetch('http://localhost:8081/api/email/code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ const SignupModal = () => {
 
   const verifyEmailCode = async (email, code) => {
     try {
-      const response = await fetch('http://localhost:8080/api/email/verify', {
+      const response = await fetch('http://localhost:8081/api/email/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -238,7 +239,7 @@ const SignupModal = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/users/check-nickname/${nickname}`,
+        `http://localhost:8081/api/users/check-nickname/${nickname}`,
         {
           method: 'GET',
         },
@@ -351,7 +352,7 @@ const SignupModal = () => {
   return (
     <ContentsLayout>
       <div className="flex items-center justify-center">
-        <div className="w-[700px] rounded bg-white bg-opacity-60 p-6">
+        <div className="w-[700px] overflow-y-auto rounded bg-white bg-opacity-60 p-6">
           <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
             회원가입
           </h2>
@@ -385,7 +386,7 @@ const SignupModal = () => {
                     )}
                   />
 
-                  {!verificationCodeSent && (
+                  {/* {!verificationCodeSent && (
                     <button
                       type="button"
                       className={`ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white ${isEmailChecked ? 'bg-gray-500' : 'bg-pal-purple'}`}
@@ -394,24 +395,35 @@ const SignupModal = () => {
                     >
                       중복 확인
                     </button>
+                  )} */}
+                  {!isEmailChecked && (
+                    <button
+                      type="button"
+                      className={`ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white`}
+                      onClick={() => checkEmailDuplicate(email)}
+                      disabled={isEmailChecked}
+                    >
+                      중복 확인
+                    </button>
+                  )}
+
+                  {isEmailChecked && !verificationCodeSent && (
+                    <button
+                      type="button"
+                      className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
+                      onClick={() => sendVerificationCode(email)}
+                    >
+                      이메일 전송
+                    </button>
                   )}
                 </div>
               </div>
-              <div className="flex">
+              <div className="flex max-h-[12px] min-h-[12px]">
                 <div className="w-1/4"></div>
                 {errors.email && (
-                  <p className="text-red-500">{errors.email.message}</p>
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
               </div>
-              {isEmailChecked && !verificationCodeSent && (
-                <button
-                  type="button"
-                  className="mt-2 w-full rounded bg-pal-purple px-4 py-2 text-white"
-                  onClick={() => sendVerificationCode(email)}
-                >
-                  이메일 전송
-                </button>
-              )}
               {verificationCodeSent && !isEmailVerified && (
                 <div className="mt-4 flex items-center">
                   <Controller
@@ -442,7 +454,7 @@ const SignupModal = () => {
                   )}
 
                   {errors.emailVerification && (
-                    <p className="text-red-500">
+                    <p className="text-sm text-red-500">
                       {errors.emailVerification.message}
                     </p>
                   )}
@@ -481,10 +493,12 @@ const SignupModal = () => {
                   </button>
                 </div>
               </div>
-              <div className="flex">
+              <div className="flex max-h-[12px] min-h-[12px]">
                 <div className="w-1/4"></div>
                 {errors.nickname && (
-                  <p className="text-red-500">{errors.nickname.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.nickname.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -514,10 +528,10 @@ const SignupModal = () => {
                 />
               </div>
             </div>
-            <div className="flex">
+            <div className="flex max-h-[12px] min-h-[12px]">
               <div className="w-1/4"></div>
               {errors.password && (
-                <p className="text-start text-red-500">
+                <p className="text-start text-sm text-red-500">
                   {errors.password.message}
                 </p>
               )}
@@ -549,16 +563,16 @@ const SignupModal = () => {
                 />
               </div>
             </div>
-            <div className="flex">
+            <div className="flex max-h-[12px] min-h-[12px]">
               <div className="w-1/4"></div>
               {errors.confirmPassword && (
-                <p className="text-start text-red-500">
+                <p className="text-start text-sm text-red-500">
                   {errors.confirmPassword.message}
                 </p>
               )}
             </div>
             {/* 이용약관 동의 */}
-            <div className="ml-5 mt-10 flex items-center">
+            <div className="ml-5 mt-8 flex items-center">
               <label className="flex items-center">
                 <Controller
                   name="termsOfUseAccepted"
@@ -583,12 +597,14 @@ const SignupModal = () => {
                 보기
               </button>
             </div>
-            {errors.termsOfUseAccepted && (
-              <p className="ml-5 text-sm text-red-500">
-                {errors.termsOfUseAccepted.message}
-              </p>
-            )}
-            <div className="ml-5 mt-4 flex items-center">
+            <div className="max-h-[15px] min-h-[15px]">
+              {errors.termsOfUseAccepted && (
+                <p className="ml-5 text-sm text-red-500">
+                  {errors.termsOfUseAccepted.message}
+                </p>
+              )}
+            </div>
+            <div className="ml-5 mt-2 flex items-center">
               <label className="flex items-center">
                 <Controller
                   name="privacyPolicyAccepted"
@@ -615,11 +631,13 @@ const SignupModal = () => {
                 보기
               </button>
             </div>
-            {errors.privacyPolicyAccepted && (
-              <p className="ml-5 text-sm text-red-500">
-                {errors.privacyPolicyAccepted.message}
-              </p>
-            )}
+            <div className="max-h-[15px] min-h-[15px]">
+              {errors.privacyPolicyAccepted && (
+                <p className="ml-5 text-sm text-red-500">
+                  {errors.privacyPolicyAccepted.message}
+                </p>
+              )}
+            </div>
             {/* 회원가입 버튼 */}
             <div className="flex justify-center gap-20">
               <button
@@ -670,18 +688,3 @@ const SignupModal = () => {
 };
 
 export default SignupModal;
-
-/*
-이메일 입력하기  - 중복 확인
-(중복이 아닌 경우) -> 이메일 보내기 -> 10분 안에 인증
-인증 완료시: 이메일 수정 불가, 중복 확인 버튼 사라짐
-
-닉네임 중복 확인 
-
-비밀번호 유효성 확인
-비밀번호 일치/불일치 확인
-
-이용약관 2개 동의
-
--> 모든 조건 만족 시 회원가입 버튼 활성화 , 성공 모달 출력, 로그인 화면으로 이동
-*/

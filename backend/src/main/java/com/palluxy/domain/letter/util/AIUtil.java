@@ -8,6 +8,8 @@ import com.palluxy.domain.pet.entity.Pet;
 import java.util.List;
 
 public interface AIUtil<T extends AIRequest> {
-  public T getRequest(List<Letter> letters, Pet pet);
-  public void sendRequest(T request, Long petId, Room room);
+
+    public T getRequest(List<Letter> letters, Pet pet);
+
+    public void sendRequest(T request, Long petId, Room room);
 }
