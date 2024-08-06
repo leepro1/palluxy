@@ -1,13 +1,13 @@
 import { instance } from '@/utils/axios';
 
 const postCreateRoom = async (payload) => {
+  console.log(payload);
   await instance.post(`/api/rooms`, payload, {
     headers: { 'content-type': 'multipart/form-data' },
   });
 };
 
 const postCreatePet = async (payload) => {
-  console.log(payload);
   await instance.post(`/api/pets`, payload);
 };
 
