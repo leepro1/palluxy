@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,12 +27,18 @@ import org.springframework.util.StreamUtils;
 
 import static com.palluxy.global.common.constant.JWT_SET.*;
 
-@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RefreshServiceImpl refreshService;
+
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshServiceImpl refreshService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.refreshService = refreshService;
+        super.setFilterProcessesUrl("/api/login");
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
