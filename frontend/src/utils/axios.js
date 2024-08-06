@@ -10,7 +10,7 @@ export const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
   const access = sessionStorage.getItem('access');
-  if (config.url === '/login') {
+  if (config.url === '/api/login') {
     return config;
   }
   if (config.url === '/api/reissue') {

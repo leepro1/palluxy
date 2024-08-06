@@ -9,8 +9,9 @@ public final class SECURITY_SET {
         "/swagger-ui/**",
         "/swagger-ui/index.html",
 
-        // join
-        "/login",
+        // auth
+        "/api/login",
+        "/api/logout",
 
         // refresh
         "/api/reissue",
