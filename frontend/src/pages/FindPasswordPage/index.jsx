@@ -76,7 +76,7 @@ const FindPasswordModal = () => {
             />
           </div>
           <h4 className="mb-10 text-center font-bold text-black">
-            비밀번호를 찾고자 하는 계정의 이메일을 입력해주세요.
+            비밀번호를 찾거나 바꾸고자 하는 계정의 이메일을 입력해주세요.
           </h4>
           {successMessage && (
             <p className="mt-4 whitespace-pre-wrap text-center text-green-500">
@@ -87,7 +87,7 @@ const FindPasswordModal = () => {
             <div className="mb-4">
               <div className="flex flex-row items-center">
                 <label className="mr-2 w-1/3 text-end font-semibold text-gray-700">
-                  이메일*
+                  이메일
                 </label>
                 <Controller
                   name="email"
@@ -124,7 +124,7 @@ const FindPasswordModal = () => {
                 }`}
                 disabled={!isEmailValid}
               >
-                비밀번호 찾기
+                이메일 전송
               </button>
             </div>
           </form>
