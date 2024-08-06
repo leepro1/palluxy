@@ -101,12 +101,19 @@ public class GroupController {
         return CommonResponse.ok("모임 참가 신청 취소 완료");
     }
 
-    @GetMapping("/my/{userId}/{page}")
+    @GetMapping("/my/all/{userId}/{page}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> getMyGroups(@PathVariable("userId") Long userId,
         @PathVariable("page") int page) {
         Pageable pageable = PageRequest.of(page, 9);
         GroupResponses groups = groupService.findGroupsByUserId(userId, pageable);
+        return CommonResponse.ok("정상적으로 조회되었습니다.", groups);
+    }
+
+    @GetMapping("/my/available/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> getMyAvailableGroups(@PathVariable("userId") Long userId) {
+        GroupResponses groups = groupService.findAvailableGroupsByUserId(userId);
         return CommonResponse.ok("정상적으로 조회되었습니다.", groups);
     }
 }

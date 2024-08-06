@@ -79,7 +79,7 @@ public class GeminiUtil implements AIUtil<GeminiRequest> {
                     .writer(Writer.PET)
                     .petId(petId)
                     .room(room)
-                    .openedAt(LocalDateTime.now().plusHours(6L))
+                    .openedAt(LocalDateTime.now())
                     .build();
                 letterRepository.saveAndFlush(letter);
             });

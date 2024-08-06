@@ -55,6 +55,12 @@ public class GroupServiceImpl implements GroupService {
         return getGroupResponses(groupPage);
     }
 
+    @Override
+    public GroupResponses findAvailableGroupsByUserId(Long userId) {
+        List<Group> groups = groupRepository.findAvailableGroupsByUserId(userId);
+        return getGroupResponses(groups);
+    }
+
     public GroupResponses searchByKey(String key, String value, Pageable pageable) {
         Page<Group> groupPage = null;
         switch (key) {
@@ -90,6 +96,10 @@ public class GroupServiceImpl implements GroupService {
 
     public void createJoin(Long groupId, Long userId) {
         Group group = findById(groupId);
+        if (group.getRemainingCapacity() <= 0) {
+            throw new ValidateException("이미 모집 마감되었습니다.");
+        }
+
         User user = getUser(userId);
         groupUserService.createGroupUser(group, user, false);
 
@@ -150,7 +160,7 @@ public class GroupServiceImpl implements GroupService {
 
     private User getUser(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new NotFoundException("user");
         }
 
@@ -176,10 +186,19 @@ public class GroupServiceImpl implements GroupService {
 
     public GroupResponses getGroupResponses(Page<Group> groupPage) {
         List<GroupResponse> groups = new ArrayList<>();
-        for (Group group : groupPage) {
+        for (Group group : groupPage.getContent()) {
             groups.add(GroupResponse.of(group));
         }
 
         return new GroupResponses(groups, groupPage.getTotalElements());
+    }
+
+    private GroupResponses getGroupResponses(List<Group> groups) {
+        List<GroupResponse> groupResponses = new ArrayList<>();
+        for (Group group : groups) {
+            groupResponses.add(GroupResponse.of(group));
+        }
+
+        return new GroupResponses(groupResponses, (long) groups.size());
     }
 }

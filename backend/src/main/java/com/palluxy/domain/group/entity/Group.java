@@ -18,7 +18,9 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Table(name = "`group`", indexes = @Index(name = "idx_group_status", columnList = "status"))
+@Table(name = "`group`", indexes = {
+    @Index(name = "idx_group_status", columnList = "status")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group extends BaseEntity {
 
