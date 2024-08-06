@@ -109,4 +109,11 @@ public class GroupController {
         GroupResponses groups = groupService.findGroupsByUserId(userId, pageable);
         return CommonResponse.ok("정상적으로 조회되었습니다.", groups);
     }
+
+    @GetMapping("/my/available/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<?> getMyAvailableGroups(@PathVariable("userId") Long userId) {
+        GroupResponses groups = groupService.findAvailableGroupsByUserId(userId);
+        return CommonResponse.ok("정상적으로 조회되었습니다.", groups);
+    }
 }

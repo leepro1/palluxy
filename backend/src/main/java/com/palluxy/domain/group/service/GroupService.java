@@ -36,4 +36,6 @@ public interface GroupService {
     void validateApproveKey(Group group, String approveKey);
 
     void validateUser(GroupUser groupUser);
+
+    GroupResponses findAvailableGroupsByUserId(Long userId);
 }
