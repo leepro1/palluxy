@@ -11,7 +11,7 @@ const Header = () => {
 
   const userLogout = async () => {
     console.log('userLogout 함수 시작');
-    await instance.post('/logout');
+    await instance.post('/api/logout');
   };
 
   const userData = queryClient.getQueryData(['userInfo']);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
-const MakeSession = ({ removeModal }) => {
+const MakeSession = ({ removeModal, onSessionCreated }) => {
   const queryClient = useQueryClient();
   const userInfo = queryClient.getQueryData(['userInfo']);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -57,9 +57,11 @@ const MakeSession = ({ removeModal }) => {
           'content-type': 'multipart/form-data',
         },
       });
-      console.log('Response:');
+      onSessionCreated('새 모임이 성공적으로 생성되었습니다!')
+      removeModal();
     } catch (error) {
       console.error('Error:', error);
+      onSessionCreated('에러 발생, 잠시 후에 시도해 주세요')
     }
   };
 
