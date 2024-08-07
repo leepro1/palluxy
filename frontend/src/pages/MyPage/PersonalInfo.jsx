@@ -1,52 +1,97 @@
 import React, { useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { NavLink } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
+import Loading from '@components/Loading';
+import NotFound from '@components/NotFound';
+
+const fetchUserInfo = async () => {
+  const { data } = await instance.get('/api/userInfo');
+  return data;
+};
 
 const PersonalInfo = () => {
   const queryClient = useQueryClient();
-  const userInformation = queryClient.getQueryData(['userInfo']);
-  console.log(userInformation);
-  const userId = userInformation.id;
+  //   const userInformation = queryClient.getQueryData(['userInfo']);
+  //   console.log(userInformation);
+  //   const userId = userInformation.id;
+  const {
+    data: userInformation,
+    isLoading: userLoading,
+    error: userError,
+  } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: fetchUserInfo,
+  });
 
   const [petData, setPetData] = useState(null);
 
-  // const getPetName = async (userId) => {
-  //   const { data } = await instance.get(`/api/pets/users/${userId}`);
-  //   return data.result;
-  // };
+  //   // const getPetName = async (userId) => {
+  //   //   const { data } = await instance.get(`/api/pets/users/${userId}`);
+  //   //   return data.result;
+  //   // };
+
+  //   useEffect(() => {
+  //     const getPetName = async () => {
+  //       try {
+  //         const response = await instance.get(`/api/pets/users/${userId}`);
+  //         setPetData(response.data);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     };
+
+  //     getPetName();
+  //   }, [userId]);
 
   useEffect(() => {
-    const getPetName = async () => {
-      try {
-        const response = await instance.get(`/api/pets/users/${userId}`);
-        setPetData(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    if (userInformation) {
+      const getPetName = async () => {
+        try {
+          const response = await instance.get(
+            `/api/pets/users/${userInformation.id}`,
+          );
+          setPetData(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
 
-    getPetName();
-  }, [userId]);
+      getPetName();
+    }
+  }, [userInformation]);
+
+  if (userLoading) {
+    return (
+      <ContentsLayout>
+        <Loading />
+      </ContentsLayout>
+    );
+  }
+
+  if (userError) {
+    return (
+      <ContentsLayout>
+        <NotFound />
+      </ContentsLayout>
+    );
+  }
 
   return (
     <ContentsLayout>
       <div className="mx-16">
-        <label className="font-semibold">개인정보</label>
-        <div className="mb-2 mt-6">닉네임: {userInformation.nickname} </div>
-        {/* <div>테스트용 userID: {userInformation.id}</div> */}
-        <div className="mt-2">
+        <label className="font-jamsilRegular">개인정보</label>
+        <li className="mb-2 mt-6 font-jamsilLight">
+          닉네임: {userInformation.nickname}{' '}
+        </li>
+        <li className="mt-2 font-jamsilLight">
           반려동물 이름:
-          {petData?.name ? petData.name : '현재 등록된 반려동물이 없습니다'}
-        </div>
-        <div className="flex content-end justify-center">
-          <button
-            type="button"
-            className="my-10 rounded border border-white p-2"
-          >
-            수정 - 근데 수정기능이 없는데?
-          </button>
-        </div>
+          {petData?.name ? petData.name : ' 현재 등록된 반려동물이 없습니다'}
+        </li>
+        <li className="my-2 font-jamsilLight hover:font-jamsilBold">
+          <NavLink to={'/find'}>비밀번호 수정하기</NavLink>{' '}
+        </li>
       </div>
     </ContentsLayout>
   );
