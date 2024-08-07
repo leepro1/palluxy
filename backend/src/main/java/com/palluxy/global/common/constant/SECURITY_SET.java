@@ -22,6 +22,7 @@ public final class SECURITY_SET {
 
         // room
         "/api/rooms",
+        "/api/rooms/user/*",
 
         // album
         "/api/albums/*",
@@ -62,11 +63,9 @@ public final class SECURITY_SET {
 
         // room
         "/api/rooms/*",
-        "/api/rooms/user/*",
 
         // album
         "/api/albums/*",
-        "/api/albums/room/*",
 
         // image
         "/api/albums/*/images/*",

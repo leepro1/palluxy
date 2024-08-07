@@ -1,20 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
 import logo from '@assets/images/logo/logo.svg';
 import ContentsLayout from '@layout/ContentsLayout';
 
-const SigninModal = () => {
+const SigninProcess = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const queryClient = useQueryClient();
+  const [loginError, setLoginError] = useState('');
   const {
     handleSubmit,
     control,
     watch,
     formState: { errors },
+    reset,
   } = useForm({ mode: 'onChange' });
 
   const validateEmail = (email) => {
@@ -53,27 +54,31 @@ const SigninModal = () => {
       return res.data.result;
     } catch (error) {
       console.error('logintester 실패', error);
+      throw error;
     }
   };
 
   const { mutate: signMutate } = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
-      console.log('return mutate data', data);
+      console.log('로그인 성공', data);
       queryClient.setQueryData(['userInfo'], data);
       // const cachedData = queryClient.getQueryData(['userInfo']);
       // console.log('Cached userInfo after login:', cachedData);
-      const redirectTo = location.state?.from?.pathname || '/';
-      navigate(redirectTo, { replace: true });
+      // const redirectTo = location.state?.from?.pathname || '/';
+      navigate('/', { replace: true });
+    },
+    onError: (error) => {
+      console.log('로그인 실패', error);
+      reset({ email: '', password: '' });
+      // navigate('/signin', { replace: true });
+      setLoginError('아이디 또는 비밀번호가 잘못 입력되었습니다.');
     },
   });
 
   const onSubmit = (data) => {
-    try {
-      signMutate(data);
-    } catch (error) {
-      console.log(error);
-    }
+    setLoginError('');
+    signMutate(data);
   };
 
   const email = watch('email', '');
@@ -86,13 +91,18 @@ const SigninModal = () => {
     <ContentsLayout>
       <div className="flex justify-center">
         <div className="w-[500px] rounded bg-white bg-opacity-60 p-6">
-          <div className="mb-10 flex justify-center">
+          <div className="mb-5 flex justify-center">
             <img
               src={logo}
               alt="logo_image"
             />
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
+            {loginError && (
+              <div className="mb-4 text-center font-jamsilRegular text-lg text-red-500">
+                {loginError}
+              </div>
+            )}
             <div className="flex items-center text-center">
               <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
                 이메일
@@ -117,10 +127,10 @@ const SigninModal = () => {
                 />
               </div>
             </div>
-            <div className="flex">
+            <div className="flex h-[12px]">
               <div className="w-1/3"></div>
               {errors.email && (
-                <p className="my-2 w-2/3 text-start text-red-500">
+                <p className="w-2/3 text-start text-sm text-red-500">
                   {errors.email.message}
                 </p>
               )}
@@ -150,10 +160,10 @@ const SigninModal = () => {
                 />
               </div>
             </div>
-            <div className="flex">
+            <div className="flex h-[20px]">
               <div className="w-1/3"></div>
               {errors.password && (
-                <p className="my-2 text-start text-red-500">
+                <p className="w-2/3 text-start text-sm text-red-500">
                   {errors.password.message}
                 </p>
               )}
@@ -198,4 +208,4 @@ const SigninModal = () => {
   );
 };
 
-export default SigninModal;
+export default SigninProcess;

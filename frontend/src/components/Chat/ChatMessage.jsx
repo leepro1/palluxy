@@ -7,7 +7,9 @@ const ChatMessage = ({ content, userId, createdAt, isOwnMessage }) => {
     >
       <div
         className={`max-w-full break-words rounded-lg p-2 ${
-          isOwnMessage ? 'bg-blue-500 text-white' : 'bg-green-500 text-white'
+          isOwnMessage
+            ? 'bg-pal-purple text-white'
+            : 'bg-pal-disable text-white'
         }`}
       >
         <p className="text-xs">{userId}</p>

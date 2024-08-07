@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
 
-const SignupModal = () => {
+const SignupProcess = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailMessageType, setEmailMessageType] = useState('');
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [nicknameMessage, setNicknameMessage] = useState('');
+  const [nicknameMessageType, setNicknameMessageType] = useState('');
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [verificationCodeSent, setVerificationCodeSent] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -21,6 +24,7 @@ const SignupModal = () => {
     watch,
     formState: { errors },
     setError,
+    clearErrors,
   } = useForm({ mode: 'onChange' });
 
   useEffect(() => {
@@ -75,9 +79,12 @@ const SignupModal = () => {
 
     try {
       const response = await registerUser(transformedData);
-      if (response) {
+
+      if (response.statusCode === 201) {
         setSuccessMessage('회원가입에 성공했습니다!');
         setShowSuccessModal(true);
+      } else {
+        throw new Error('회원가입에 실패했습니다.');
       }
     } catch (error) {
       console.error('Registration Failed', error);
@@ -115,22 +122,18 @@ const SignupModal = () => {
   };
 
   const registerUser = async (data) => {
-    console.log('유저 등록', data);
-    const response = await fetch('http://localhost:8081/api/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      console.log('유저 등록', data);
 
-    if (!response.ok) {
-      const responseData = await response.json();
+      const response = await instance.post('/api/users', data);
+
+      if (response.status !== 201) {
+        throw new Error('회원가입에 실패했습니다.');
+      }
+      return response.data;
+    } catch (error) {
       throw new Error('회원가입에 실패했습니다.');
     }
-
-    console.log('회원가입 완료');
-    return await response.json();
   };
 
   const checkEmailDuplicate = async (email) => {
@@ -139,91 +142,72 @@ const SignupModal = () => {
         type: 'manual',
         message: '이메일을 입력해주세요.',
       });
+      setEmailMessage('');
+      setEmailMessageType('');
       return;
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:8081/api/users/check-email/${email}`,
-        {
-          method: 'GET',
-        },
-      );
+      const response = await instance.get(`/api/users/check-email/${email}`);
 
-      const responseData = await response.json();
-
-      if (
-        response.status === 400 &&
-        responseData.message === '이미 가입한 회원입니다.'
-      ) {
-        setError('email', {
-          type: 'manual',
-          message: '이미 사용 중인 이메일입니다.',
-        });
-        setIsEmailChecked(false);
-      } else {
-        setError('email', {
-          type: 'manual',
-          message: '사용 가능한 이메일입니다.',
-        });
+      if (response.status === 200) {
+        setEmailMessage('사용 가능한 닉네임입니다.');
+        setEmailMessageType('success');
         setIsEmailChecked(true);
         setVerificationCodeSent(false);
+      } else {
+        setEmailMessage('이미 사용 중인 이메일입니다.');
+        setEmailMessageType('error');
+        setIsEmailChecked(false);
       }
     } catch (error) {
-      setError('email', {
-        type: 'manual',
-        message: '이메일 확인에 실패했습니다.',
-      });
+      if (error.response && error.response.status === 400) {
+        setEmailMessage('이미 사용 중인 이메일입니다.');
+        setEmailMessageType('error');
+        setIsEmailChecked(false);
+      } else {
+        setEmailMessage('이메일 확인에 실패했습니다.');
+        setEmailMessageType('error');
+      }
     }
   };
 
   const sendVerificationCode = async (email) => {
     try {
-      const response = await fetch('http://localhost:8081/api/email/code', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ type: 'signup', email }),
+      const response = await instance.post('/api/email/code', {
+        type: 'signup',
+        email,
       });
-      if (!response.ok) {
-        const responseData = await response.json();
-        throw new Error(responseData.message || '이메일 전송에 실패했습니다.');
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
       }
 
       setVerificationCodeSent(true);
       alert('인증코드가 이메일로 전송되었습니다.');
     } catch (error) {
-      setError('email', {
-        type: 'manual',
-        message: error.message,
-      });
+      throw new Error(error.message);
     }
   };
 
   const verifyEmailCode = async (email, code) => {
     try {
-      const response = await fetch('http://localhost:8081/api/email/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, verifyCode: code }),
+      const response = await instance.post('/api/email/verify', {
+        email: email,
+        verifyCode: code,
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         setIsEmailVerified(true);
+        clearErrors('emailVerification');
         alert('이메일 인증에 성공했습니다.');
       } else {
-        const responseData = await response.json();
-        throw new Error(
-          responseData.message || '인증코드가 올바르지 않습니다.',
-        );
+        throw new Error('인증코드가 올바르지 않습니다.');
       }
     } catch (error) {
       setError('emailVerification', {
         type: 'manual',
-        message: error.message,
+        message: '인증코드가 올바르지 않습니다.',
       });
     }
   };
@@ -234,99 +218,85 @@ const SignupModal = () => {
         type: 'manual',
         message: '닉네임을 입력해주세요.',
       });
+      setNicknameMessage('');
+      setNicknameMessageType('');
       return;
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:8081/api/users/check-nickname/${nickname}`,
-        {
-          method: 'GET',
-        },
+      const response = await instance.get(
+        `/api/users/check-nickname/${nickname}`,
       );
 
-      const responseData = await response.json();
-
-      if (
-        response.status === 400 &&
-        responseData.message === '이미 존재하는 닉네임입니다.'
-      ) {
-        setError('nickname', {
-          type: 'manual',
-          message: '이미 사용 중인 닉네임입니다.',
-        });
-        setIsNicknameChecked(false);
-      } else {
-        setError('nickname', {
-          type: 'manual',
-          message: '사용 가능한 닉네임입니다.',
-        });
+      if (response.status === 200) {
+        setNicknameMessage('사용 가능한 닉네임입니다.');
+        setNicknameMessageType('success');
         setIsNicknameChecked(true);
+      } else {
+        setNicknameMessage('이미 사용 중인 닉네임입니다.');
+        setNicknameMessageType('error');
+        setIsNicknameChecked(false);
       }
     } catch (error) {
-      setError('nickname', {
-        type: 'manual',
-        message: '닉네임 확인에 실패했습니다.',
-      });
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.message === '이미 존재하는 닉네임입니다.'
+      ) {
+        setNicknameMessage('이미 사용 중인 닉네임입니다.');
+        setNicknameMessageType('error');
+        setIsNicknameChecked(false);
+      } else {
+        setNicknameMessage('닉네임 확인에 실패했습니다.');
+        setNicknameMessageType('error');
+      }
     }
   };
-  // const checkNicknameDuplicate = async (nickname) => {
-  //   try {
-  //     const response = await instance.get(
-  //       `/api/users/check-nickname/${nickname}`,
-  //     );
-
-  //     console.log('API 응답:', response.status);
-  //     console.log(response.data);
-  //     console.log(response.data.message);
-
-  //     // API 응답 구조에 따라 조건을 확인
-  //     if (response.status === 200) {
-  //       setError('nickname', {
-  //         type: 'manual',
-  //         message: '사용 가능한 닉네임입니다.',
-  //       });
-  //       setIsNicknameChecked(true);
-  //     } else if (response.statusCode === 400) {
-  //       setError('nickname', {
-  //         type: 'manual',
-  //         message: '이미 사용 중인 닉네임입니다.',
-  //       });
-  //       setIsNicknameChecked(false);
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       if (error.response.status === 400) {
-  //         console.log(error.response.status);
-  //         setError('nickname', {
-  //           type: 'manual',
-  //           message: '이미 사용 중인 닉네임입니다.',
-  //         });
-  //         setIsNicknameChecked(false);
-  //       } else {
-  //         console.error('닉네임 중복 확인 에러:', error.response.status);
-  //         setError('nickname', {
-  //           type: 'manual',
-  //           message: '닉네임 확인에 실패했습니다.',
-  //         });
-  //       }
-  //     } else {
-  //       console.error('닉네임 중복 확인 에러:', error);
-  //       setError('nickname', {
-  //         type: 'manual',
-  //         message: '서버와의 통신에 실패했습니다.',
-  //       });
-  //     }
-  //   }
-  // };
 
   const email = watch('email', '');
   const verificationCode = watch('verificationCode', '');
   const nickname = watch('nickname', '');
   const password = watch('password', '');
 
+  const termsOfUseAccepted = useWatch({ control, name: 'termsOfUseAccepted' });
+  const privacyPolicyAccepted = useWatch({
+    control,
+    name: 'privacyPolicyAccepted',
+  });
+
   const isEmailValid = validateEmail(email) === true;
   const isPasswordValid = validatePassword(password) === true;
+
+  useEffect(() => {
+    setEmailMessage('');
+    setIsEmailChecked(false);
+    setIsEmailVerified(false);
+  }, [email]);
+
+  useEffect(() => {
+    setIsNicknameChecked(false);
+    setNicknameMessage('');
+  }, [nickname]);
+
+  useEffect(() => {
+    if (!termsOfUseAccepted) {
+      setError('termsOfUseAccepted', {
+        type: 'manual',
+        message: '이용약관에 동의하셔야 합니다.',
+      });
+    } else {
+      clearErrors('termsOfUseAccepted');
+    }
+
+    if (!privacyPolicyAccepted) {
+      setError('privacyPolicyAccepted', {
+        type: 'manual',
+        message: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
+      });
+    } else {
+      clearErrors('privacyPolicyAccepted');
+    }
+  }, [termsOfUseAccepted, privacyPolicyAccepted, setError, clearErrors]);
 
   const isFormValid =
     isEmailValid &&
@@ -336,18 +306,6 @@ const SignupModal = () => {
     isNicknameChecked &&
     watch('termsOfUseAccepted') &&
     watch('privacyPolicyAccepted');
-
-  // 이용약관 비동의 시 메시지(현재 버튼 비활성화로 의미 없음)
-  React.useEffect(() => {
-    setError('termsOfUseAccepted', {
-      type: 'manual',
-      message: '이용약관에 동의하셔야 합니다.',
-    });
-    setError('privacyPolicyAccepted', {
-      type: 'manual',
-      message: '개인정보 수집 및 이용동의에 동의하셔야 합니다.',
-    });
-  }, [setError]);
 
   return (
     <ContentsLayout>
@@ -385,17 +343,6 @@ const SignupModal = () => {
                       />
                     )}
                   />
-
-                  {/* {!verificationCodeSent && (
-                    <button
-                      type="button"
-                      className={`ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white ${isEmailChecked ? 'bg-gray-500' : 'bg-pal-purple'}`}
-                      onClick={() => checkEmailDuplicate(email)}
-                      disabled={isEmailChecked}
-                    >
-                      중복 확인
-                    </button>
-                  )} */}
                   {!isEmailChecked && (
                     <button
                       type="button"
@@ -413,7 +360,7 @@ const SignupModal = () => {
                       className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
                       onClick={() => sendVerificationCode(email)}
                     >
-                      이메일 전송
+                      메일 전송
                     </button>
                   )}
                 </div>
@@ -423,43 +370,57 @@ const SignupModal = () => {
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
+                {emailMessage && !errors.email && (
+                  <p
+                    className={`text-sm ${emailMessageType === 'success' ? 'text-green-500' : 'text-red-500'}`}
+                  >
+                    {emailMessage}
+                  </p>
+                )}
               </div>
               {verificationCodeSent && !isEmailVerified && (
-                <div className="mt-4 flex items-center">
-                  <Controller
-                    name="verificationCode"
-                    control={control}
-                    defaultValue=""
-                    rules={{ required: '인증코드를 입력해주세요.' }}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        type="text"
-                        className="w-1/4 rounded border px-3 py-2 text-black"
-                        placeholder="인증코드 입력"
-                      />
+                <div className="mt-4 flex items-center text-center">
+                  <div className="w-1/4 px-4 text-right text-gray-700">
+                    {timer > 0 && (
+                      <p>
+                        {' '}
+                        {`남은 시간: ${Math.floor(timer / 60)}분 ${timer % 60}초`}{' '}
+                      </p>
                     )}
-                  />
-                  <button
-                    type="button"
-                    className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
-                    onClick={() => verifyEmailCode(email, verificationCode)}
-                  >
-                    인증 확인
-                  </button>
-                  {timer > 0 && (
-                    <p className="ml-4 w-1/4 text-gray-700">
-                      {`남은 시간: ${Math.floor(timer / 60)}분 ${timer % 60}초`}
-                    </p>
-                  )}
-
-                  {errors.emailVerification && (
-                    <p className="text-sm text-red-500">
-                      {errors.emailVerification.message}
-                    </p>
-                  )}
+                  </div>
+                  <div className="flex w-3/4">
+                    <Controller
+                      name="verificationCode"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: '인증코드를 입력해주세요.' }}
+                      render={({ field }) => (
+                        <input
+                          {...field}
+                          type="text"
+                          className="w-full rounded border px-3 py-2 text-black"
+                          placeholder="인증코드 입력"
+                        />
+                      )}
+                    />
+                    <button
+                      type="button"
+                      className="ml-2 w-1/4 rounded bg-pal-purple px-4 py-2 text-white"
+                      onClick={() => verifyEmailCode(email, verificationCode)}
+                    >
+                      인증 확인
+                    </button>
+                  </div>
                 </div>
               )}
+              <div className="flex max-h-[12px] min-h-[12px]">
+                <div className="w-1/4"></div>
+                {errors.emailVerification && (
+                  <p className="text-sm text-red-500">
+                    {errors.emailVerification.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* 닉네임 입력 */}
@@ -495,9 +456,11 @@ const SignupModal = () => {
               </div>
               <div className="flex max-h-[12px] min-h-[12px]">
                 <div className="w-1/4"></div>
-                {errors.nickname && (
-                  <p className="text-sm text-red-500">
-                    {errors.nickname.message}
+                {nicknameMessage && (
+                  <p
+                    className={`text-sm ${nicknameMessageType === 'success' ? 'text-green-500' : 'text-red-500'}`}
+                  >
+                    {nicknameMessage}
                   </p>
                 )}
               </div>
@@ -674,7 +637,7 @@ const SignupModal = () => {
                     setShowSuccessModal(false);
                     navigate('/signin');
                   }}
-                  className="mt-4 rounded bg-pal-purple px-4 py-2 text-white"
+                  className="mt-4 justify-center rounded bg-pal-purple px-4 py-2 text-white"
                 >
                   확인
                 </button>
@@ -687,4 +650,4 @@ const SignupModal = () => {
   );
 };
 
-export default SignupModal;
+export default SignupProcess;

@@ -4,39 +4,70 @@ services:
   my-server:
     build: .
     ports:
-      - 8081:8081
+      - "8081:8081"
     depends_on:
       my-db:
         condition: service_healthy
       my-cache-server:
         condition: service_healthy
-    entrypoint: ["java", "-jar", "/app.jar"]
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/ssafy_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=ssafy
       - SPRING_REDIS_HOST=my-cache-server
       - SPRING_REDIS_PORT=6379
+      - TZ=Asia/Seoul
+    entrypoint: ["java", "-jar", "-Duser.timezone=Asia/Seoul", "/app.jar"]
+    networks:
+      - my-network
 
   my-db:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: ssafy
       MYSQL_DATABASE: ssafy_db
+        - TZ=Asia/Seoul
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - /home/ubuntu/data/mysql:/var/lib/mysql
+      - /home/ubuntu/data/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
-      - 3307:3306
+      - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping"]
       interval: 5s
       retries: 10
+    networks:
+      - my-network
 
   my-cache-server:
     image: redis
+    environment:
+      - TZ=Asia/Seoul
     ports:
-      - 6379:6379
+      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 10
+    networks:
+      - my-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/ubuntu/data/nginx:/etc/nginx/conf.d
+      - /home/ubuntu/data/letsencrypt:/etc/letsencrypt
+      - /var/www/html/dist:/usr/share/nginx/html
+    depends_on:
+      - my-server
+    environment:
+      - TZ=Asia/Seoul
+    networks:
+      - my-network
+
+networks:
+  my-network:

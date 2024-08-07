@@ -33,9 +33,9 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
     const start_time = `${data.startDate}T${data.startTime.hour.padStart(2, '0')}:${data.startTime.minute.padStart(2, '0')}`;
     const end_time = `${data.startDate}T${data.endTime.hour.padStart(2, '0')}:${data.endTime.minute.padStart(2, '0')}`;
     if (
-      data.endTime.hour < data.startTime.hour ||
-      (data.endTime.hour === data.startTime.hour &&
-        data.endTime.minute <= data.startTime.minute)
+      parseInt(data.endTime.hour) < parseInt(data.startTime.hour) ||
+      (parseInt(data.endTime.hour) === parseInt(data.startTime.hour) &&
+        parseInt(data.endTime.minute) <= parseInt(data.startTime.minute))
     ) {
       setErrorTrigger(true);
       return;
@@ -51,7 +51,6 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
     };
  
     try {
-
       await instance.post('/api/group', postData, {
         headers: {
           'content-type': 'multipart/form-data',

@@ -106,7 +106,15 @@ const Header = () => {
         {userData ? (
           <div className="flex flex-row items-center gap-20 text-center text-white">
             <div className="cursor-pointer items-center pr-4 font-jamsilMedium text-white lg:pr-0">
-              <p>{userData.nickname}님</p>
+              <GlobalBtn
+                className="border-1 bg-pal-purple"
+                size={'sm'}
+                text={'마이페이지'}
+                onClick={() => {
+                  console.log('mypage');
+                  navigate('/mypage');
+                }}
+              />
             </div>
             <div>
               <GlobalBtn
