@@ -7,7 +7,6 @@ import NotFound from '@/components/NotFound';
 
 // admin
 import NoticeDetail from '@pages/NoticePage/NoticeDetail';
-import CreateNotice from '@pages/NoticePage/CreateNotice';
 import AdminPage from '@pages/AdminPage';
 import NoticePage from '@pages/NoticePage';
 
@@ -60,7 +59,6 @@ const routerInfo = [
         path: '/noticeboard/detail/:noticeId',
         element: <NoticeDetail />,
       },
-      { path: '/noticeboard/create', element: <CreateNotice /> },
 
       // 치유 모임
       {

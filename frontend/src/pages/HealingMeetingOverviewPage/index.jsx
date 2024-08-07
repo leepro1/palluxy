@@ -48,7 +48,7 @@ const HealingSessionPage = () => {
   const showNotificationMessage = (message) => {
     setNotification(message);
     setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 3000); // 3초 후에 알림 사라짐
+    setTimeout(() => setShowNotification(false), 5000); // 3초 후에 알림 사라짐
   };
   useEffect(() => {
     const fetchData = async () => {
