@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
+import com.palluxy.domain.memoryRoom.petmeta.dto.WebhookRequest;
 import com.palluxy.domain.memoryRoom.petmeta.entity.PetMeta;
 import com.palluxy.domain.memoryRoom.petmeta.repository.PetMetaRepository;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
@@ -186,5 +187,14 @@ public class PetMetaServiceImpl implements PetMetaService {
           .withCannedAcl(CannedAccessControlList.PublicRead));
       return amazonS3.getUrl(bucketName, s3Key).toString();
     });
+  }
+
+  @Override
+  public WebhookRequest handleWebhookData(Long roomId, String file) {
+    // Webhook에서 받은 데이터를 처리할 수 있지만, 여기서는 그대로 반환
+    WebhookRequest response = new WebhookRequest();
+    response.setRoomId(roomId);
+    response.setFile(file);
+    return response;
   }
 }

@@ -1,6 +1,7 @@
 package com.palluxy.domain.memoryRoom.petmeta.controller;
 
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
+import com.palluxy.domain.memoryRoom.petmeta.dto.WebhookRequest;
 import com.palluxy.domain.memoryRoom.petmeta.service.PetMetaService;
 import com.palluxy.global.common.data.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -207,18 +208,20 @@ public class PetMetaController {
         .map(url -> CommonResponse.created("Image uploaded successfully"));
   }
 
-  @Operation(summary = "Django 웹훅 수신")
+  @Operation(summary = "Django 웹훅 수신, json 방식으로 ")
   @ApiResponses(
       value = {
           @ApiResponse(responseCode = "200", description = "웹훅이 성공적으로 수신되었습니다."),
           @ApiResponse(responseCode = "400", description = "잘못된 입력")
       })
-  @PostMapping(value = "/webhook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping("/webhook")
   @ResponseStatus(HttpStatus.OK)
-  public Mono<CommonResponse<String>> handleWebhook(
-      @RequestPart("file") FilePart filePart,
-      @RequestPart("roomId") Long roomId) {
-    return petMetaService.processWebhook(roomId, filePart)
-        .map(url -> CommonResponse.ok("Webhook received successfully", url));
+  public CommonResponse<WebhookRequest> handleWebhook(@RequestBody WebhookRequest webhookRequest) {
+    Long roomId = webhookRequest.getRoomId();
+    String file = webhookRequest.getFile();
+    // Webhook 데이터를 처리하고, 그대로 반환
+    WebhookRequest response = petMetaService.handleWebhookData(roomId, file);
+    // 프론트엔드로 Webhook 데이터를 그대로 전달
+    return CommonResponse.ok("Webhook data received successfully", response);
   }
 }
