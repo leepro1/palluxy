@@ -45,7 +45,7 @@ const SigninProcess = () => {
 
   const loginUser = async (payload) => {
     try {
-      const res = await instance.post('/login', payload);
+      const res = await instance.post('/api/login', payload);
       const accessToken = res.headers['access'];
 
       if (accessToken) {
