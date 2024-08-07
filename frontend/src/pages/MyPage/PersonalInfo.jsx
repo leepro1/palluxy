@@ -89,8 +89,13 @@ const PersonalInfo = () => {
           반려동물 이름:
           {petData?.name ? petData.name : ' 현재 등록된 반려동물이 없습니다'}
         </li>
-        <li className="my-2 font-jamsilLight hover:font-jamsilBold">
-          <NavLink to={'/find'}>비밀번호 수정하기</NavLink>{' '}
+        <li className="my-2 font-jamsilLight">
+          <NavLink
+            to={'/find'}
+            className="hover:font-jamsilBold"
+          >
+            비밀번호 수정하기
+          </NavLink>{' '}
         </li>
       </div>
     </ContentsLayout>

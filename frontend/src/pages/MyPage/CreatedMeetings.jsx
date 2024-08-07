@@ -13,7 +13,7 @@ const fetchMeetings = async (userId) => {
   const allMeetings = [];
 
   while (page < totalPages) {
-    const response = await instance.get(`/api/group/my/${userId}/${page}`);
+    const response = await instance.get(`/api/group/my/all/${userId}/${page}`);
     const result = response.data.result;
     allMeetings.push(...result.groups);
     if (page === 0) {

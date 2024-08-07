@@ -112,7 +112,7 @@ const Header = () => {
             </div>
             <div>
               <GlobalBtn
-                className="border-2 border-white"
+                className="border-2 border-white font-jamsilLight"
                 size={'sm'}
                 text={'로그아웃'}
                 onClick={() => {
