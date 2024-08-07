@@ -186,13 +186,6 @@ const HealingMeetingPageContents = () => {
       }
     });
 
-    newSession.on('signal:my-chat', (event) => {
-      if (event.from.connectionId !== newSession.connection.connectionId) {
-        const newMessage = JSON.parse(event.data);
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-      }
-    });
-
     try {
       const token = await getToken(role, mySessionId);
       console.log(token);

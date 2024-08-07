@@ -105,7 +105,6 @@ const Header = () => {
                 size={'sm'}
                 text={'마이페이지'}
                 onClick={() => {
-                  console.log('mypage');
                   navigate('/mypage');
                 }}
               />
@@ -116,7 +115,6 @@ const Header = () => {
                 size={'sm'}
                 text={'로그아웃'}
                 onClick={() => {
-                  console.log('d');
                   logoutMutate();
                 }}
               />

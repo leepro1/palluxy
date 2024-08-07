@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import logo from '@assets/images/logo/logo.svg';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
 
 const FindPasswordModal = () => {
-  const navigate = useNavigate();
-  const [resetVerificationCodeSent, setResetVerificationCodeSent] =
-    useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
   const {
@@ -20,46 +16,39 @@ const FindPasswordModal = () => {
     setError,
   } = useForm({ mode: 'onChange' });
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email) || '이메일의 형태를 갖추어야 합니다.';
+  const sendResetVerificationCode = async (email) => {
+    const response = await instance.post('/api/email/code', {
+      type: 'password',
+      email,
+    });
+    if (response.status !== 200) {
+      throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
+    }
+    return response.data;
   };
 
-  const handleFindPassword = async (data) => {
-    console.log(data);
-    try {
-      await sendResetVerificationCode(data.email);
+  const mutation = useMutation({
+    mutationFn: sendResetVerificationCode,
+    onSuccess: () => {
       setSuccessMessage(
         '성공적으로 이메일을 발송했습니다.\n 전송되기까지 시간이 소요될 수 있으니 기다려주세요!',
       );
-    } catch (error) {
+    },
+    onError: (error) => {
       setError('email', {
         type: 'manual',
         message: error.message,
       });
-    }
+    },
+  });
+
+  const handleFindPassword = (data) => {
+    mutation.mutate(data.email);
   };
 
-  // const handleBackgroundClick = (e) => {
-  //   if (e.target === e.currentTarget) {
-  //     navigate(-1);
-  //   }
-  // };
-
-  const sendResetVerificationCode = async (email) => {
-    try {
-      const response = await instance.post('/api/email/code', {
-        type: 'password',
-        email,
-      });
-      if (response.status !== 200) {
-        throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
-      }
-
-      setResetVerificationCodeSent(true);
-    } catch (error) {
-      throw new Error(error.message);
-    }
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email) || '이메일의 형태를 갖추어야 합니다.';
   };
 
   const email = watch('email', '');
@@ -79,7 +68,7 @@ const FindPasswordModal = () => {
             비밀번호를 찾거나 바꾸고자 하는 계정의 이메일을 입력해주세요.
           </h4>
           {successMessage && (
-            <p className="mt-4 whitespace-pre-wrap text-center text-green-500">
+            <p className="mb-4 whitespace-pre-wrap text-center text-pal-purple">
               {successMessage}
             </p>
           )}
@@ -124,7 +113,7 @@ const FindPasswordModal = () => {
                 }`}
                 disabled={!isEmailValid}
               >
-                이메일 전송
+                {mutation.isPending ? '전송 중...' : '이메일 전송'}
               </button>
             </div>
           </form>

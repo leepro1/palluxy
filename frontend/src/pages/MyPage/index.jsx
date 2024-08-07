@@ -33,12 +33,7 @@ const MyPage = () => {
         </nav>
         <div className="mx-16 my-5 border border-white"></div>
         <section className="text-start text-xl text-white">
-          {/* {location.pathname === '/mypage' && <PersonalInfo />} */}
-          {location.pathname === '/mypage' && (
-            <div className="my-16 text-center font-jamsilExtraBold text-5xl">
-              PAL:Luxy
-            </div>
-          )}
+          {location.pathname === '/mypage' && <PersonalInfo />}
           <Outlet />
         </section>
       </div>
