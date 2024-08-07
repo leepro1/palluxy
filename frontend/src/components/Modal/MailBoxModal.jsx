@@ -5,7 +5,7 @@ const MailBoxModal = ({ handler }) => {
         className="fixed left-0 top-0 z-40 h-screen w-screen overflow-hidden bg-black opacity-50"
         onClick={() => handler(false)}
       ></div>
-      <div className="absolute left-1/2 top-1/2 z-40 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white">
+      <div className="fixed left-1/2 top-1/2 z-40 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white">
         <div className="flex h-full w-full flex-col">
           <div className="flex p-8">
             <p className="grow font-jamsilBold">오랜만이군</p>
