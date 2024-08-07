@@ -1,59 +1,112 @@
-import React, { useEffect, useState } from 'react';
-import ContentsLayout from '@layout/ContentsLayout';
+import React, { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
-import GlobalBtn from '@components/GlobalBtn';
+const MakeSession = ({ removeModal, onSessionCreated }) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-const CreateNotice = () => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const handleBackgroundClick = (e) => {
+    if (e.target === e.currentTarget) {
+      removeModal();
+    }
+  };
+
+  const onSubmit = async (data) => {
+    const postData = {
+      title: data.title,
+      content: data.content,
+    };
+
+    try {
+      await instance.post('/api/notice', postData, {});
+      onSessionCreated('공지사항이 등록되었습니다');
+      removeModal();
+    } catch (error) {
+      console.error('Error:', error);
+      onSessionCreated('에러 발생, 잠시 후에 시도해 주세요');
+    }
+  };
 
   return (
-    <ContentsLayout>
-      <div className="mx-auto flex min-h-[500px] w-[90%] flex-col rounded bg-white">
-        <div className="p-5 text-center font-jamsilBold text-3xl">
-          공지사항 작성
-        </div>
-        <div className="mx-auto w-[90%] border border-gray-200"></div>
-        <div className="mx-auto w-[90%] p-3 font-jamsilRegular">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={handleBackgroundClick}
+    >
+      <div
+        className="w-1/2 rounded bg-white p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="mb-4 text-center text-2xl font-bold text-black">
+          공지사항 생성하기
+        </h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label
-              className="mb-2 block text-sm font-bold text-gray-700"
-              htmlFor="title"
-            >
-              제목
+            <label className="block font-semibold text-gray-700">
+              공지 제목*
             </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              className="w-full rounded border px-3 py-2 text-gray-700 shadow"
+            <Controller
+              name="title"
+              control={control}
+              defaultValue=""
+              rules={{ required: '공지 제목을 입력해주세요.' }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="공지 제목을 입력해주세요."
+                />
+              )}
             />
+            {errors.title && (
+              <p className="text-red-500">{errors.title.message}</p>
+            )}
           </div>
-          <div className="mb-6">
-            <label
-              className="mb-2 text-sm font-bold text-gray-700"
-              htmlFor="content"
-            >
-              내용
+          <div className="mb-4">
+            <label className="block font-semibold text-gray-700">
+              공지 상세 설명*
             </label>
-            <textarea
-              id="content"
-              value={content}
-              className="w-full rounded border px-3 py-2 text-gray-700 shadow"
-              rows="10"
+            <Controller
+              name="content"
+              control={control}
+              defaultValue=""
+              rules={{ required: '공지 상세 설명을 작성해주세요.' }}
+              render={({ field }) => (
+                <textarea
+                  {...field}
+                  className="w-full rounded border px-3 py-2 text-black"
+                  placeholder="공지 상세 설명을 작성해주세요."
+                  rows="4"
+                ></textarea>
+              )}
             />
+            {errors.content && (
+              <p className="text-red-500">{errors.content.message}</p>
+            )}
           </div>
-        </div>
-        <div className="mx-auto mb-5 mt-auto flex justify-center">
-          <GlobalBtn
-            className="bg-pal-purple font-jamsilRegular text-white"
-            size={'md'}
-            text={'등록'}
-          />
-        </div>
+
+          <div className="flex justify-center gap-20">
+            <button
+              type="submit"
+              className="rounded bg-pal-purple px-4 py-2 text-white"
+            >
+              신청하기
+            </button>
+            <button
+              type="button"
+              className="rounded bg-gray-500 px-4 py-2 text-white"
+              onClick={removeModal}
+            >
+              취소
+            </button>
+          </div>
+        </form>
       </div>
-    </ContentsLayout>
+    </div>
   );
 };
 
-export default CreateNotice;
+export default MakeSession;

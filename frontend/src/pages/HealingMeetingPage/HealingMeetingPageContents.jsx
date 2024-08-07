@@ -4,12 +4,13 @@ import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
 import UserVideoComponent from './UserVideoComponent';
 import ChatMessageBox from '@/components/Chat/ChatMessageBox';
-import ConfirmModal from './ConfirmModal'; // 모달 컴포넌트 추가
+
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
 import EntranceModal from './EntranceModal';
 import { useQuery } from '@tanstack/react-query';
+import { NavLink } from 'react-router-dom';
 
 const formatDateRange = (startDate, endDate) => {
   const options = {
@@ -26,6 +27,7 @@ const formatDateRange = (startDate, endDate) => {
 
   return `${start.replace(',', '')}~${end.split(' ')[3]}`;
 };
+
 const fetchGroupData = async (userId) => {
   const { data } = await instance.get(`api/group/my/available/${userId}`);
   return data.result.groups;
@@ -34,7 +36,7 @@ const fetchUserByAccess = async () => {
   const access = sessionStorage.getItem('access');
   if (!access) return null;
   const res = await instance.get('/api/users/user-info');
-  console.log('fet');
+
   return res.data.result;
 };
 
@@ -353,6 +355,19 @@ const HealingMeetingPageContents = () => {
     <div className="container mx-auto">
       {session === undefined ? (
         <ContentsLayout>
+          {data?.length === 0 ? (
+            <div className="flex flex-col text-2xl text-pal-lightwhite">
+              현재 입장 가능한 치유모임이 없습니다. 새로운 치유모임을 만들거나,
+              다른 치유모임에 참가 신청을 하시겠어요?
+              <NavLink to={'/meetingoverview/1'}>
+                <button className="w-max rounded-lg bg-pal-purple px-4 py-2 text-sm font-medium text-white hover:bg-purple-950 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  치유모임 모아보기
+                </button>
+              </NavLink>
+            </div>
+          ) : (
+            <div></div>
+          )}
           <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
             {data &&
               data.map((item, index) => (
