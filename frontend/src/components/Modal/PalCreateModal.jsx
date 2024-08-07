@@ -13,17 +13,11 @@ const PalCreateModal = ({ roomId, handler }) => {
   const { mutateAsync: palImageMutate, isPending: isPalImagePending } =
     useMutation({
       mutationFn: postPalImage,
-      onSuccess: async (res) => {
-        // handler(false);
-        console.log('이게 되나?');
-        console.log(res);
-        // window.location.href = '/memorySpace';
-      },
     });
+
   const { mutateAsync: palMetaMutate } = useMutation({
     mutationFn: postCreatePalmeta,
     onSuccess: () => {
-      console.log('mutate');
       queryClient.invalidateQueries({
         queryKey: ['palMeta'],
       });
@@ -57,8 +51,8 @@ const PalCreateModal = ({ roomId, handler }) => {
     try {
       const res = await palImageMutate(payload);
       const palMetaPayload = {
-        roomId: res.data.result.roomId,
-        objFilePath: res.data.result.file,
+        roomId: res.roomId,
+        objFilePath: res.file,
       };
       await palMetaMutate(palMetaPayload);
     } catch (e) {

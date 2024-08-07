@@ -1,3 +1,7 @@
+import PropTypes from 'prop-types';
+
+import GlobalBtn from '@components/GlobalBtn';
+
 const MailBoxModal = ({ handler }) => {
   return (
     <div className="">
@@ -8,7 +12,7 @@ const MailBoxModal = ({ handler }) => {
       <div className="fixed left-1/2 top-1/2 z-40 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white">
         <div className="flex h-full w-full flex-col">
           <div className="flex p-8">
-            <p className="grow font-jamsilBold">오랜만이군</p>
+            <p className="grow font-jamsilBold">우편함</p>
             <span
               className="material-symbols-outlined cursor-pointer"
               onClick={() => {
@@ -20,29 +24,22 @@ const MailBoxModal = ({ handler }) => {
           </div>
           {/* btn */}
           <div className="flex justify-end gap-x-8 px-8 py-4">
-            <label
-              className="flex h-[40px] w-[130px] items-center justify-center rounded-md bg-pal-purple text-white"
-              htmlFor="fileInput"
-            >
-              {/* <span>파일선택</span>
-              <input
-                className="hidden"
-                id="fileInput"
-                type="file"
-                onChange={handleUploadImage}
-              /> */}
-            </label>
-            {/* <GlobalBtn
+            <GlobalBtn
               className="bg-pal-purple text-white"
-              onClick={submitUploadImage}
+              // onClick={submitUploadImage}
               size={'md'}
               text={'업로드 하기'}
-            /> */}
+            />
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+MailBoxModal.propTypes = {
+  handler: PropTypes.func.isRequired,
+  roomId: PropTypes.number.isRequired,
 };
 
 export default MailBoxModal;

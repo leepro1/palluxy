@@ -13,6 +13,8 @@ import GlobalBtn from '@components/GlobalBtn';
 
 import MailBoxModal from '@components/Modal/MailBoxModal';
 import PalCreateModal from '@components//Modal/PalCreateModal';
+import { fetchPalmeta } from '@api/memorySpace/createApi';
+fetchPalmeta;
 
 const RoomCanvas = () => {
   const queryClient = useQueryClient();
@@ -25,6 +27,12 @@ const RoomCanvas = () => {
   const { data, isSuccess, isLoading } = useQuery({
     queryKey: ['palFrameImage'],
     queryFn: () => fetchAllFrameImage(roomData.roomId),
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const { data: palMetaData } = useQuery({
+    queryKey: ['palMeta'],
+    queryFn: () => fetchPalmeta(roomData.roomId),
     staleTime: 1000 * 60 * 10,
   });
 
@@ -99,7 +107,8 @@ const RoomCanvas = () => {
           {/* <SceneUpdater /> */}
           <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
-            <PalModel />
+            {palMetaData && <PalModel objURL={palMetaData[0]?.objFilePath} />}
+            {/* <PalModel /> */}
           </mesh>
         </group>
       </Canvas>

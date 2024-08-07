@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
+
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { useLoader } from '@react-three/fiber';
 
 import { useModelPositionStore } from '@store/memorySpace';
 
-const PalModel = () => {
-  const obj = useLoader(OBJLoader, '/models/cat.obj');
+const PalModel = ({ objURL }) => {
+  const obj = useLoader(OBJLoader, objURL);
 
   const position = useModelPositionStore((state) => state.position);
   const rotation = useModelPositionStore((state) => state.rotation);
@@ -21,6 +23,10 @@ const PalModel = () => {
   obj.scale.z = 2;
 
   return <primitive object={obj} />;
+};
+
+PalModel.propTypes = {
+  objURL: PropTypes.string.isRequired,
 };
 
 export default PalModel;
