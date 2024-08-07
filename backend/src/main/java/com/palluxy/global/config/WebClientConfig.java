@@ -15,7 +15,9 @@ public class WebClientConfig {
     @Bean
     public WebClient.Builder webClientBuilder() {
         HttpClient httpClient = HttpClient.create()
-            .responseTimeout(Duration.ofSeconds(60));
+            .responseTimeout(Duration.ofSeconds(60))
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000);
+
 
         return WebClient.builder()
             .clientConnector(new ReactorClientHttpConnector(httpClient));
