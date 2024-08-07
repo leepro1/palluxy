@@ -1,8 +1,7 @@
 package com.palluxy.domain.memoryRoom.petmeta.service;
 
 import com.palluxy.domain.memoryRoom.petmeta.dto.PetMetaDto;
-import com.palluxy.domain.memoryRoom.petmeta.dto.WebhookRequest;
-import org.springframework.http.codec.multipart.FilePart;
+import com.palluxy.domain.memoryRoom.petmeta.dto.WebhookResponse; // WebhookResponse 클래스 추가
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
@@ -29,12 +28,5 @@ public interface PetMetaService {
 
     void deletePetMeta(Long petMetaId);
 
-    Mono<String> uploadImageToDjangoAndProcess(Long roomId, MultipartFile file);
-
-    Mono<String> processWebhook(Long roomId, FilePart filePart);
-
-    Mono<String> handleObjFileUpload(Long roomId, FilePart filePart);
-
-    WebhookRequest handleWebhookData(Long roomId, String file); // 변경된 메서드
-
+    Mono<WebhookResponse.WebhookResult> uploadImageToDjangoAndProcess(Long roomId, MultipartFile file); // 수정된 부분
 }
