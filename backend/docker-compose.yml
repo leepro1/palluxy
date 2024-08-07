@@ -29,6 +29,7 @@ services:
         - TZ=Asia/Seoul
     volumes:
       - /home/ubuntu/data/mysql:/var/lib/mysql
+      - /home/ubuntu/data/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
       - "3306:3306"
     healthcheck:
