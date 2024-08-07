@@ -1,6 +1,7 @@
 import os
 import subprocess
 import requests
+import boto3
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,10 +21,11 @@ class RunModelAPIView(APIView):
 
         image = request.FILES.get('file')
         
-
         if not image:
             return Response({"error": "Image file is required"}, status=status.HTTP_400_BAD_REQUEST)
         
+        print(image)
+        print(image.name)
         local_image_path = f'./tmp/{image.name}'
         with open(local_image_path, 'wb') as f:
             for chunk in image.chunks():
@@ -32,8 +34,11 @@ class RunModelAPIView(APIView):
         output_dir = f'./tmp/output/{image.name}'
         os.makedirs(output_dir, exist_ok=True)
 
+        python_path = "/home/redstone0618/anaconda3/envs/python_3/bin/python"
+
         # AI 모델 실행
-        command = f"python run.py {local_image_path} --output-dir {output_dir}"
+        # command = f"python run.py {local_image_path} --output-dir {output_dir}"
+        command = f"{python_path} run.py {local_image_path} --output-dir {output_dir}"
         try:
             result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
         except subprocess.CalledProcessError as e:
@@ -44,14 +49,32 @@ class RunModelAPIView(APIView):
         if not os.path.exists(output_file):
             return Response({"error": "Output file not found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # 스프링 서버로 obj 파일 전송
+
+        # S3설정
+        s3 = boto3.client('s3',
+                        aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY,
+                        region_name = settings.AWS_S3_REGION_NAME,
+                        )
+        
+        object_name = 'palmodel/'
+        s3.put_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=object_name)
+
+        try:
+            s3.upload_file(output_file, settings.AWS_STORAGE_BUCKET_NAME, f'palmodel/{roomId}/{image.name}.obj', ExtraArgs={'ContentType': 'application/octet-stream', 'ContentDisposition': 'inline'})
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # # 스프링 서버로 obj 파일 전송
         spring_server_url = f'{settings.SPRING_SERVER_URL}/api/rooms/{roomId}/petmeta/webhook' # 스프링 서버 URL은 settings.py에 정의
         try:
-            with open(output_file, 'rb') as f:
-                files = {'file': (f'{image.name}.obj', f, 'application/octet-stream')}
-                response = requests.post(spring_server_url, files=files)
-                if response.status_code != 200:
-                    return Response({"error": "Failed to upload obj file to Spring server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            payload = {
+                'file':f'https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/{roomId}/{image.name}.obj',
+                "roomId": roomId
+            }
+            response = requests.post(spring_server_url, data=payload)
+            if response.status_code != 200:
+                return Response({"error": "Failed to upload obj file to Spring server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -64,8 +87,4 @@ class RunModelAPIView(APIView):
             os.rmdir(output_dir)  # output 디렉토리가 비어 있지 않다면, 비워진 후에 삭제
         except Exception as e:
             return Response({"error": f"Failed to delete files: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response({"message": "File processed, uploaded, and deleted successfully",}, status=status.HTTP_200_OK)
-        # return Response({"message": "File processed, uploaded, and deleted successfully", "result": result.stdout}, status=status.HTTP_200_OK)
-    
-    
+        return Response({"message": "File processed, uploaded, and deleted successfully"}, status=status.HTTP_200_OK)
