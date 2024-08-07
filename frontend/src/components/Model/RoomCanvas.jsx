@@ -14,7 +14,8 @@ import GlobalBtn from '@components/GlobalBtn';
 import MailBoxModal from '@components/Modal/MailBoxModal';
 import PalCreateModal from '@components//Modal/PalCreateModal';
 import { fetchPalmeta } from '@api/memorySpace/createApi';
-fetchPalmeta;
+
+import { useModelPositionStore } from '@store/memorySpace';
 
 const RoomCanvas = () => {
   const queryClient = useQueryClient();
@@ -24,17 +25,34 @@ const RoomCanvas = () => {
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
   const roomData = queryClient.getQueryData(['memorySpace']);
   const userData = queryClient.getQueryData(['userInfo']);
+
+  const updatePosition = useModelPositionStore((state) => state.fetchPosition);
+  const updateRotation = useModelPositionStore((state) => state.fetchRotation);
+
   const { data, isSuccess, isLoading } = useQuery({
     queryKey: ['palFrameImage'],
     queryFn: () => fetchAllFrameImage(roomData.roomId),
     staleTime: 1000 * 60 * 10,
   });
 
-  const { data: palMetaData } = useQuery({
+  const { data: palMetaData, isSuccess: isPalMetaSuccess } = useQuery({
     queryKey: ['palMeta'],
     queryFn: () => fetchPalmeta(roomData.roomId),
     staleTime: 1000 * 60 * 10,
   });
+
+  if (isPalMetaSuccess) {
+    updatePosition({
+      positionX: palMetaData[0].positionX,
+      positionY: palMetaData[0].positionY,
+      positionZ: palMetaData[0].positionZ,
+    });
+    updateRotation({
+      rotationX: palMetaData[0].rotationX,
+      rotationY: palMetaData[0].rotationY,
+      rotationZ: palMetaData[0].rotationZ,
+    });
+  }
 
   const handleModelClick = (event) => {
     console.log(event.object.name);
@@ -107,7 +125,7 @@ const RoomCanvas = () => {
           {/* <SceneUpdater /> */}
           <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
-            {palMetaData && <PalModel objURL={palMetaData[0]?.objFilePath} />}
+            {palMetaData[0] && <PalModel objData={palMetaData[0]} />}
             {/* <PalModel /> */}
           </mesh>
         </group>

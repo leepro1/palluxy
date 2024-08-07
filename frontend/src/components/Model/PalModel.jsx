@@ -4,19 +4,29 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { useLoader } from '@react-three/fiber';
 
 import { useModelPositionStore } from '@store/memorySpace';
+import { useEffect } from 'react';
 
-const PalModel = ({ objURL }) => {
-  const obj = useLoader(OBJLoader, objURL);
+const PalModel = ({ objData }) => {
+  const obj = useLoader(OBJLoader, objData.objFilePath);
 
   const position = useModelPositionStore((state) => state.position);
   const rotation = useModelPositionStore((state) => state.rotation);
 
-  obj.position.x = position.x;
-  obj.position.y = position.y;
-  obj.position.z = position.z;
-  obj.rotation.x = rotation.x;
-  obj.rotation.y = rotation.y;
-  obj.rotation.z = rotation.z;
+  obj.position.x = objData.positionX;
+  obj.position.y = objData.positionY;
+  obj.position.z = objData.positionZ;
+  obj.rotation.x = objData.rotationX;
+  obj.rotation.y = objData.rotationY;
+  obj.rotation.z = objData.rotationZ;
+
+  useEffect(() => {
+    obj.position.x = position.positionX;
+    obj.position.y = position.positionY;
+    obj.position.z = position.positionZ;
+    obj.rotation.x = rotation.rotationX;
+    obj.rotation.y = rotation.rotationY;
+    obj.rotation.z = rotation.rotationZ;
+  }, [position, rotation]);
 
   obj.scale.x = 2;
   obj.scale.y = 2;
@@ -26,7 +36,7 @@ const PalModel = ({ objURL }) => {
 };
 
 PalModel.propTypes = {
-  objURL: PropTypes.string.isRequired,
+  objData: PropTypes.object.isRequired,
 };
 
 export default PalModel;
