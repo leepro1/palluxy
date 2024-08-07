@@ -10,13 +10,14 @@ services:
         condition: service_healthy
       my-cache-server:
         condition: service_healthy
-    entrypoint: ["java", "-jar", "/app.jar"]
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/ssafy_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=ssafy
       - SPRING_REDIS_HOST=my-cache-server
       - SPRING_REDIS_PORT=6379
+      - TZ=Asia/Seoul
+    entrypoint: ["java", "-jar", "-Duser.timezone=Asia/Seoul", "/app.jar"]
     networks:
       - my-network
 
@@ -25,6 +26,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ssafy
       MYSQL_DATABASE: ssafy_db
+        - TZ=Asia/Seoul
     volumes:
       - /home/ubuntu/data/mysql:/var/lib/mysql
     ports:
@@ -38,6 +40,8 @@ services:
 
   my-cache-server:
     image: redis
+    environment:
+      - TZ=Asia/Seoul
     ports:
       - "6379:6379"
     healthcheck:
@@ -59,6 +63,8 @@ services:
       - /var/www/html/dist:/usr/share/nginx/html
     depends_on:
       - my-server
+    environment:
+      - TZ=Asia/Seoul
     networks:
       - my-network
 
