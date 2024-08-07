@@ -19,9 +19,9 @@ const Slider = ({ type, coordinate }) => {
   return (
     <input
       type="range"
-      min={type === 'position' ? -50 : -5}
-      max={type === 'position' ? 50 : 5}
-      step={type === 'position' ? 2 : 0.01}
+      min={type === 'position' ? -3 : -5}
+      max={type === 'position' ? 3 : 5}
+      step={type === 'position' ? 0.2 : 0.01}
       value={type === 'position' ? position[coordinate] : rotation[coordinate]}
       onChange={(e) => {
         updateValue(e);

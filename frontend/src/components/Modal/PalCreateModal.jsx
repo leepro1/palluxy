@@ -3,33 +3,33 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
 
-import { postPalImage } from '@api/memorySpace/createApi';
+import { postPalImage, postCreatePalmeta } from '@api/memorySpace/createApi';
 
 const PalCreateModal = ({ roomId, handler }) => {
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
   const queryClient = useQueryClient();
 
-  const { mutate: palImageMutate } = useMutation({
-    mutationFn: postPalImage,
-    onSuccess: async () => {
-      // handler(false);
-      console.log('이게 되나?');
-      // window.location.href = '/memorySpace';
+  const { mutateAsync: palImageMutate, isPending: isPalImagePending } =
+    useMutation({
+      mutationFn: postPalImage,
+      onSuccess: async (res) => {
+        // handler(false);
+        console.log('이게 되나?');
+        console.log(res);
+        // window.location.href = '/memorySpace';
+      },
+    });
+  const { mutateAsync: palMetaMutate } = useMutation({
+    mutationFn: postCreatePalmeta,
+    onSuccess: () => {
+      console.log('mutate');
+      queryClient.invalidateQueries({
+        queryKey: ['palMeta'],
+      });
+      handler(false);
     },
   });
-  // const { mutate: updateMutate } = useMutation({
-  //   mutationFn: updateFrameImage,
-  //   onSuccess: () => {
-  //     // Invalidate and refetch
-  //     console.log('mutate');
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['palFrameImage'],
-  //     });
-  //     handler(false);
-  //     // window.location.href = '/memorySpace';
-  //   },
-  // });
 
   const handleUploadImage = (event) => {
     console.log(event.target.files[0]);
@@ -43,7 +43,7 @@ const PalCreateModal = ({ roomId, handler }) => {
     }
   };
 
-  const submitUploadImage = () => {
+  const submitUploadImage = async () => {
     if (!uploadImage) {
       return;
     }
@@ -54,7 +54,17 @@ const PalCreateModal = ({ roomId, handler }) => {
       roomId: roomId,
       data: formData,
     };
-    palImageMutate(payload);
+    try {
+      const res = await palImageMutate(payload);
+      const palMetaPayload = {
+        roomId: res.data.result.roomId,
+        objFilePath: res.data.result.file,
+      };
+      await palMetaMutate(palMetaPayload);
+    } catch (e) {
+      alert('렌더링 과정 중 오류가 발생했습니다.');
+    }
+
     // if (selectData) {
     //   updateMutate({
     //     data: formData,
@@ -92,36 +102,44 @@ const PalCreateModal = ({ roomId, handler }) => {
             </p>
           </div>
           {/* none */}
-          <div className="grow px-8">
-            {previewPath && (
-              <img
-                src={previewPath}
-                alt="preview image"
-              />
-            )}
-          </div>
-          {/* btn */}
-          <div className="flex justify-end gap-x-8 px-8 py-4">
-            <label
-              className="flex h-[40px] w-[130px] items-center justify-center rounded-md bg-pal-purple text-white"
-              htmlFor="fileInput"
-            >
-              <span>파일선택</span>
-              <input
-                className="hidden"
-                id="fileInput"
-                type="file"
-                accept="image/*"
-                onChange={handleUploadImage}
-              />
-            </label>
-            <GlobalBtn
-              className="bg-pal-purple text-white"
-              onClick={submitUploadImage}
-              size={'md'}
-              text={'업로드 하기'}
-            />
-          </div>
+          {isPalImagePending ? (
+            <div>
+              <p>3D 렌더링이 진행 중 입니다.</p>
+              <p>20 ~ 30초의 시간이 걸리니 창을 닫지 말아주세요.</p>
+            </div>
+          ) : (
+            <div>
+              <div className="grow px-8">
+                {previewPath && (
+                  <img
+                    src={previewPath}
+                    alt="preview image"
+                  />
+                )}
+              </div>
+              <div className="flex justify-end gap-x-8 px-8 py-4">
+                <label
+                  className="flex h-[40px] w-[130px] items-center justify-center rounded-md bg-pal-purple text-white"
+                  htmlFor="fileInput"
+                >
+                  <span>파일선택</span>
+                  <input
+                    className="hidden"
+                    id="fileInput"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadImage}
+                  />
+                </label>
+                <GlobalBtn
+                  className="bg-pal-purple text-white"
+                  onClick={submitUploadImage}
+                  size={'md'}
+                  text={'업로드 하기'}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

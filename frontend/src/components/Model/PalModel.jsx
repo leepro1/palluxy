@@ -16,9 +16,9 @@ const PalModel = () => {
   obj.rotation.y = rotation.y;
   obj.rotation.z = rotation.z;
 
-  obj.scale.x = 20;
-  obj.scale.y = 20;
-  obj.scale.z = 20;
+  obj.scale.x = 2;
+  obj.scale.y = 2;
+  obj.scale.z = 2;
 
   return <primitive object={obj} />;
 };
