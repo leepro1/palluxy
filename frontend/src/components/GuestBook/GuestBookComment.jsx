@@ -52,7 +52,7 @@ const GuestBookComment = ({ data }) => {
 };
 
 GuestBookComment.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 export default GuestBookComment;
