@@ -59,24 +59,16 @@ class RunModelAPIView(APIView):
         
         object_name = 'palmodel/'
         s3.put_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=object_name)
-
+        # S3로 obj업로드
         try:
             s3.upload_file(output_file, settings.AWS_STORAGE_BUCKET_NAME, f'palmodel/{roomId}/{image.name}.obj', ExtraArgs={'ContentType': 'application/octet-stream', 'ContentDisposition': 'inline'})
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        # # 스프링 서버로 obj 파일 전송
-        spring_server_url = f'{settings.SPRING_SERVER_URL}/api/rooms/{roomId}/petmeta/webhook' # 스프링 서버 URL은 settings.py에 정의
-        try:
-            payload = {
-                'file':f'https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/{roomId}/{image.name}.obj',
-                "roomId": roomId
-            }
-            response = requests.post(spring_server_url, data=payload)
-            if response.status_code != 200:
-                return Response({"error": "Failed to upload obj file to Spring server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        payload = {
+            'file':f'https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/{roomId}/https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/2/sleepcat.jpg.obj',
+            "roomId": roomId
+        }
 
         # 이미지 파일과 obj 파일 삭제
         try:
@@ -87,4 +79,5 @@ class RunModelAPIView(APIView):
             os.rmdir(output_dir)  # output 디렉토리가 비어 있지 않다면, 비워진 후에 삭제
         except Exception as e:
             return Response({"error": f"Failed to delete files: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({"message": "File processed, uploaded, and deleted successfully"}, status=status.HTTP_200_OK)
+        
+        return Response({"message": "File processed, uploaded, and deleted successfully", "result": payload}, status=status.HTTP_200_OK)
