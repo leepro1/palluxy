@@ -17,9 +17,11 @@ export default class UserVideoComponent extends Component {
         }`}
       >
         {this.props.streamManager !== undefined ? (
-          <div className="">
+          <div className="flex flex-auto">
             <OpenViduVideoComponent streamManager={this.props.streamManager} />
-            <p className="absolute bg-white">{this.getNicknameTag()}</p>
+            <p className="absolute bg-pal-purple px-2 text-xl text-pal-lightwhite">
+              {this.getNicknameTag()}
+            </p>
           </div>
         ) : null}
       </div>
