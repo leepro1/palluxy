@@ -66,7 +66,7 @@ class RunModelAPIView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         payload = {
-            'file':f'https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/{roomId}/https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/2/sleepcat.jpg.obj',
+            'file':f'https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/palmodel/{roomId}/{image.name}.obj',
             "roomId": roomId
         }
 
