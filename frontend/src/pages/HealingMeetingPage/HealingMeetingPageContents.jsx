@@ -1,10 +1,9 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
-import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
 import UserVideoComponent from './UserVideoComponent';
 import ChatMessageBox from '@/components/Chat/ChatMessageBox';
-
+import LeaderEntranceModal from './LeaderEntranceModal';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
@@ -64,17 +63,17 @@ const HealingMeetingPageContents = () => {
   const [isMike, setIsMike] = useState(true);
   const [isCamera, setIsCamera] = useState(true);
   const role = 'PUBLISHER';
+  const [approveKey, setApproveKey] = useState('');
   // const [data, setData] = useState(null);
   const OV = useRef(null);
   const [activeSpeaker, setActiveSpeaker] = useState(null);
-
+  const [myMeetingName, setMyMeetingName] = useState('');
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const scrollRef = useRef(null);
 
-  const [showModal, setShowModal] = useState(false); // 모달 상태
   const [entranceModal, setEntranceModal] = useState(false);
-  const [targetSubscriber, setTargetSubscriber] = useState(null); // 강퇴 대상 상태
+  const [entranceLeaderModal, setEntranceLeaderModal] = useState(false);
 
   const handleToggle = (kind) => {
     if (publisher) {
@@ -99,19 +98,6 @@ const HealingMeetingPageContents = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     // if (!userInfo) return;
-  //     try {
-  //       const response = await instance.get(`api/group/my/${userInfo.id}/0`);
-  //       setData(response.data.result.groups);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [userInfo]);
-
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       leaveSession();
@@ -126,12 +112,23 @@ const HealingMeetingPageContents = () => {
   const confirmEntrance = () => {
     setEntranceModal(true);
   };
+  const confirmLeaderEntrance = () => {
+    setEntranceLeaderModal(true);
+  };
   const handleEntrance = () => {
     setEntranceModal(false);
-    joinSession();
+    joinSession(1);
   };
   const cancelEntrance = () => {
     setEntranceModal(false);
+    setMySessionId(null);
+  };
+  const handleLeaderEntrance = () => {
+    setEntranceLeaderModal(false);
+    joinSession(2);
+  };
+  const cancelLeaderEntrance = () => {
+    setEntranceLeaderModal(false);
     setMySessionId(null);
   };
 
@@ -145,17 +142,7 @@ const HealingMeetingPageContents = () => {
     setMySessionId(sessionId);
   };
 
-  const confirmRemoveUser = (connectionId) => {
-    setTargetSubscriber(connectionId);
-    setShowModal(true); // 모달 표시
-  };
-
-  const cancelRemoveUser = () => {
-    setShowModal(false); // 모달 숨기기
-    setTargetSubscriber(null);
-  };
-
-  const joinSession = async () => {
+  const joinSession = async (code) => {
     if (mySessionId === null) {
       return;
     }
@@ -186,15 +173,8 @@ const HealingMeetingPageContents = () => {
       }
     });
 
-    newSession.on('signal:my-chat', (event) => {
-      if (event.from.connectionId !== newSession.connection.connectionId) {
-        const newMessage = JSON.parse(event.data);
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-      }
-    });
-
     try {
-      const token = await getToken(role, mySessionId);
+      const token = await getToken(role, mySessionId, code);
       console.log(token);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
@@ -234,6 +214,63 @@ const HealingMeetingPageContents = () => {
     }
   };
 
+  const getToken = async (role, id, code) => {
+    if (code === 2) {
+      const sessionId = await createSession(id);
+    }
+
+    return await createToken(mySessionId, role, id);
+  };
+
+  const createSession = async (sessionId) => {
+    try {
+      const response = await instance.post(
+        'api/sessions',
+        {
+          params: {
+            customSessionId: String(sessionId),
+          },
+          // customSessionId: sessionId,
+          userId: userInfo.id,
+          groupId: sessionId,
+          approveKey: approveKey,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      setSession(undefined);
+      alert('에러 발생! 입장 키를 다시 확인해 주세요');
+      console.error(error);
+      throw error; // optional: rethrow the error if you want it to propagate
+    }
+  };
+
+  const createToken = async (sessionId, role, id) => {
+    try {
+      const response = await instance.post(
+        `api/sessions/${sessionId}/connections`,
+        { role, userId: userInfo.id, groupId: id },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      console.log(response);
+      return response.data.result;
+    } catch (error) {
+      setSession(undefined);
+      alert('아직 방이 만들어지지 않았습니다. 잠시만 기다려주세요!');
+      console.error(error);
+      throw error; // optional: rethrow the error if you want it to propagate
+    }
+  };
+
+  const handleChangeApproveKey = (e) => {
+    setApproveKey(e.target.value);
+  };
   const leaveSession = useCallback(() => {
     if (session) {
       session.disconnect();
@@ -281,44 +318,6 @@ const HealingMeetingPageContents = () => {
       console.error(e);
     }
   }, [session, mainStreamManager, currentVideoDevice]);
-
-  const getToken = async (role, id) => {
-    const sessionId = await createSession(id);
-    console.log(sessionId);
-    return await createToken(sessionId, role, id);
-  };
-
-  const createSession = async (sessionId) => {
-    const response = await instance.post(
-      'api/sessions',
-      {
-        params: {
-          customSessionId: String(sessionId),
-        },
-        // customSessio nId: sessionId,
-        userId: userInfo.id,
-        groupId: sessionId,
-        approveKey: '123456',
-      },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    console.log(response);
-    return response.data;
-  };
-
-  const createToken = async (sessionId, role, id) => {
-    const response = await instance.post(
-      `api/sessions/${sessionId.result}/connections`,
-      { role, userId: userInfo.id, groupId: id },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    console.log(response);
-    return response.data.result;
-  };
 
   const sendMessage = () => {
     if (text.trim()) {
@@ -377,7 +376,12 @@ const HealingMeetingPageContents = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     changeSession(item.id);
-                    confirmEntrance();
+                    setMyMeetingName(item.title);
+                    if (item.leaderId === userInfo.id) {
+                      confirmLeaderEntrance();
+                    } else {
+                      confirmEntrance();
+                    }
                   }}
                 >
                   <div className="relative w-full rounded-md">
@@ -437,9 +441,7 @@ const HealingMeetingPageContents = () => {
             <div className="relative flex h-screen w-10/12 flex-col">
               {/* 헤더 */}
               <div className="flex h-16 w-full items-center justify-center bg-gray-900">
-                <p className="text-2xl text-white">
-                  치유모임 이름 {mySessionId}
-                </p>
+                <p className="text-2xl text-white">{myMeetingName}</p>
               </div>
               {/* 비디오 */}
               <div className="flex grow bg-black">
@@ -461,25 +463,6 @@ const HealingMeetingPageContents = () => {
                           sub.stream.connection.connectionId === activeSpeaker
                         }
                       />
-                      <div className="items-center">
-                        {role === 'MODERATOR' && (
-                          <div className="mt-2 hidden flex-col items-center group-hover:flex">
-                            <span
-                              onClick={() =>
-                                confirmRemoveUser(
-                                  sub.stream.connection.connectionId,
-                                )
-                              }
-                              className="material-symbols-outlined cursor-pointer text-red-500"
-                            >
-                              close
-                            </span>
-                            <span className="text-sm text-red-500">
-                              내보내기
-                            </span>
-                          </div>
-                        )}
-                      </div>
                     </div>
                   ))}
                 </div>
@@ -592,6 +575,14 @@ const HealingMeetingPageContents = () => {
         message="정말 입장하시겠습니까?"
         onConfirm={handleEntrance}
         onCancel={cancelEntrance}
+      />
+      <LeaderEntranceModal
+        show={entranceLeaderModal}
+        message="정말 입장하시겠습니까?"
+        onConfirm={handleLeaderEntrance}
+        onCancel={cancelLeaderEntrance}
+        handleChangeApproveKey={handleChangeApproveKey}
+        approveKey={approveKey}
       />
     </div>
   );
