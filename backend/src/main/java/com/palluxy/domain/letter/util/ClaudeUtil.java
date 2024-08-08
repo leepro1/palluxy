@@ -55,35 +55,63 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
                 .defaultHeader("content-type", "application/json")
                 .build();
 
-        webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
-            response -> {
+        ClaudeResponse response = webClient.post().bodyValue(json).retrieve()
+            .bodyToMono(ClaudeResponse.class).block();
 
-                if (response.type().equals("error")) {
-                    Letter letter = Letter.builder()
-                        .title("편지가 도착했어요")
-                        .content("편지는 잘 받아봤어요. 그런데 제가 아직 한글이 어려워서 무슨 말인지 정확하게 이해를 못했어요. 다시 보내주시면 제가 주변 친구들한테 물어서 답장써볼게요!")
-                        .writer(Writer.PET)
-                        .petId(petId)
-                        .room(room)
-                        .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
-                        .build();
-                    letterRepository.saveAndFlush(letter);
+        if (response.type().equals("error")) {
+            Letter letter = Letter.builder()
+                .title("편지가 도착했어요")
+                .content("편지는 잘 받아봤어요. 그런데 제가 아직 한글이 어려워서 무슨 말인지 정확하게 이해를 못했어요. 다시 보내주시면 제가 주변 친구들한테 물어서 답장써볼게요!")
+                .writer(Writer.PET)
+                .petId(petId)
+                .room(room)
+                .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .build();
+            letterRepository.saveAndFlush(letter);
 
-                    throw new AIException(response.getErrorMessage());
-                }
+            throw new AIException(response.getErrorMessage());
+        }
 
-                String content = response.getText();
-                Letter letter = Letter.builder()
-                    .title("편지가 도착했어요")
-                    .content(content)
-                    .writer(Writer.PET)
-                    .petId(petId)
-                    .room(room)
-                    .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
-                    .build();
-                letterRepository.saveAndFlush(letter);
-            }
-        );
+        String content = response.getText();
+        Letter letter = Letter.builder()
+            .title("편지가 도착했어요")
+            .content(content)
+            .writer(Writer.PET)
+            .petId(petId)
+            .room(room)
+            .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+            .build();
+        letterRepository.saveAndFlush(letter);
+
+//        webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
+//            response -> {
+//
+//                if (response.type().equals("error")) {
+//                    Letter letter = Letter.builder()
+//                        .title("편지가 도착했어요")
+//                        .content("편지는 잘 받아봤어요. 그런데 제가 아직 한글이 어려워서 무슨 말인지 정확하게 이해를 못했어요. 다시 보내주시면 제가 주변 친구들한테 물어서 답장써볼게요!")
+//                        .writer(Writer.PET)
+//                        .petId(petId)
+//                        .room(room)
+//                        .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+//                        .build();
+//                    letterRepository.saveAndFlush(letter);
+//
+//                    throw new AIException(response.getErrorMessage());
+//                }
+//
+//                String content = response.getText();
+//                Letter letter = Letter.builder()
+//                    .title("편지가 도착했어요")
+//                    .content(content)
+//                    .writer(Writer.PET)
+//                    .petId(petId)
+//                    .room(room)
+//                    .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+//                    .build();
+//                letterRepository.saveAndFlush(letter);
+//            }
+//        );
     }
 
     public ClaudeRequest getRequest(List<Letter> letters, Pet pet) {
