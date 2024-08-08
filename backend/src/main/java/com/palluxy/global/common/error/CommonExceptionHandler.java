@@ -2,6 +2,7 @@ package com.palluxy.global.common.error;
 
 import com.palluxy.domain.group.exception.OpenviduException;
 import com.palluxy.domain.group.exception.ValidateException;
+import com.palluxy.domain.letter.AIException;
 import com.palluxy.domain.user.exception.DuplicateUserException;
 import com.palluxy.domain.user.exception.InvalidRefreshTokenException;
 import com.palluxy.domain.user.exception.RefreshTokenExpiredException;
@@ -23,6 +24,7 @@ public class CommonExceptionHandler {
         RefreshTokenExpiredException.class,
         InvalidRefreshTokenException.class,
         DuplicateUserException.class,
+        AIException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResponse<?> handleCommonExceptions(Exception e) {
