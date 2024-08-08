@@ -27,6 +27,9 @@ const PalCreateModal = ({ roomId, handler }) => {
 
   const handleUploadImage = (event) => {
     console.log(event.target.files[0]);
+    if (!event.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
     if (event.target.files) {
       setUploadImage(event.target.files[0]);
       const reader = new FileReader();
@@ -58,17 +61,6 @@ const PalCreateModal = ({ roomId, handler }) => {
     } catch (e) {
       alert('렌더링 과정 중 오류가 발생했습니다.');
     }
-
-    // if (selectData) {
-    //   updateMutate({
-    //     data: formData,
-    //     imageId: selectData.imageId,
-    //     albumId: frameData.albumId,
-    //   });
-    // } else {
-    //   formData.append('index', selectFrame);
-    //   fetchMutate({ data: formData, albumId: frameData.albumId });
-    // }
   };
 
   return (
@@ -97,7 +89,7 @@ const PalCreateModal = ({ roomId, handler }) => {
           </div>
           {/* none */}
           {isPalImagePending ? (
-            <div>
+            <div className="flex flex-col items-center px-8 pb-2 text-pal-purple">
               <p>3D 렌더링이 진행 중 입니다.</p>
               <p>20 ~ 30초의 시간이 걸리니 창을 닫지 말아주세요.</p>
             </div>

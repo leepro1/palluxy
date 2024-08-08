@@ -43,14 +43,14 @@ const RoomCanvas = () => {
 
   if (isPalMetaSuccess) {
     updatePosition({
-      positionX: palMetaData[0].positionX,
-      positionY: palMetaData[0].positionY,
-      positionZ: palMetaData[0].positionZ,
+      positionX: palMetaData[0] ? palMetaData[0].positionX : 0,
+      positionY: palMetaData[0] ? palMetaData[0].positionY : 0,
+      positionZ: palMetaData[0] ? palMetaData[0].positionZ : 0,
     });
     updateRotation({
-      rotationX: palMetaData[0].rotationX,
-      rotationY: palMetaData[0].rotationY,
-      rotationZ: palMetaData[0].rotationZ,
+      rotationX: palMetaData[0] ? palMetaData[0].rotationX : 0,
+      rotationY: palMetaData[0] ? palMetaData[0].rotationY : 0,
+      rotationZ: palMetaData[0] ? palMetaData[0].rotationZ : 0,
     });
   }
 
