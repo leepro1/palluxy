@@ -1,6 +1,7 @@
 package com.palluxy.domain.letter.controller;
 
 import com.palluxy.domain.letter.dto.LetterRequest;
+import com.palluxy.domain.letter.dto.LetterResponse;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.service.LetterService;
 import com.palluxy.domain.letter.service.LetterServiceImpl;
@@ -21,14 +22,14 @@ public class LetterController {
     @GetMapping("/{petId}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> getLetters(@PathVariable("petId") Long petId) {
-        List<Letter> letters = letterService.findByPetIdAndOpenedAtBefore(petId);
+        List<LetterResponse> letters = letterService.findByPetIdAndOpenedAtBefore(petId);
         return CommonResponse.ok("정상적으로 편지가 조회되었습니다.", letters);
     }
 
     @GetMapping("/room/{roomId}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> getLettersByRoomId(@PathVariable("roomId") Long roomId) {
-        List<Letter> letters = letterService.findLettersByRoomIdAndOpenedAtBefore(roomId);
+        List<LetterResponse> letters = letterService.findLettersByRoomIdAndOpenedAtBefore(roomId);
         return CommonResponse.ok("정상적으로 편지가 조회되었습니다.", letters);
     }
 
