@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
+
 const MakeSession = ({ removeModal, onSessionCreated }) => {
   const queryClient = useQueryClient();
   const userInfo = queryClient.getQueryData(['userInfo']);
@@ -14,11 +15,6 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
   } = useForm();
   const [uploadImage, setUploadImage] = useState(null);
 
-  const handleBackgroundClick = (e) => {
-    if (e.target === e.currentTarget) {
-      removeModal();
-    }
-  };
 
   const handleFileChange = (e) => {
 
@@ -66,19 +62,18 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={handleBackgroundClick}
+      className="fixed inset-0 flex items-center justify-center"
+
     >
       <div
-        className="w-1/2 rounded bg-white p-6"
-        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-screen-sm rounded bg-white p-6 overflow-hidden"
       >
-        <h2 className="mb-4 text-center text-2xl font-bold text-black">
+        <h2 className="mb-4 text-center text-2xl font-bold text-black font-jamsilRegular">
           모임 생성하기
         </h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">
+            <label className="block font-jamsilRegular text-gray-700">
               모임 이름*
             </label>
             <Controller
@@ -89,7 +84,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
               render={({ field }) => (
                 <input
                   {...field}
-                  className="w-full rounded border px-3 py-2 text-black"
+                  className="w-full rounded border px-3 py-2 text-black font-jamsilLight"
                   placeholder="모임 이름을 입력해주세요."
                 />
               )}
@@ -99,7 +94,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">
+            <label className="block font-jamsilRegular text-gray-700">
               모임 상세 설명*
             </label>
             <Controller
@@ -110,7 +105,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
               render={({ field }) => (
                 <textarea
                   {...field}
-                  className="w-full rounded border px-3 py-2 text-black"
+                  className="w-full rounded border px-3 py-2 text-black font-jamsilLight resize-none"
                   placeholder="어떤 모임을 가지고 싶으신가요? 모임에 대한 상세 설명을 작성해주세요."
                   rows="4"
                 ></textarea>
@@ -121,7 +116,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
             )}
           </div>
           <div className="mb-4">
-            <label className="font-semi bold block text-gray-700">
+            <label className="font-jamsilRegular block text-gray-700">
               모임 일자*
             </label>
             <div className="flex w-fit items-center gap-2 text-black">
@@ -134,7 +129,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
                   <input
                     {...field}
                     type="date"
-                    className="rounded border px-3 py-2"
+                    className="rounded font-jamsilLight text-gray-400 border px-3 py-2"
                   />
                 )}
               />
@@ -144,98 +139,103 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
             </div>
           </div>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">
+            <label className="block font-jamsilRegular text-gray-700">
               시작 시간 ~ 종료 시간*
             </label>
-            <div className="flex w-fit items-center gap-2 text-black">
-              <Controller
-                name="startTime.hour"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '시작 시간을 입력해주세요.',
-                  min: { value: 0, message: '0 이상이어야 합니다.' },
-                  max: { value: 23, message: '23 이하이어야 합니다.' },
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    className="rounded border px-3 py-2"
-                    placeholder="ex.10"
-                    min="0"
-                    max="23"
-                  />
-                )}
-              />
-              <div>시</div>
-              <Controller
-                name="startTime.minute"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '시작 시간을 입력해주세요.',
-                  min: { value: 0, message: '0 이상이어야 합니다.' },
-                  max: { value: 59, message: '59 이하이어야 합니다.' },
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    className="rounded border px-3 py-2"
-                    placeholder="ex.0"
-                    min="0"
-                    max="59"
-                  />
-                )}
-              />
-              <div>분 ~ </div>
-              <Controller
-                name="endTime.hour"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '종료 시간을 입력해주세요.',
-                  min: { value: 0, message: '0 이상이어야 합니다.' },
-                  max: { value: 23, message: '23 이하이어야 합니다.' },
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    className="rounded border px-3 py-2"
-                    placeholder="ex.20"
-                    min="0"
-                    max="23"
-                  />
-                )}
-              />
-              <div>시</div>
-              <Controller
-                name="endTime.minute"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: '종료 시간을 입력해주세요.',
-                  min: { value: 0, message: '0 이상이어야 합니다.' },
-                  max: { value: 59, message: '59 이하이어야 합니다.' },
-                }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    className="rounded border px-3 py-2"
-                    placeholder="ex.30"
-                    min="0"
-                    max="59"
-                  />
-                )}
-              />
-              <div>분</div>
+            <div className="flex flex-col md:flex-row w-fit items-center gap-2 text-black  sm:my-2"> 
+              <div className='flex items-center gap-2'>
+                <Controller
+                  name="startTime.hour"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '시작 시간을 입력해주세요.',
+                    min: { value: 0, message: '0 이상이어야 합니다.' },
+                    max: { value: 23, message: '23 이하이어야 합니다.' },
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      className="rounded border px-3 py-2"
+                      placeholder="ex.10"
+                      min="0"
+                      max="23"
+                    />
+                  )}
+                />
+                <div>시</div>
+                <Controller
+                  name="startTime.minute"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '시작 시간을 입력해주세요.',
+                    min: { value: 0, message: '0 이상이어야 합니다.' },
+                    max: { value: 59, message: '59 이하이어야 합니다.' },
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      className="rounded border px-3 py-2"
+                      placeholder="ex.0"
+                      min="0"
+                      max="59"
+                    />
+                  )}
+                />
+                <div>분 ~ </div>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Controller
+                  name="endTime.hour"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '종료 시간을 입력해주세요.',
+                    min: { value: 0, message: '0 이상이어야 합니다.' },
+                    max: { value: 23, message: '23 이하이어야 합니다.' },
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      className="rounded border px-3 py-2"
+                      placeholder="ex.20"
+                      min="0"
+                      max="23"
+                    />
+                  )}
+                />
+                <div>시</div>
+                <Controller
+                  name="endTime.minute"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: '종료 시간을 입력해주세요.',
+                    min: { value: 0, message: '0 이상이어야 합니다.' },
+                    max: { value: 59, message: '59 이하이어야 합니다.' },
+                  }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      className="rounded border px-3 py-2"
+                      placeholder="ex.30"
+                      min="0"
+                      max="59"
+                    />
+                  )}
+                />
+                <div>분</div>
+
+              </div>
             </div>
           </div>
           <div className="mb-4">
-            <label className="font-semibold text-gray-700">최대 인원*</label>
+            <label className="font-jamsilRegular text-gray-700">최대 인원*</label>
             <div className="flex items-center gap-2 text-black">
               <Controller
                 name="max_capacity"
@@ -261,12 +261,12 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
             </div>
           </div>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">
+            <label className="block font-jamsilRegular text-gray-700">
               포스터 이미지
             </label>
             <input
               type="file"
-              className="w-full rounded border px-3 py-2"
+              className="w-full rounded font-jamsilLight border px-3 py-2"
               onChange={handleFileChange}
             />
             {selectedFile && (
@@ -282,7 +282,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
               </p>,
             ): (<div></div>)}
 
-          <div className="flex justify-center gap-20">
+          <div className="flex justify-center md:gap-20 sm:gap-10 gap-5">
             <button
               type="submit"
               className="rounded bg-pal-purple px-4 py-2 text-white"

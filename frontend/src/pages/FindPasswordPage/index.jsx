@@ -7,6 +7,7 @@ import ContentsLayout from '@layout/ContentsLayout';
 
 const FindPasswordModal = () => {
   const [successMessage, setSuccessMessage] = useState('');
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
 
   const {
     handleSubmit,
@@ -42,6 +43,30 @@ const FindPasswordModal = () => {
     },
   });
 
+  // const checkEmailDuplicate = async (email) => {
+  //   if (!email) {
+  //     setError('email', {
+  //       type: 'manual',
+  //       message: '이메일을 입력해주세요.',
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await instance.get(`/api/users/check-email/${email}`);
+
+  //     if (response.status === 200) {
+  //       setIsEmailChecked(true);
+  //     } else {
+  //       setIsEmailChecked(false);
+  //     }
+  //   } catch (error) {
+  //     if (error.response && error.response.status === 400) {
+  //       setIsEmailChecked(false);
+  //     }
+  //   }
+  // };
+
   const handleFindPassword = (data) => {
     mutation.mutate(data.email);
   };
@@ -65,7 +90,7 @@ const FindPasswordModal = () => {
             />
           </div>
           <h4 className="mb-10 text-center font-bold text-black">
-            비밀번호를 찾거나 바꾸고자 하는 계정의 이메일을 입력해주세요.
+            회원가입한 이메일 주소를 입력해주세요.
           </h4>
           {successMessage && (
             <p className="mb-4 whitespace-pre-wrap text-center text-pal-purple">

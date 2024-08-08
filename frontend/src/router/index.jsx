@@ -39,10 +39,6 @@ const routerInfo = [
     children: [
       { path: '*', element: <NotFound /> },
       { index: true, element: <HomePage /> },
-      // {
-      //   path: '/noticeboard',
-      //   element: <NoticePage />,
-      // },
 
       // notice
       {

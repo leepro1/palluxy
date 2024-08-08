@@ -63,6 +63,7 @@ const HealingSessionPage = () => {
         }
 
         const response = await instance.get(endpoint);
+
         setTotalPage(Math.ceil(response.data.result.totalGroupCount / 9));
         setData(response.data.result.groups);
         setDatalength(response.data.result.totalGroupCount);
