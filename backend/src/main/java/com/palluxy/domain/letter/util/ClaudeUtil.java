@@ -11,6 +11,8 @@ import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.letter.repository.LetterRepository;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +63,7 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
                     .writer(Writer.PET)
                     .petId(petId)
                     .room(room)
-                    .openedAt(LocalDateTime.now())
+                    .openedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
                     .build();
                 letterRepository.saveAndFlush(letter);
             }

@@ -27,8 +27,6 @@ const formatDateRange = (startDate, endDate) => {
 };
 
 const HealingSessionPage = () => {
-  const queryClient = useQueryClient();
-  const userInfo = queryClient.getQueryData(['userInfo']);
   const { pageIndex } = useParams();
   const pageIndexInt = parseInt(pageIndex, 10);
   const [isModalOpen, setIsModalOpen] = useState(false);

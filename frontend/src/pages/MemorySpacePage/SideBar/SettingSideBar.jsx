@@ -116,8 +116,8 @@ const SettingSideBar = () => {
         {/* 액자 설정 */}
         <div className="flex items-center gap-6 text-white">
           <div className="flex flex-col">
-            <span className="">추억</span>
             <span className="">사진</span>
+            <span className="">설정</span>
           </div>
           <div className="flex flex-col items-end gap-y-3">
             <div className="flex gap-x-3">
@@ -146,62 +146,6 @@ const SettingSideBar = () => {
                   upload_file
                 </span>
                 <ImgRotationBtn index={1} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>세 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(2);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={2} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>네 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(3);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={3} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>다섯 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(4);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={4} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>여섯 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(5);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={5} />
               </div>
             </div>
           </div>

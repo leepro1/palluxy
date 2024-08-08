@@ -139,9 +139,6 @@ const MeetingDetail = () => {
     if (!userInfo) {
       return <p>로그인 후 신청해 주세요 </p>; // 로그인이 되어있지 않을 때
     }
-    if (data.remainCapacity === 0) {
-      return <p>이미 마감된 공고입니다</p>;
-    }
     if (userInfo.id === data.leaderId) {
       return (
         <button
@@ -151,6 +148,9 @@ const MeetingDetail = () => {
           모임 수정
         </button>
       );
+    }
+    if (data.remainCapacity === 0) {
+      return <p>이미 마감된 공고입니다</p>;
     }
     if (data.groupUserId?.includes(userInfo.id)) {
       return (
