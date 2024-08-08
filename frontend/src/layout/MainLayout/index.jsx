@@ -3,16 +3,9 @@ import Footer from '@components/Footer';
 
 import { Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { instance } from '@/utils/axios';
+import { fetchUserByAccess } from '@api/user';
 
 const MainLayout = () => {
-  const fetchUserByAccess = async () => {
-    const access = sessionStorage.getItem('access');
-    if (!access) return null;
-    const res = await instance.get('/api/users/user-info');
-    return res.data.result;
-  };
-
   useQuery({
     queryKey: ['userInfo'],
     queryFn: fetchUserByAccess,
