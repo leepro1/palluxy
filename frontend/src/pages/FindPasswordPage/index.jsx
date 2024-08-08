@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import logo from '@assets/images/logo/logo.svg';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
 
 const FindPasswordModal = () => {
-  const navigate = useNavigate();
-  const [resetVerificationCodeSent, setResetVerificationCodeSent] =
-    useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
   const {
     handleSubmit,
@@ -20,46 +17,77 @@ const FindPasswordModal = () => {
     setError,
   } = useForm({ mode: 'onChange' });
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email) || '이메일의 형태를 갖추어야 합니다.';
+  const sendResetVerificationCode = async (email) => {
+    const response = await instance.post('/api/email/code', {
+      type: 'password',
+      email,
+    });
+    if (response.status !== 200) {
+      throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
+    }
+    return response.data;
   };
 
-  const handleFindPassword = async (data) => {
-    console.log(data);
-    try {
-      await sendResetVerificationCode(data.email);
-      setSuccessMessage(
-        '성공적으로 이메일을 발송했습니다.\n 전송되기까지 시간이 소요될 수 있으니 기다려주세요!',
-      );
-    } catch (error) {
+  const mutation = useMutation({
+    mutationFn: sendResetVerificationCode,
+    onSuccess: () => {
+      setIsEmailSent(true);
+    },
+    onError: (error) => {
       setError('email', {
         type: 'manual',
         message: error.message,
       });
+    },
+  });
+
+  const checkEmailDuplicate = async (email) => {
+    if (!email) {
+      setError('email', {
+        type: 'manual',
+        message: '이메일을 입력해주세요.',
+      });
+      return false;
+    }
+
+    try {
+      const response = await instance.get(`/api/users/check-email/${email}`);
+
+      if (response.status === 200) {
+        setError('email', {
+          type: 'manual',
+          message: '회원가입한 이메일이 존재하지 않습니다.',
+        });
+        setIsEmailChecked(false);
+        return false;
+      } else {
+        setIsEmailChecked(true);
+        return true;
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        setIsEmailChecked(true);
+        return true;
+      }
+      setError('email', {
+        type: 'manual',
+        message: '이메일 중복 검사에 실패했습니다.',
+      });
+      setIsEmailChecked(false);
+      return false;
     }
   };
 
-  // const handleBackgroundClick = (e) => {
-  //   if (e.target === e.currentTarget) {
-  //     navigate(-1);
-  //   }
-  // };
-
-  const sendResetVerificationCode = async (email) => {
-    try {
-      const response = await instance.post('/api/email/code', {
-        type: 'password',
-        email,
-      });
-      if (response.status !== 200) {
-        throw new Error(response.data.message || '이메일 전송에 실패했습니다.');
-      }
-
-      setResetVerificationCodeSent(true);
-    } catch (error) {
-      throw new Error(error.message);
+  const handleFindPassword = async (data) => {
+    const isRegistered = await checkEmailDuplicate(data.email);
+    if (isRegistered) {
+      mutation.mutate(data.email);
     }
+  };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email) || '이메일의 형태를 갖추어야 합니다.';
   };
 
   const email = watch('email', '');
@@ -75,14 +103,19 @@ const FindPasswordModal = () => {
               alt="logo_image"
             />
           </div>
-          <h4 className="mb-10 text-center font-bold text-black">
-            비밀번호를 찾거나 바꾸고자 하는 계정의 이메일을 입력해주세요.
+          <h4
+            className={`mb-10 text-center font-bold ${isEmailSent ? 'text-pal-purple' : 'text-black'}`}
+          >
+            {isEmailSent ? (
+              <>
+                성공적으로 이메일을 발송했습니다.
+                <br />
+                전송되기까지 시간이 소요될 수 있으니 기다려주세요!
+              </>
+            ) : (
+              '회원가입한 이메일 주소를 입력해주세요.'
+            )}
           </h4>
-          {successMessage && (
-            <p className="mt-4 whitespace-pre-wrap text-center text-green-500">
-              {successMessage}
-            </p>
-          )}
           <form onSubmit={handleSubmit(handleFindPassword)}>
             <div className="mb-4">
               <div className="flex flex-row items-center">
@@ -124,7 +157,7 @@ const FindPasswordModal = () => {
                 }`}
                 disabled={!isEmailValid}
               >
-                이메일 전송
+                {mutation.isPending ? '전송 중...' : '이메일 전송'}
               </button>
             </div>
           </form>

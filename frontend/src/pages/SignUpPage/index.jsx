@@ -61,7 +61,6 @@ const SignupProcess = () => {
     );
   };
 
-  // 폼 제출 시
   const onSubmit = async (data) => {
     const isFormValid = validateForm(data);
     if (!isFormValid) return;
@@ -73,9 +72,6 @@ const SignupProcess = () => {
       password: data.password,
       acceptedTerms: data.termsOfUseAccepted && data.privacyPolicyAccepted,
     };
-
-    console.log('변환 전 데이터:', data);
-    console.log('전송할 데이터:', transformedData);
 
     try {
       const response = await registerUser(transformedData);
@@ -314,9 +310,6 @@ const SignupProcess = () => {
           <h2 className="mb-4 text-center text-2xl font-bold text-pal-purple">
             회원가입
           </h2>
-          {/* <h4 className="mb-5 ml-5 text-start text-xl font-bold text-black">
-            기본정보
-          </h4> */}
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* 이메일 입력 */}
             <div className="mb-4">
@@ -372,7 +365,7 @@ const SignupProcess = () => {
                 )}
                 {emailMessage && !errors.email && (
                   <p
-                    className={`text-sm ${emailMessageType === 'success' ? 'text-green-500' : 'text-red-500'}`}
+                    className={`text-sm ${emailMessageType === 'success' ? 'text-green-600' : 'text-red-500'}`}
                   >
                     {emailMessage}
                   </p>
@@ -629,7 +622,7 @@ const SignupProcess = () => {
           </div>
           {/* 성공 모달  */}
           {showSuccessModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="flex items-center justify-center bg-black bg-opacity-50">
               <div className="rounded bg-white p-6">
                 <h3 className="mb-4 text-xl font-bold">{successMessage}</h3>
                 <button

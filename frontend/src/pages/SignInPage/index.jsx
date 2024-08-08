@@ -32,17 +32,6 @@ const SigninProcess = () => {
     );
   };
 
-  // const getCookie = (name) => {
-  //   const nameEQ = name + '=';
-  //   const ca = document.cookie.split(';');
-  //   for (let i = 0; i < ca.length; i++) {
-  //     let c = ca[i];
-  //     while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-  //     if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  //   }
-  //   return null;
-  // };
-
   const loginUser = async (payload) => {
     try {
       const res = await instance.post('/api/login', payload);
@@ -63,15 +52,11 @@ const SigninProcess = () => {
     onSuccess: async (data) => {
       console.log('로그인 성공', data);
       queryClient.setQueryData(['userInfo'], data);
-      // const cachedData = queryClient.getQueryData(['userInfo']);
-      // console.log('Cached userInfo after login:', cachedData);
-      // const redirectTo = location.state?.from?.pathname || '/';
       navigate('/', { replace: true });
     },
     onError: (error) => {
       console.log('로그인 실패', error);
       reset({ email: '', password: '' });
-      // navigate('/signin', { replace: true });
       setLoginError('아이디 또는 비밀번호가 잘못 입력되었습니다.');
     },
   });
