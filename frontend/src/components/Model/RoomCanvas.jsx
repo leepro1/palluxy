@@ -32,13 +32,13 @@ const RoomCanvas = () => {
   const { data, isSuccess, isLoading } = useQuery({
     queryKey: ['palFrameImage'],
     queryFn: () => fetchAllFrameImage(roomData.roomId),
-    staleTime: 1000 * 60 * 10,
+    // staleTime: 1000 * 60 * 10,
   });
 
   const { data: palMetaData, isSuccess: isPalMetaSuccess } = useQuery({
     queryKey: ['palMeta'],
     queryFn: () => fetchPalmeta(roomData.roomId),
-    staleTime: 1000 * 60 * 10,
+    // staleTime: 1000 * 60 * 10,
   });
 
   if (isPalMetaSuccess) {

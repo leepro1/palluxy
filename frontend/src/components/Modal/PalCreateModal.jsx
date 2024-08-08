@@ -4,6 +4,7 @@ import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
 
 import { postPalImage, postCreatePalmeta } from '@api/memorySpace/createApi';
+import { postFirstLetter, fetchPetId } from '@api/memorySpace/letterApi';
 
 const PalCreateModal = ({ roomId, handler }) => {
   const [uploadImage, setUploadImage] = useState(null);
@@ -23,6 +24,9 @@ const PalCreateModal = ({ roomId, handler }) => {
       });
       handler(false);
     },
+  });
+  const { mutateAsync: palLetterMutate } = useMutation({
+    mutationFn: postFirstLetter,
   });
 
   const handleUploadImage = (event) => {
@@ -58,6 +62,12 @@ const PalCreateModal = ({ roomId, handler }) => {
         objFilePath: res.file,
       };
       await palMetaMutate(palMetaPayload);
+      const petId = await fetchPetId();
+      const letterPayload = {
+        roomId: res.roomId,
+        petId: petId,
+      };
+      await palLetterMutate(letterPayload);
     } catch (e) {
       alert('렌더링 과정 중 오류가 발생했습니다.');
     }

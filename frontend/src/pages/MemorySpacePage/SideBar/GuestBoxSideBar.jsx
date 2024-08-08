@@ -18,7 +18,7 @@ const GuestBoxSideBar = () => {
   const { data: guestBookData, isSuccess } = useQuery({
     queryKey: ['guestBook'],
     queryFn: () => fetchGuestbookComment(roomData.roomId),
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
   });
 
   const { mutate: commentPostMutation } = useMutation({
