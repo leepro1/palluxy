@@ -125,7 +125,7 @@ const RoomCanvas = () => {
           {/* <SceneUpdater /> */}
           <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
-            {palMetaData[0] && <PalModel objData={palMetaData[0]} />}
+            {palMetaData?.length >= 1 && <PalModel objData={palMetaData[0]} />}
             {/* <PalModel /> */}
           </mesh>
         </group>
