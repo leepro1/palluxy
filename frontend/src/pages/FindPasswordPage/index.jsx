@@ -6,8 +6,8 @@ import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
 
 const FindPasswordModal = () => {
-  const [successMessage, setSuccessMessage] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
   const {
     handleSubmit,
@@ -31,9 +31,7 @@ const FindPasswordModal = () => {
   const mutation = useMutation({
     mutationFn: sendResetVerificationCode,
     onSuccess: () => {
-      setSuccessMessage(
-        '성공적으로 이메일을 발송했습니다.\n 전송되기까지 시간이 소요될 수 있으니 기다려주세요!',
-      );
+      setIsEmailSent(true);
     },
     onError: (error) => {
       setError('email', {
@@ -43,32 +41,48 @@ const FindPasswordModal = () => {
     },
   });
 
-  // const checkEmailDuplicate = async (email) => {
-  //   if (!email) {
-  //     setError('email', {
-  //       type: 'manual',
-  //       message: '이메일을 입력해주세요.',
-  //     });
-  //     return;
-  //   }
+  const checkEmailDuplicate = async (email) => {
+    if (!email) {
+      setError('email', {
+        type: 'manual',
+        message: '이메일을 입력해주세요.',
+      });
+      return false;
+    }
 
-  //   try {
-  //     const response = await instance.get(`/api/users/check-email/${email}`);
+    try {
+      const response = await instance.get(`/api/users/check-email/${email}`);
 
-  //     if (response.status === 200) {
-  //       setIsEmailChecked(true);
-  //     } else {
-  //       setIsEmailChecked(false);
-  //     }
-  //   } catch (error) {
-  //     if (error.response && error.response.status === 400) {
-  //       setIsEmailChecked(false);
-  //     }
-  //   }
-  // };
+      if (response.status === 200) {
+        setError('email', {
+          type: 'manual',
+          message: '회원가입한 이메일이 존재하지 않습니다.',
+        });
+        setIsEmailChecked(false);
+        return false;
+      } else {
+        setIsEmailChecked(true);
+        return true;
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        setIsEmailChecked(true);
+        return true;
+      }
+      setError('email', {
+        type: 'manual',
+        message: '이메일 중복 검사에 실패했습니다.',
+      });
+      setIsEmailChecked(false);
+      return false;
+    }
+  };
 
-  const handleFindPassword = (data) => {
-    mutation.mutate(data.email);
+  const handleFindPassword = async (data) => {
+    const isRegistered = await checkEmailDuplicate(data.email);
+    if (isRegistered) {
+      mutation.mutate(data.email);
+    }
   };
 
   const validateEmail = (email) => {
@@ -89,14 +103,19 @@ const FindPasswordModal = () => {
               alt="logo_image"
             />
           </div>
-          <h4 className="mb-10 text-center font-bold text-black">
-            회원가입한 이메일 주소를 입력해주세요.
+          <h4
+            className={`mb-10 text-center font-bold ${isEmailSent ? 'text-pal-purple' : 'text-black'}`}
+          >
+            {isEmailSent ? (
+              <>
+                성공적으로 이메일을 발송했습니다.
+                <br />
+                전송되기까지 시간이 소요될 수 있으니 기다려주세요!
+              </>
+            ) : (
+              '회원가입한 이메일 주소를 입력해주세요.'
+            )}
           </h4>
-          {successMessage && (
-            <p className="mb-4 whitespace-pre-wrap text-center text-pal-purple">
-              {successMessage}
-            </p>
-          )}
           <form onSubmit={handleSubmit(handleFindPassword)}>
             <div className="mb-4">
               <div className="flex flex-row items-center">
