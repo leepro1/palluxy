@@ -112,7 +112,11 @@ public class LetterServiceImpl implements LetterService {
     }
 
     public Room getRoom(Long roomId) {
-        return roomRepository.findById(roomId)
-            .orElseThrow(() -> new NotFoundException("Room not found with id: " + roomId));
+        Optional<Room> room = roomRepository.findById(roomId);
+        if (room.isEmpty()) {
+            throw new NotFoundException("Room not found with id: " + roomId);
+        }
+
+        return room.get();
     }
 }
