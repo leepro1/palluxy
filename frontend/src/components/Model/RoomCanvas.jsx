@@ -122,7 +122,6 @@ const RoomCanvas = () => {
         />
         <ambientLight intensity={Math.PI / 2} />
         <group onClick={(e) => handleModelClick(e)}>
-          {/* <SceneUpdater /> */}
           <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
             {palMetaData?.length >= 1 && <PalModel objData={palMetaData[0]} />}
