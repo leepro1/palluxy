@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 
-import {
-  fetchLetter,
-  postFirstLetter,
-  postLetter,
-  fetchPetId,
-} from '@api/memorySpace/letterApi';
+import { postLetter, fetchPetId } from '@api/memorySpace/letterApi';
 
 export const LetterIcon = ({ data }) => {
   return (
@@ -34,20 +30,20 @@ export const LetterContent = ({ data }) => {
   );
 };
 
-export const LetterCreate = ({ data, handler }) => {
+export const LetterCreate = ({ handler }) => {
   const queryClient = useQueryClient();
-
+  const { userId } = useParams();
   const { register, handleSubmit, resetField } = useForm();
 
   const { mutateAsync } = useMutation({
     mutationFn: postLetter,
     onSuccess: () => {
-      queryClient.invalidateQueries(['letter']);
+      queryClient.invalidateQueries(['letter', userId]);
     },
   });
 
   const LetterSubmit = async (formValues) => {
-    const roomData = queryClient.getQueryData(['memorySpace']);
+    const roomData = queryClient.getQueryData(['memorySpace', userId]);
     const petId = await fetchPetId();
     const payload = {
       petId: petId,
@@ -121,4 +117,12 @@ export const LetterCreate = ({ data, handler }) => {
 
 LetterIcon.propTypes = {
   data: PropTypes.object.isRequired,
+};
+
+LetterContent.propTypes = {
+  data: PropTypes.object.isRequired,
+};
+
+LetterCreate.propTypes = {
+  handler: PropTypes.func.isRequired,
 };

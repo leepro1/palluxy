@@ -2,6 +2,7 @@ import MemorySideBarLayout from '@layout/MemorySideBarLayout';
 
 import GuestBookComment from '@components/GuestBook/GuestBookComment';
 
+import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import {
@@ -12,20 +13,21 @@ import {
 const GuestBoxSideBar = () => {
   const { register, handleSubmit, resetField } = useForm();
   const queryClient = useQueryClient();
+  const { userId } = useParams();
   const userData = queryClient.getQueryData(['userInfo']);
-  const roomData = queryClient.getQueryData(['memorySpace']);
+  const roomData = queryClient.getQueryData(['memorySpace', userId]);
 
   const { data: guestBookData, isSuccess } = useQuery({
-    queryKey: ['guestBook'],
+    queryKey: ['guestBook', userId],
     queryFn: () => fetchGuestbookComment(roomData.roomId),
-    // staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
   });
 
   const { mutate: commentPostMutation } = useMutation({
     mutationFn: postGuestboxComment,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['guestBook'],
+        queryKey: ['guestBook', userId],
       });
     },
   });
@@ -64,13 +66,13 @@ const GuestBoxSideBar = () => {
               ))}
 
           {isSuccess &&
-            guestBookData.comments.filter((data) => !data.deleted).length === 0 &&
-              (
-                <div className="rounded-md bg-white px-4 py-4 text-center font-bold">
-                  <p>아직 방명록을 남긴 분들이 없네요</p>
-                  <p>방명록을 남기는 건 어떠신가요?</p>
-                </div>
-              )}
+            guestBookData.comments.filter((data) => !data.deleted).length ===
+              0 && (
+              <div className="rounded-md bg-white px-4 py-4 text-center font-bold">
+                <p>아직 방명록을 남긴 분들이 없네요</p>
+                <p>방명록을 남기는 건 어떠신가요?</p>
+              </div>
+            )}
         </div>
         {userData && (
           <div className="rounded-md bg-white px-1 py-1">

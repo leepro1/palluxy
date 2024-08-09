@@ -46,20 +46,12 @@ const MemorySpaceCreatePage = () => {
   const navigate = useNavigate();
   const [previewPath, setPreviewPath] = useState(null);
   const [uploadImage, setUploadImage] = useState(null);
-  const [isRoomCreate, setRoomCreate] = useState(false);
-  const [isPetCreate, setPetCreate] = useState(false);
   const queryClient = useQueryClient();
   const { mutateAsync: petMutate } = useMutation({
     mutationFn: postCreatePet,
-    onSuccess: async () => {
-      setPetCreate(true);
-    },
   });
   const { mutateAsync: roomMutate } = useMutation({
     mutationFn: postCreateRoom,
-    onSuccess: async () => {
-      setRoomCreate(true);
-    },
   });
 
   const { data: petPersonalities, isSuccess } = useQuery({

@@ -8,8 +8,10 @@ import ImgRotationBtn from '@components/Model/ImgRotationBtn';
 import { useModelPositionStore } from '@store/memorySpace';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updatePalRotation, updatePalPosition } from '@/api/petapi';
+import { useParams } from 'react-router-dom';
 
 const SettingSideBar = () => {
+  const { userId } = useParams();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectFrame, setSelectFrame] = useState();
   const queryClient = useQueryClient();
@@ -33,7 +35,7 @@ const SettingSideBar = () => {
     mutationFn: updatePalPosition,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['palMeta'],
+        queryKey: ['palMeta', userId],
       });
       return alert('성공적으로 저장되었습니다!');
     },
@@ -43,15 +45,15 @@ const SettingSideBar = () => {
     mutationFn: updatePalRotation,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['palMeta'],
+        queryKey: ['palMeta', userId],
       });
       return alert('성공적으로 저장되었습니다!');
     },
   });
 
   const handlePositionSave = () => {
-    const palMetaData = queryClient.getQueryData(['palMeta']);
-    const roomData = queryClient.getQueryData(['memorySpace']);
+    const palMetaData = queryClient.getQueryData(['palMeta', userId]);
+    const roomData = queryClient.getQueryData(['memorySpace', userId]);
 
     if (!palMetaData || palMetaData.length === 0) {
       return alert('아직 펫이 없습니다!');
@@ -68,8 +70,8 @@ const SettingSideBar = () => {
     palPositionMutation(payload);
   };
   const handleRotationSave = () => {
-    const palMetaData = queryClient.getQueryData(['palMeta']);
-    const roomData = queryClient.getQueryData(['memorySpace']);
+    const palMetaData = queryClient.getQueryData(['palMeta', userId]);
+    const roomData = queryClient.getQueryData(['memorySpace', userId]);
 
     if (!palMetaData || palMetaData.length === 0) {
       return alert('아직 펫이 없습니다!');

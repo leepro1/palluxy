@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
@@ -38,6 +39,11 @@ const CameraOption = ({ target, position }) => {
       maxDistance={13}
     />
   );
+};
+
+CameraOption.propTypes = {
+  target: PropTypes.object.isRequired,
+  position: PropTypes.object.isRequired,
 };
 
 export default CameraOption;

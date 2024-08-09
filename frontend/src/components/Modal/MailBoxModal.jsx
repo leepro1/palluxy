@@ -2,19 +2,20 @@ import PropTypes from 'prop-types';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchLetter } from '@api/memorySpace/letterApi';
-
+import { useParams } from 'react-router-dom';
 import { LetterIcon, LetterContent, LetterCreate } from '@components/Letter';
 import { useState } from 'react';
 
 const MailBoxModal = ({ handler }) => {
   const queryClient = useQueryClient();
-
+  const { userId } = useParams();
   const [selectMail, setSelectMail] = useState(null);
   const [isPostMail, setPostMail] = useState(false);
-  const roomData = queryClient.getQueryData(['memorySpace']);
+
+  const roomData = queryClient.getQueryData(['memorySpace', userId]);
 
   const { data: letterData, isSuccess } = useQuery({
-    queryKey: ['letter'],
+    queryKey: ['letter', userId],
     queryFn: () => fetchLetter(roomData.roomId),
   });
 

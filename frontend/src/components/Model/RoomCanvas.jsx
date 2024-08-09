@@ -14,31 +14,33 @@ import GlobalBtn from '@components/GlobalBtn';
 import MailBoxModal from '@components/Modal/MailBoxModal';
 import PalCreateModal from '@components//Modal/PalCreateModal';
 import { fetchPalmeta } from '@api/memorySpace/createApi';
-
+import { useParams } from 'react-router-dom';
 import { useModelPositionStore } from '@store/memorySpace';
 
 const RoomCanvas = () => {
   const queryClient = useQueryClient();
+  const { userId } = useParams();
   const [isMailModalOpen, setMailModalOpen] = useState(false);
   const [isPalModalOpen, setPalModalOpen] = useState(false);
   const [position, setPosition] = useState(new Vector3(-6, 2, 6));
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
-  const roomData = queryClient.getQueryData(['memorySpace']);
-  const userData = queryClient.getQueryData(['userInfo']);
+
+  const roomData = queryClient.getQueryData(['memorySpace', userId]);
+  const userData = queryClient.getQueryData(['userInfo', userId]);
 
   const updatePosition = useModelPositionStore((state) => state.fetchPosition);
   const updateRotation = useModelPositionStore((state) => state.fetchRotation);
 
   const { data, isSuccess, isLoading } = useQuery({
-    queryKey: ['palFrameImage'],
+    queryKey: ['palFrameImage', userId],
     queryFn: () => fetchAllFrameImage(roomData.roomId),
-    // staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 10,
   });
 
   const { data: palMetaData, isSuccess: isPalMetaSuccess } = useQuery({
-    queryKey: ['palMeta'],
+    queryKey: ['palMeta', userId],
     queryFn: () => fetchPalmeta(roomData.roomId),
-    // staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 10,
   });
 
   if (isPalMetaSuccess) {
@@ -90,7 +92,7 @@ const RoomCanvas = () => {
         추억공간 : {roomData.name}
       </p>
       <div className="absolute right-2 top-4 z-40 flex items-center gap-x-3">
-        {userData.id === roomData.userId && (
+        {userData?.id === roomData.userId && (
           <GlobalBtn
             className="bg-pal-purple text-white"
             size={'md'}
