@@ -120,7 +120,7 @@ LetterIcon.propTypes = {
 };
 
 LetterContent.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
 };
 
 LetterCreate.propTypes = {

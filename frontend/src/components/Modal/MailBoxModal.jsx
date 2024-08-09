@@ -100,7 +100,6 @@ const MailBoxModal = ({ handler }) => {
 
 MailBoxModal.propTypes = {
   handler: PropTypes.func.isRequired,
-  roomId: PropTypes.number.isRequired,
 };
 
 export default MailBoxModal;
