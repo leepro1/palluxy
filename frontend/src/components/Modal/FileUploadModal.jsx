@@ -7,8 +7,10 @@ import {
   fetchFrameImage,
   updateFrameImage,
 } from '@/api/memorySpace/frameImageApi';
+import { useParams } from 'react-router-dom';
 
 const FileUploadModal = ({ handler, selectFrame }) => {
+  const { userId } = useParams();
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
   const queryClient = useQueryClient();
@@ -16,23 +18,19 @@ const FileUploadModal = ({ handler, selectFrame }) => {
   const { mutate: fetchMutate } = useMutation({
     mutationFn: fetchFrameImage,
     onSuccess: async () => {
-      // Invalidate and refetch
       await queryClient.invalidateQueries({
-        queryKey: ['palFrameImage'],
+        queryKey: ['palFrameImage', userId],
       });
       handler(false);
-      // window.location.href = '/memorySpace';
     },
   });
   const { mutate: updateMutate } = useMutation({
     mutationFn: updateFrameImage,
     onSuccess: () => {
-      // Invalidate and refetch
       queryClient.invalidateQueries({
-        queryKey: ['palFrameImage'],
+        queryKey: ['palFrameImage', userId],
       });
       handler(false);
-      // window.location.href = '/memorySpace';
     },
   });
 
@@ -55,7 +53,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
       return;
     }
     const formData = new FormData();
-    const frameData = queryClient.getQueryData(['palFrameImage']);
+    const frameData = queryClient.getQueryData(['palFrameImage', userId]);
     const selectData = frameData.images.find(
       (frame) => frame.index === selectFrame,
     );

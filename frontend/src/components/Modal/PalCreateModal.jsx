@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
-
+import { useParams } from 'react-router-dom';
 import { postPalImage, postCreatePalmeta } from '@api/memorySpace/createApi';
 import { postFirstLetter, fetchPetId } from '@api/memorySpace/letterApi';
 
@@ -10,6 +10,7 @@ const PalCreateModal = ({ roomId, handler }) => {
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
   const queryClient = useQueryClient();
+  const { userId } = useParams();
 
   const { mutateAsync: palImageMutate, isPending: isPalImagePending } =
     useMutation({
@@ -20,7 +21,7 @@ const PalCreateModal = ({ roomId, handler }) => {
     mutationFn: postCreatePalmeta,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['palMeta'],
+        queryKey: ['palMeta', userId],
       });
       handler(false);
     },

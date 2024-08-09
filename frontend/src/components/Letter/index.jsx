@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 
 import {
   fetchLetter,
@@ -36,18 +37,18 @@ export const LetterContent = ({ data }) => {
 
 export const LetterCreate = ({ data, handler }) => {
   const queryClient = useQueryClient();
-
+  const { userId } = useParams();
   const { register, handleSubmit, resetField } = useForm();
 
   const { mutateAsync } = useMutation({
     mutationFn: postLetter,
     onSuccess: () => {
-      queryClient.invalidateQueries(['letter']);
+      queryClient.invalidateQueries(['letter', userId]);
     },
   });
 
   const LetterSubmit = async (formValues) => {
-    const roomData = queryClient.getQueryData(['memorySpace']);
+    const roomData = queryClient.getQueryData(['memorySpace', userId]);
     const petId = await fetchPetId();
     const payload = {
       petId: petId,
