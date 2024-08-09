@@ -22,7 +22,7 @@ public class CommonExceptionHandler {
         RefreshTokenNullException.class,
         RefreshTokenExpiredException.class,
         InvalidRefreshTokenException.class,
-        DuplicateUserException.class,
+        DuplicateUserException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResponse<?> handleCommonExceptions(Exception e) {

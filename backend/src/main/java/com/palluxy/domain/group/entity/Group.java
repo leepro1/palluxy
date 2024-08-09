@@ -19,7 +19,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Table(name = "`group`", indexes = {
-    @Index(name = "idx_group_status", columnList = "status")
+    @Index(name = "idx_group_status", columnList = "status"),
+    @Index(name = "idx_group_status_capacity_starttime", columnList = "status, remaining_capacity, start_time")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group extends BaseEntity {
@@ -44,11 +45,11 @@ public class Group extends BaseEntity {
     private int maxCapacity;
     private int remainingCapacity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leader_id")
     private User leader;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<GroupUser> groupUser;
 
     @Builder

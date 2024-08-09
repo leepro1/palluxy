@@ -17,7 +17,6 @@ const FileUploadModal = ({ handler, selectFrame }) => {
     mutationFn: fetchFrameImage,
     onSuccess: async () => {
       // Invalidate and refetch
-      console.log('mutate');
       await queryClient.invalidateQueries({
         queryKey: ['palFrameImage'],
       });
@@ -29,7 +28,6 @@ const FileUploadModal = ({ handler, selectFrame }) => {
     mutationFn: updateFrameImage,
     onSuccess: () => {
       // Invalidate and refetch
-      console.log('mutate');
       queryClient.invalidateQueries({
         queryKey: ['palFrameImage'],
       });
@@ -39,7 +37,9 @@ const FileUploadModal = ({ handler, selectFrame }) => {
   });
 
   const handleUploadImage = (event) => {
-    console.log(event.target.files[0]);
+    if (!event.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
     if (event.target.files) {
       setUploadImage(event.target.files[0]);
       const reader = new FileReader();
@@ -52,7 +52,6 @@ const FileUploadModal = ({ handler, selectFrame }) => {
 
   const submitUploadImage = () => {
     if (!uploadImage) {
-      console.log('이미지 없음');
       return;
     }
     const formData = new FormData();
@@ -62,7 +61,6 @@ const FileUploadModal = ({ handler, selectFrame }) => {
     );
 
     formData.append('file', uploadImage);
-    console.log(selectData);
     if (selectData) {
       updateMutate({
         data: formData,
@@ -116,6 +114,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
                 className="hidden"
                 id="fileInput"
                 type="file"
+                accept="image/*"
                 onChange={handleUploadImage}
               />
             </label>

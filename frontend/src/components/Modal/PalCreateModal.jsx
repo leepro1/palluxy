@@ -4,6 +4,7 @@ import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
 
 import { postPalImage, postCreatePalmeta } from '@api/memorySpace/createApi';
+import { postFirstLetter, fetchPetId } from '@api/memorySpace/letterApi';
 
 const PalCreateModal = ({ roomId, handler }) => {
   const [uploadImage, setUploadImage] = useState(null);
@@ -13,26 +14,25 @@ const PalCreateModal = ({ roomId, handler }) => {
   const { mutateAsync: palImageMutate, isPending: isPalImagePending } =
     useMutation({
       mutationFn: postPalImage,
-      onSuccess: async (res) => {
-        // handler(false);
-        console.log('이게 되나?');
-        console.log(res);
-        // window.location.href = '/memorySpace';
-      },
     });
+
   const { mutateAsync: palMetaMutate } = useMutation({
     mutationFn: postCreatePalmeta,
     onSuccess: () => {
-      console.log('mutate');
       queryClient.invalidateQueries({
         queryKey: ['palMeta'],
       });
       handler(false);
     },
   });
+  const { mutateAsync: palLetterMutate } = useMutation({
+    mutationFn: postFirstLetter,
+  });
 
   const handleUploadImage = (event) => {
-    console.log(event.target.files[0]);
+    if (!event.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
     if (event.target.files) {
       setUploadImage(event.target.files[0]);
       const reader = new FileReader();
@@ -57,24 +57,19 @@ const PalCreateModal = ({ roomId, handler }) => {
     try {
       const res = await palImageMutate(payload);
       const palMetaPayload = {
-        roomId: res.data.result.roomId,
-        objFilePath: res.data.result.file,
+        roomId: res.roomId,
+        objFilePath: res.file,
       };
       await palMetaMutate(palMetaPayload);
+      const petId = await fetchPetId();
+      const letterPayload = {
+        roomId: res.roomId,
+        petId: petId,
+      };
+      await palLetterMutate(letterPayload);
     } catch (e) {
       alert('렌더링 과정 중 오류가 발생했습니다.');
     }
-
-    // if (selectData) {
-    //   updateMutate({
-    //     data: formData,
-    //     imageId: selectData.imageId,
-    //     albumId: frameData.albumId,
-    //   });
-    // } else {
-    //   formData.append('index', selectFrame);
-    //   fetchMutate({ data: formData, albumId: frameData.albumId });
-    // }
   };
 
   return (
@@ -103,7 +98,7 @@ const PalCreateModal = ({ roomId, handler }) => {
           </div>
           {/* none */}
           {isPalImagePending ? (
-            <div>
+            <div className="flex flex-col items-center px-8 pb-2 text-pal-purple">
               <p>3D 렌더링이 진행 중 입니다.</p>
               <p>20 ~ 30초의 시간이 걸리니 창을 닫지 말아주세요.</p>
             </div>

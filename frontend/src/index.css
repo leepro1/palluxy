@@ -23,3 +23,10 @@ body::-webkit-scrollbar {
   background: #4b4376;
   border-radius: 10px;
 }
+.letterBoxOverflow::-webkit-scrollbar {
+  width: 8px;
+}
+.letterBoxOverflow::-webkit-scrollbar-thumb {
+  background: #4b4376;
+  border-radius: 10px;
+}

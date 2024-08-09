@@ -1,7 +1,6 @@
 import { instance } from '@/utils/axios';
 
 const postCreateRoom = async (payload) => {
-  console.log(payload);
   await instance.post(`/api/rooms`, payload, {
     headers: { 'content-type': 'multipart/form-data' },
   });
@@ -12,19 +11,26 @@ const postCreatePet = async (payload) => {
 };
 
 const fetchRoom = async (payload) => {
-  console.log(payload);
   const res = await instance.get(`/api/rooms/user/${payload}`);
   return res.data.result;
 };
+
+const fetchPalmeta = async (payload) => {
+  const res = await instance.get(`/api/rooms/${payload}/petmeta`);
+  return res.data.result;
+};
+
 const postPalImage = async (payload) => {
-  await instance.post(
+  const res = await instance.post(
     `/api/rooms/${payload.roomId}/petmeta/upload-image`,
     payload.data,
     {
       headers: { 'content-type': 'multipart/form-data' },
     },
   );
+  return res.data.result;
 };
+
 const postCreatePalmeta = async (payload) => {
   try {
     await instance.post(`/api/rooms/${payload.roomId}/petmeta`, payload);
@@ -39,4 +45,5 @@ export {
   fetchRoom,
   postPalImage,
   postCreatePalmeta,
+  fetchPalmeta,
 };

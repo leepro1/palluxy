@@ -18,7 +18,7 @@ const GuestBoxSideBar = () => {
   const { data: guestBookData, isSuccess } = useQuery({
     queryKey: ['guestBook'],
     queryFn: () => fetchGuestbookComment(roomData.roomId),
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
   });
 
   const { mutate: commentPostMutation } = useMutation({
@@ -62,6 +62,15 @@ const GuestBoxSideBar = () => {
                   data={data}
                 />
               ))}
+
+          {isSuccess &&
+            guestBookData.comments.filter((data) => !data.deleted).length === 0 &&
+              (
+                <div className="rounded-md bg-white px-4 py-4 text-center font-bold">
+                  <p>아직 방명록을 남긴 분들이 없네요</p>
+                  <p>방명록을 남기는 건 어떠신가요?</p>
+                </div>
+              )}
         </div>
         {userData && (
           <div className="rounded-md bg-white px-1 py-1">

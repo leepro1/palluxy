@@ -55,7 +55,6 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
       onSessionCreated('새 모임이 성공적으로 생성되었습니다!')
       removeModal();
     } catch (error) {
-      console.error('Error:', error);
       onSessionCreated('에러 발생, 잠시 후에 시도해 주세요')
     }
   };

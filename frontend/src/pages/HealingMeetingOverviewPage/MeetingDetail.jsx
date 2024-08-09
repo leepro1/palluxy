@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ContentsLayout from '@layout/ContentsLayout';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, ScrollRestoration } from 'react-router-dom';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
-import { ScrollRestoration } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
 
@@ -57,11 +56,7 @@ const MeetingDetail = () => {
     };
 
     try {
-      const response = await instance.post(
-        `/api/group/detail/${meetingIdInt}/join`,
-        postData,
-      );
-      console.log(response.data);
+      await instance.post(`/api/group/detail/${meetingIdInt}/join`, postData);
       fetchData(); // 데이터 다시 불러오기
       setNotification('성공적으로 신청됐습니다');
       setShowNotification(true);
@@ -69,7 +64,6 @@ const MeetingDetail = () => {
         setShowNotification(false);
       }, 3000); // 3초 후에 메시지 사라지게 하기
     } catch (err) {
-      console.error(err);
       setNotification('에러 발생, 잠시 후에 시도해 보세요');
       setShowNotification(true);
       setTimeout(() => {
@@ -84,11 +78,9 @@ const MeetingDetail = () => {
     };
 
     try {
-      const response = await instance.delete(
-        `/api/group/detail/${meetingIdInt}/join`,
-        { data: postData },
-      );
-      console.log(response.data);
+      await instance.delete(`/api/group/detail/${meetingIdInt}/join`, {
+        data: postData,
+      });
       setNotification('성공적으로 취소됐습니다');
       setShowNotification(true);
       setTimeout(() => {
@@ -96,7 +88,6 @@ const MeetingDetail = () => {
       }, 3000);
       fetchData(); // 데이터 다시 불러오기
     } catch (err) {
-      console.error(err);
       setNotification('에러 발생, 잠시 후에 시도해 보세요');
       setShowNotification(true);
       setTimeout(() => {
@@ -116,10 +107,7 @@ const MeetingDetail = () => {
     };
 
     try {
-      const response = await instance.patch(
-        `/api/group/detail/${meetingIdInt}`,
-        patchData,
-      );
+      await instance.patch(`/api/group/detail/${meetingIdInt}`, patchData);
       setData((prevData) => ({
         ...prevData,
         title: patchData.title,
@@ -149,9 +137,6 @@ const MeetingDetail = () => {
         </button>
       );
     }
-    if (data.remainCapacity === 0) {
-      return <p>이미 마감된 공고입니다</p>;
-    }
     if (data.groupUserId?.includes(userInfo.id)) {
       return (
         <button
@@ -161,6 +146,9 @@ const MeetingDetail = () => {
           신청 취소
         </button>
       );
+    }
+    if (data.remainCapacity === 0) {
+      return <p>이미 마감된 공고입니다</p>;
     }
     return (
       <button

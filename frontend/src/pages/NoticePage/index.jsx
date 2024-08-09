@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import ContentsLayout from '@layout/ContentsLayout';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { instance } from '@/utils/axios';
@@ -7,10 +7,9 @@ import Loading from '@components/Loading';
 import Pagination from '@pages/HealingMeetingOverviewPage/Pagination';
 import GlobalBtn from '@components/GlobalBtn';
 import CreateNotice from '@pages/NoticePage/CreateNotice';
-import { useQueryClient } from '@tanstack/react-query';
 
 const fetchNotice = async ({ queryKey }) => {
-  const [_, pageNumber] = queryKey;
+  const [pageNumber] = queryKey[1];
   const response = await instance.get(`/api/notice/${pageNumber}`);
   return response.data.result;
 };
