@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
-const MakeSession = ({ removeModal, onSessionCreated }) => {
+import PropTypes from 'prop-types';
+
+const CreateNotice = ({ removeModal, onSessionCreated }) => {
   const {
     control,
     handleSubmit,
@@ -109,4 +110,9 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
   );
 };
 
-export default MakeSession;
+CreateNotice.propTypes = {
+  removeModal: PropTypes.func.isRequired,
+  onSessionCreated: PropTypes.func.isRequired,
+};
+
+export default CreateNotice;
