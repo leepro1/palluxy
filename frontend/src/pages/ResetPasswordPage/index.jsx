@@ -64,21 +64,21 @@ const ResetPasswordModal = () => {
   return (
     <ContentsLayout>
       <div className="flex items-center justify-center">
-        <div className="w-[700px] rounded bg-white bg-opacity-60 p-6">
+        <div className="w-[700px] rounded bg-white bg-opacity-60 p-10">
           <div className="mb-4 flex justify-center">
             <img
               src={logo}
               alt="logo_image"
             />
           </div>
-          <h4 className="mb-10 text-center font-bold text-black">
+          <h4 className="mb-10 text-center font-jamsilRegular text-black">
             변경하실 비밀번호를 입력하세요.
           </h4>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
               <div className="flex flex-row items-center">
-                <label className="mr-2 w-1/3 text-end font-semibold text-gray-700">
+                <label className="mr-2 w-1/3 text-end font-jamsilRegular text-gray-700">
                   비밀번호
                 </label>
                 <Controller
@@ -112,7 +112,7 @@ const ResetPasswordModal = () => {
             {/* 비밀번호 재확인 */}
             <div className="mb-4">
               <div className="flex flex-row items-center">
-                <label className="mr-2 w-1/3 text-end font-semibold text-gray-700">
+                <label className="mr-2 w-1/3 text-end font-jamsilRegular text-gray-700">
                   비밀번호 확인
                 </label>
                 <Controller
@@ -145,7 +145,7 @@ const ResetPasswordModal = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center gap-20">
+            <div className="flex justify-center font-jamsilRegular">
               <button
                 type="submit"
                 className={`my-6 w-full rounded p-3 text-white ${

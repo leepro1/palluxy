@@ -9,10 +9,9 @@ const ChatInput = ({ onSend, text, setText }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bottom-0 flex h-20 w-full bg-pal-purple p-2"
+      className="flex h-20 w-full bg-pal-purple p-2"
     >
       <textarea
-        // type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         className="border-white-700 mr-4 w-3/4 resize-none overflow-auto rounded p-2"

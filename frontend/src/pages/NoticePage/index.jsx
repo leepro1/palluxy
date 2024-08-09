@@ -87,7 +87,7 @@ const NoticeBoard = () => {
   return (
     <ContentsLayout>
       <div className="flex flex-col">
-        <div className="mx-auto min-h-[1000px] sm:w-[500px] md:w-[1000px]">
+        <div className="mx-auto min-h-[600px] sm:w-[500px] md:w-[1000px]">
           <h1 className="mb-10 text-center font-jamsilBold text-3xl text-white">
             공지사항
           </h1>
