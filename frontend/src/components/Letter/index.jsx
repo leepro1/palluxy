@@ -26,7 +26,6 @@ export const LetterIcon = ({ data }) => {
 };
 
 export const LetterContent = ({ data }) => {
-  console.log(data);
   return (
     <div className="letterBoxOverflow flex h-[363px] w-[363px] grow flex-col items-start justify-start overflow-y-scroll px-4">
       <p className="font-semibold">제목 : {data[0].title}</p>
@@ -48,7 +47,6 @@ export const LetterCreate = ({ data, handler }) => {
   });
 
   const LetterSubmit = async (formValues) => {
-    console.log(formValues);
     const roomData = queryClient.getQueryData(['memorySpace']);
     const petId = await fetchPetId();
     const payload = {

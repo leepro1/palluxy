@@ -21,7 +21,6 @@ const postFirstLetter = async (payload) => {
 // https://i11a208.p.ssafy.io/api/letter/2?roomId=2
 
 const postLetter = async (payload) => {
-  console.log(payload);
   await instance.post(`/api/letter/${payload.petId}`, payload.data, {
     params: { roomId: payload.roomId },
   });

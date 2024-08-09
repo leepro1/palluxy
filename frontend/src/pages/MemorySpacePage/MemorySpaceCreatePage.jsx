@@ -54,17 +54,11 @@ const MemorySpaceCreatePage = () => {
     onSuccess: async () => {
       setPetCreate(true);
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
   const { mutateAsync: roomMutate } = useMutation({
     mutationFn: postCreateRoom,
     onSuccess: async () => {
       setRoomCreate(true);
-    },
-    onError: (error) => {
-      console.log(error);
     },
   });
 

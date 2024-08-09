@@ -18,7 +18,6 @@ const RoomModel = React.memo(({ data }) => {
     }
   });
 
-  console.log(scene);
   scene.scale.x = 1.3;
   scene.scale.y = 1.3;
   scene.scale.z = 1.3;

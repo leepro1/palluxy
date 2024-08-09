@@ -55,7 +55,6 @@ const RoomCanvas = () => {
   }
 
   const handleModelClick = (event) => {
-    console.log(event.object.name);
     if (event.object.name.includes('post')) {
       setMailModalOpen(!isMailModalOpen);
       return;
@@ -64,12 +63,10 @@ const RoomCanvas = () => {
     if (event.object.name.includes('frame')) {
       if (event.object.name === 'frame001') {
         setTarget(event.object.position);
-        console.log(event.object.position);
         setPosition({ x: -1, y: 3.8, z: -1 });
       }
       if (event.object.name === 'frame002') {
         setTarget(event.object.position);
-        console.log(event.object.position);
         setPosition({ x: 0, y: 2.3, z: -1.4 });
       }
     }

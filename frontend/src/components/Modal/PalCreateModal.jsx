@@ -30,7 +30,6 @@ const PalCreateModal = ({ roomId, handler }) => {
   });
 
   const handleUploadImage = (event) => {
-    console.log(event.target.files[0]);
     if (!event.target.files[0].type.includes('image')) {
       return alert('이미지파일이 아닙니다!');
     }
