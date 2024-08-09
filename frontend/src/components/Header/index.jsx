@@ -10,7 +10,6 @@ const Header = () => {
   const navigate = useNavigate();
 
   const userLogout = async () => {
-    console.log('userLogout 함수 시작');
     await instance.post('/api/logout');
   };
 
@@ -19,7 +18,6 @@ const Header = () => {
   const { mutate: logoutMutate } = useMutation({
     mutationFn: userLogout,
     onSuccess: () => {
-      console.log('mutate logout 성공');
       sessionStorage.removeItem('access');
       queryClient.setQueryData(['userInfo'], null);
       navigate('/');
@@ -48,14 +46,19 @@ const Header = () => {
           <div className="block text-center md:hidden">
             <div className="group relative flex cursor-pointer items-center justify-center gap-x-2 font-jamsilMedium text-white">
               <span className="material-symbols-outlined">menu</span>
-              <span>See More</span>
-              <div className="bg-pal- absolute -bottom-[168px] z-50 hidden w-full bg-pal-purple py-3 group-hover:block">
+              <span>더보기</span>
+              <div className="bg-pal- absolute -bottom-[208px] z-50 hidden w-full bg-pal-purple py-3 group-hover:block">
                 <ul className="flex flex-col gap-y-4">
                   <li>
                     <NavLink to={'/noticeboard'}>공지사항</NavLink>
                   </li>
                   <li>
                     <NavLink to={'/healingmeeting'}>치유모임</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to={'/meetingoverview/1'}>
+                      치유모임 모아보기
+                    </NavLink>
                   </li>
                   <li>
                     <NavLink
@@ -69,23 +72,21 @@ const Header = () => {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink to={'/meetingoverview/1'}>
-                      치유모임 모아보기
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink to={'/memoryspaceoverview'}>치유공간 탐방</NavLink>
+                    <NavLink to={'/memoryspaceoverview'}>추억공간 탐방</NavLink>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
-          <ul className="hidden gap-x-16 font-jamsilMedium text-sm text-white md:flex md:text-xl">
+          <ul className="hidden gap-x-16 font-jamsilMedium text-white md:flex md:text-base lg:text-xl">
             <li>
               <NavLink to={'/noticeboard'}>공지사항</NavLink>
             </li>
             <li>
               <NavLink to={'/healingmeeting'}>치유모임</NavLink>
+            </li>
+            <li>
+              <NavLink to={'/meetingoverview/1'}>치유모임 모아보기</NavLink>
             </li>
             <li>
               <NavLink
@@ -95,47 +96,49 @@ const Header = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink to={'/meetingoverview/1'}>치유모임 모아보기</NavLink>
-            </li>
-            <li>
-              <NavLink to={'/memoryspaceoverview'}>치유공간 탐방</NavLink>
+              <NavLink to={'/memoryspaceoverview'}>추억공간 탐방</NavLink>
             </li>
           </ul>
         </div>
         {/* 로그인 회원가입 버튼 */}
         {userData ? (
-          <div className="flex flex-row items-center gap-20 text-center text-white">
-            <div className="cursor-pointer items-center pr-4 font-jamsilMedium text-white lg:pr-0">
-              <GlobalBtn
-                className="border-1 bg-pal-purple"
-                size={'sm'}
-                text={'마이페이지'}
+          <div className="group relative flex flex-row items-center gap-20 pr-4 text-center font-semibold text-white">
+            <span className="cursor-pointer">{userData.nickname} 님</span>
+            <div className="absolute right-0 top-6 z-50 hidden w-[100px] flex-col gap-y-2 rounded-md bg-pal-purple py-2 group-hover:flex">
+              <p
+                className="cursor-pointer"
                 onClick={() => {
                   navigate('/mypage');
                 }}
-              />
-            </div>
-            <div>
-              <GlobalBtn
-                className="border-2 border-white font-jamsilLight"
-                size={'sm'}
-                text={'로그아웃'}
+              >
+                마이 페이지
+              </p>
+              <p
+                className="cursor-pointer"
                 onClick={() => {
                   logoutMutate();
                 }}
-              />
+              >
+                로그아웃
+              </p>
             </div>
           </div>
         ) : (
           <div className="flex gap-x-16 font-jamsilMedium text-white">
-            <NavLink to={'/signin'}>
+            <NavLink
+              to={'/signin'}
+              className={'pr-2 md:pr-0'}
+            >
               <GlobalBtn
                 className="border-2 border-white"
                 size={'sm'}
                 text={'로그인'}
               />
             </NavLink>
-            <NavLink to={'/signup'}>
+            <NavLink
+              to={'/signup'}
+              className={'hidden md:block'}
+            >
               <GlobalBtn
                 className="bg-pal-purple"
                 size={'sm'}
