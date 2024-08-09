@@ -60,7 +60,7 @@ const AdminPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pageIndexInt]); // 검색 트리거 추가
+  }, [pageIndexInt]);
 
   const handleAcceptButton = async (index) => {
     try {

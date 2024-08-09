@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
+import PropTypes from 'prop-types';
+
 const MakeSession = ({ removeModal, onSessionCreated }) => {
   const queryClient = useQueryClient();
   const userInfo = queryClient.getQueryData(['userInfo']);
@@ -21,7 +23,6 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
   };
 
   const handleFileChange = (e) => {
-
     setSelectedFile(e.target.files[0]);
     if (e.target.files) {
       setUploadImage(e.target.files[0]);
@@ -49,17 +50,17 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
       maxCapacity: parseInt(data.max_capacity),
       file: uploadImage,
     };
- 
+
     try {
       await instance.post('/api/group', postData, {
         headers: {
           'content-type': 'multipart/form-data',
         },
       });
-      onSessionCreated('새 모임이 성공적으로 생성되었습니다!')
+      onSessionCreated('새 모임이 성공적으로 생성되었습니다!');
       removeModal();
     } catch (error) {
-      onSessionCreated('에러 발생, 잠시 후에 시도해 주세요')
+      onSessionCreated('에러 발생, 잠시 후에 시도해 주세요');
     }
   };
 
@@ -274,12 +275,13 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
               </p>
             )}
           </div>
-          {errorTrigger ===
-            true ? (
-              <p className="mb-3 text-red-500">
-                시작 시간이 종료 시간보다 빨라야 합니다
-              </p>,
-            ): (<div></div>)}
+          {errorTrigger === true ? (
+            <p className="mb-3 text-red-500">
+              시작 시간이 종료 시간보다 빨라야 합니다
+            </p>
+          ) : (
+            <div></div>
+          )}
 
           <div className="flex justify-center gap-20">
             <button
@@ -300,6 +302,10 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
       </div>
     </div>
   );
+};
+MakeSession.propTypes = {
+  removeModal: PropTypes.func.isRequired,
+  onSessionCreated: PropTypes.func.isRequired,
 };
 
 export default MakeSession;

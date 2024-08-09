@@ -127,7 +127,7 @@ const HealingSessionPage = () => {
             </select>
 
             <form
-              className="mx-1 mx-3 mt-0 mt-3 w-full sm:w-7/12"
+              className="mx-3 mt-0 w-full sm:w-7/12"
               onSubmit={handleSearchSubmit}
             >
               <label
