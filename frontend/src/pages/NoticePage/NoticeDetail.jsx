@@ -71,12 +71,12 @@ const NoticeDetail = () => {
 
   return (
     <ContentsLayout>
-      <div className="mx-auto flex min-h-[500px] w-[80%] flex-col rounded bg-white bg-opacity-70">
-        <div className="p-5 text-center font-jamsilBold text-3xl">
+      <div className="mx-auto flex min-h-[500px] w-[350px] flex-col rounded bg-white bg-opacity-70 sm:w-[500px] md:w-[768px]">
+        <div className="p-5 text-center font-jamsilBold text-xl sm:text-2xl md:text-3xl">
           {notice.title}
         </div>
         <div className="mx-auto w-[90%] border border-gray-200"></div>
-        <div className="mx-auto w-[90%] px-10 py-5 font-jamsilRegular">
+        <div className="md:px-15 font-sm px-10 py-5 font-jamsilRegular sm:px-12 sm:font-medium">
           {notice.content}
         </div>
         {userInfo?.isAdmin && (

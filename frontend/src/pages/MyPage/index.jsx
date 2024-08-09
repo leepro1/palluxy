@@ -15,21 +15,32 @@ const MyPage = () => {
 
   return (
     <ContentsLayout>
-      <div className="flex min-h-[500px] w-full flex-col">
-        <nav className="flex flex-row justify-center gap-16 font-jamsilRegular text-xl text-white">
+      <div className="flex min-h-[500px] w-[400px] flex-col sm:w-[640px] md:w-full">
+        <nav className="flex flex-row justify-center gap-8 font-jamsilRegular text-xl text-white md:gap-16">
           <Link
             to="personalInfo"
             className=""
           >
-            마이페이지
+            <div className="flex items-center">
+              <span className="hidden sm:inline">마이페이지</span>
+              <span className="inline sm:hidden">My</span>
+            </div>
           </Link>
           <Link
             to="createdMeetings"
             className=""
           >
-            생성한 치유모임
+            <div className="flex items-center">
+              <span className="hidden sm:inline">생성한 치유모임</span>
+              <span className="inline sm:hidden">생성</span>
+            </div>
           </Link>
-          <Link to="appliedMeetings">신청한 치유모임</Link>
+          <Link to="appliedMeetings">
+            <div className="flex items-center">
+              <span className="hidden sm:inline">신청한 치유모임</span>
+              <span className="inline sm:hidden">신청</span>
+            </div>
+          </Link>
         </nav>
         <div className="mx-16 my-5 border border-white"></div>
         <section className="text-start text-xl text-white">

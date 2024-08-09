@@ -58,7 +58,7 @@ const PersonalInfo = () => {
 
   return (
     <ContentsLayout>
-      <div className="mx-16">
+      <div className="mx-16 font-jamsilLight text-lg md:text-xl">
         <label className="font-jamsilRegular">개인정보</label>
         <li className="mb-2 mt-6 font-jamsilLight">
           닉네임: {userInformation.nickname}{' '}

@@ -1,6 +1,6 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
-const ChatInput = ({ onSend, text, setText }) => {
+const ChatInput = ({ onSend, text, setText, btnText = '전송' }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSend();
@@ -14,17 +14,23 @@ const ChatInput = ({ onSend, text, setText }) => {
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="border-white-700 mr-4 w-3/4 resize-none overflow-auto rounded p-2"
-        placeholder="메시지를 작성해보세요."
+        className="before:border-white-700 mr-4 w-3/4 resize-none overflow-auto rounded p-2"
       />
       <button
         type="submit"
         className="border-white-700 w-1/4 rounded border p-2 text-xs text-white sm:text-xs md:text-lg"
       >
-        전송
+        {btnText}
       </button>
     </form>
   );
+};
+
+ChatInput.propTypes = {
+  onSend: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
+  setText: PropTypes.func.isRequired,
+  btnText: PropTypes.string,
 };
 
 export default ChatInput;
