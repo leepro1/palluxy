@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
-import Pagination from './Pagination';
-
+import { useNavigate, useParams, ScrollRestoration } from 'react-router-dom';
+import Pagination from '@pages/AdminPage/Pagination';
 import ContentsLayout from '@layout/ContentsLayout';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
-import { ScrollRestoration } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 
 // 날짜 포맷 유틸리티 함수

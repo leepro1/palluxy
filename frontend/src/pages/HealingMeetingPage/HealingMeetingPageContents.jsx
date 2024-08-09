@@ -1,14 +1,13 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
-import UserVideoComponent from './UserVideoComponent';
+import UserVideoComponent from '@pages/HealingMeetingPage/UserVideoComponent';
 import ChatMessageBox from '@/components/Chat/ChatMessageBox';
-import LeaderEntranceModal from './LeaderEntranceModal';
+import LeaderEntranceModal from '@pages/HealingMeetingPage/LeaderEntranceModal';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { instance } from '@/utils/axios';
-import EntranceModal from './EntranceModal';
-import { useQuery } from '@tanstack/react-query';
+import EntranceModal from '@pages/HealingMeetingPage/EntranceModal';
 import { NavLink } from 'react-router-dom';
 
 const formatDateRange = (startDate, endDate) => {
@@ -42,7 +41,7 @@ const fetchUserByAccess = async () => {
 const HealingMeetingPageContents = () => {
   const queryClient = useQueryClient();
   const userInfo = queryClient.getQueryData(['userInfo']);
-  const { data, isLoading, refetch } = useQuery({
+  const { data } = useQuery({
     queryKey: ['groupData', userInfo?.id],
     queryFn: async () => {
       const data = await queryClient.ensureQueryData({
@@ -99,7 +98,7 @@ const HealingMeetingPageContents = () => {
   };
 
   useEffect(() => {
-    const handleBeforeUnload = (event) => {
+    const handleBeforeUnload = () => {
       leaveSession();
     };
 
@@ -149,7 +148,6 @@ const HealingMeetingPageContents = () => {
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
     setSession(newSession);
-    console.log(newSession);
     newSession.on('streamCreated', (event) => {
       const subscriber = newSession.subscribe(event.stream, undefined);
       setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
@@ -175,7 +173,6 @@ const HealingMeetingPageContents = () => {
 
     try {
       const token = await getToken(role, mySessionId, code);
-      console.log(token);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,
@@ -216,7 +213,7 @@ const HealingMeetingPageContents = () => {
 
   const getToken = async (role, id, code) => {
     if (code === 2) {
-      const sessionId = await createSession(id);
+      await createSession(id);
     }
 
     return await createToken(mySessionId, role, id);
@@ -239,13 +236,10 @@ const HealingMeetingPageContents = () => {
           headers: { 'Content-Type': 'application/json' },
         },
       );
-      console.log(response);
       return response.data;
     } catch (error) {
       setSession(undefined);
       alert('에러 발생! 입장 키를 다시 확인해 주세요');
-      console.error(error);
-      throw error; // optional: rethrow the error if you want it to propagate
     }
   };
 
@@ -258,7 +252,6 @@ const HealingMeetingPageContents = () => {
           headers: { 'Content-Type': 'application/json' },
         },
       );
-      console.log(response);
       return response.data.result;
     } catch (error) {
       setSession(undefined);
@@ -334,7 +327,6 @@ const HealingMeetingPageContents = () => {
           type: 'my-chat',
         })
         .then(() => {
-          console.log('Message successfully sent');
           setMessages((prevMessages) => [...prevMessages, newMessage]);
           setText('');
         })
@@ -451,7 +443,7 @@ const HealingMeetingPageContents = () => {
                       <UserVideoComponent streamManager={publisher} />
                     </div>
                   ) : null}
-                  {subscribers.map((sub, i) => (
+                  {subscribers.map((sub) => (
                     <div
                       key={sub.id}
                       className="group flex w-1/2 flex-col items-center border-2 border-solid border-gray-900 p-8"

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
-import MakeSession from './MakeSession';
-import Pagination from './Pagination';
-import './app.css';
+import { useNavigate, useParams, ScrollRestoration } from 'react-router-dom';
+import MakeSession from '@pages/HealingMeetingOverviewPage/MakeSession';
+import Pagination from '@pages/HealingMeetingOverviewPage/Pagination';
+import '@pages/HealingMeetingOverviewPage/app.css';
 import ContentsLayout from '@layout/ContentsLayout';
 import defaultImage from '@assets/images/healingMeetingOverview/default.png';
-import { ScrollRestoration } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 
 // 날짜 포맷 유틸리티 함수
@@ -66,7 +64,7 @@ const HealingSessionPage = () => {
         setData(response.data.result.groups);
         setDatalength(response.data.result.totalGroupCount);
       } catch (error) {
-        console.log(error);
+        alert(error);
       }
     };
 
@@ -117,11 +115,11 @@ const HealingSessionPage = () => {
     <ContentsLayout>
       <ScrollRestoration />
       <div className="text-white">
-        <div className="flex flex-row justify-between">
-          <div className="flex w-6/12 flex-row items-center">
+        <div className="flex flex-col justify-between sm:flex-row">
+          <div className="flex w-full items-center sm:w-6/12 sm:flex-row">
             <select
               id="categories"
-              className="block h-10 w-2/12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              className="block h-10 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 sm:w-2/12 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               value={searchKey}
               onChange={(e) => setSearchKey(e.target.value)}
             >
@@ -130,7 +128,7 @@ const HealingSessionPage = () => {
             </select>
 
             <form
-              className="mx-3 w-7/12"
+              className="mx-1 mx-3 mt-0 mt-3 w-full sm:w-7/12"
               onSubmit={handleSearchSubmit}
             >
               <label
@@ -175,8 +173,8 @@ const HealingSessionPage = () => {
               </div>
             </form>
           </div>
-          <div className="flex w-3/12 flex-row items-center">
-            <div className="me-3 inline-flex items-center">
+          <div className="mt-3 flex w-full flex-col items-center sm:mt-0 sm:w-3/12 sm:flex-row">
+            <div className="mb-3 me-0 inline-flex items-center sm:mb-0 sm:me-3">
               <label
                 className="relative flex cursor-pointer items-center rounded-full p-3"
                 htmlFor="check"
@@ -213,7 +211,7 @@ const HealingSessionPage = () => {
               </label>
             </div>
             <div
-              className="h-max cursor-pointer rounded bg-pal-purple p-2 text-center text-white"
+              className="h-max cursor-pointer rounded bg-pal-purple p-2 text-center text-white hover:bg-purple-950"
               onClick={openModal}
             >
               생성하기
