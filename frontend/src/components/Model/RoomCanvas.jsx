@@ -13,6 +13,9 @@ import GlobalBtn from '@components/GlobalBtn';
 
 import MailBoxModal from '@components/Modal/MailBoxModal';
 import PalCreateModal from '@components//Modal/PalCreateModal';
+import { fetchPalmeta } from '@api/memorySpace/createApi';
+
+import { useModelPositionStore } from '@store/memorySpace';
 
 const RoomCanvas = () => {
   const queryClient = useQueryClient();
@@ -22,14 +25,36 @@ const RoomCanvas = () => {
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
   const roomData = queryClient.getQueryData(['memorySpace']);
   const userData = queryClient.getQueryData(['userInfo']);
+
+  const updatePosition = useModelPositionStore((state) => state.fetchPosition);
+  const updateRotation = useModelPositionStore((state) => state.fetchRotation);
+
   const { data, isSuccess, isLoading } = useQuery({
     queryKey: ['palFrameImage'],
     queryFn: () => fetchAllFrameImage(roomData.roomId),
-    staleTime: 1000 * 60 * 10,
+    // staleTime: 1000 * 60 * 10,
   });
 
+  const { data: palMetaData, isSuccess: isPalMetaSuccess } = useQuery({
+    queryKey: ['palMeta'],
+    queryFn: () => fetchPalmeta(roomData.roomId),
+    // staleTime: 1000 * 60 * 10,
+  });
+
+  if (isPalMetaSuccess) {
+    updatePosition({
+      positionX: palMetaData[0] ? palMetaData[0].positionX : 0,
+      positionY: palMetaData[0] ? palMetaData[0].positionY : 0,
+      positionZ: palMetaData[0] ? palMetaData[0].positionZ : 0,
+    });
+    updateRotation({
+      rotationX: palMetaData[0] ? palMetaData[0].rotationX : 0,
+      rotationY: palMetaData[0] ? palMetaData[0].rotationY : 0,
+      rotationZ: palMetaData[0] ? palMetaData[0].rotationZ : 0,
+    });
+  }
+
   const handleModelClick = (event) => {
-    console.log(event.object.name);
     if (event.object.name.includes('post')) {
       setMailModalOpen(!isMailModalOpen);
       return;
@@ -38,12 +63,10 @@ const RoomCanvas = () => {
     if (event.object.name.includes('frame')) {
       if (event.object.name === 'frame001') {
         setTarget(event.object.position);
-        console.log(event.object.position);
         setPosition({ x: -1, y: 3.8, z: -1 });
       }
       if (event.object.name === 'frame002') {
         setTarget(event.object.position);
-        console.log(event.object.position);
         setPosition({ x: 0, y: 2.3, z: -1.4 });
       }
     }
@@ -96,10 +119,10 @@ const RoomCanvas = () => {
         />
         <ambientLight intensity={Math.PI / 2} />
         <group onClick={(e) => handleModelClick(e)}>
-          {/* <SceneUpdater /> */}
           <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
-            <PalModel />
+            {palMetaData?.length >= 1 && <PalModel objData={palMetaData[0]} />}
+            {/* <PalModel /> */}
           </mesh>
         </group>
       </Canvas>
