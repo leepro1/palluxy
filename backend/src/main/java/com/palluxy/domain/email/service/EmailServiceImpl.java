@@ -83,7 +83,7 @@ public class EmailServiceImpl implements EmailService {
         } else if (type.equals("password")) {
             subject = "PAL:LUXY 비밀번호 변경 링크입니다.";
             String token = code;
-            String resetLink = "http://localhost:5173/reset?code=" + token;
+            String resetLink = "https://i11a208.p.ssafy.io/find?code=" + token;
 
             code = resetLink;
         } else if (type.equals("group")) {
