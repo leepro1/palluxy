@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Pagination = ({
-  itemsPerPage,
   totalPage,
   paginate,
   paginatePrev,
@@ -16,7 +16,7 @@ const Pagination = ({
   for (let i = showingPageMin; i <= showingPageMax; i++) {
     pageNumbers.push(i);
   }
-  const handleClick = (number, e) => {
+  const handleClick = (number) => {
     // 기본 동작 방지
     paginate(number);
   };
@@ -100,6 +100,17 @@ const Pagination = ({
       </ul>
     </nav>
   );
+};
+
+Pagination.propTypes = {
+  totalPage: PropTypes.number.isRequired,
+  paginate: PropTypes.func.isRequired,
+  paginatePrev: PropTypes.func.isRequired,
+  paginateNext: PropTypes.func.isRequired,
+  showingPage: PropTypes.number.isRequired,
+  showingPageMax: PropTypes.number.isRequired,
+  showingPageMin: PropTypes.number.isRequired,
+  pageIndexInt: PropTypes.number.isRequired,
 };
 
 export default Pagination;
