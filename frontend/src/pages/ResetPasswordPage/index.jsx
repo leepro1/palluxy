@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 import { instance } from '@/utils/axios';
@@ -7,8 +7,8 @@ import ContentsLayout from '@layout/ContentsLayout';
 import logo from '@assets/images/logo/logo.svg';
 
 const ResetPasswordModal = () => {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(location.search);
   const code = urlParams.get('code');
 
@@ -17,6 +17,7 @@ const ResetPasswordModal = () => {
     control,
     watch,
     formState: { errors },
+    setError,
   } = useForm({ mode: 'onChange' });
 
   const validatePassword = (password) => {
@@ -28,36 +29,23 @@ const ResetPasswordModal = () => {
     );
   };
 
-  const resetPassword = async (payload) => {
-    try {
-      const response = await instance.patch(
-        '/api/users/reset-password',
-        payload,
-      );
-      console.log('resetPassword 내에서 출력', payload);
-      return response.data;
-    } catch (error) {
+  const resetPasswordMutation = useMutation({
+    mutationFn: (payload) =>
+      instance.patch('/api/users/reset-password', payload),
+    onSuccess: () => {
+      navigate('/signin');
+    },
+    onError: (error) => {
       console.error('resetPassword 실패', error);
-      throw error;
-    }
-  };
-
-  const { mutate: confirmResetPassword } = useMutation({
-    mutationFn: resetPassword,
-    onSuccess: async (data) => {
-      console.log('mutate 내에서 출력', data);
+      setError('password', {
+        type: 'manual',
+        message: '비밀번호 재설정에 실패했습니다. 다시 시도해주세요.',
+      });
     },
   });
 
   const onSubmit = (data) => {
-    console.log('onSubmit 내에서 출력', data);
-    try {
-      confirmResetPassword({ code: code, password: data.password });
-      console.log('urlParams', urlParams.toString());
-      console.log('code', code);
-    } catch (error) {
-      console.log(error);
-    }
+    resetPasswordMutation.mutate({ code: code, password: data.password });
   };
 
   const password = watch('password', '');
@@ -167,7 +155,9 @@ const ResetPasswordModal = () => {
                 }`}
                 disabled={!isButtonEnabled}
               >
-                비밀번호 변경
+                {resetPasswordMutation.isPending
+                  ? '처리 중...'
+                  : '비밀번호 변경'}
               </button>
             </div>
           </form>

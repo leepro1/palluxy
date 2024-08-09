@@ -1,5 +1,6 @@
 package com.palluxy.domain.letter.service;
 
+import com.palluxy.domain.letter.dto.LetterResponse;
 import com.palluxy.domain.letter.entity.Letter;
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.pet.entity.Pet;
@@ -10,9 +11,9 @@ public interface LetterService {
 
     void saveLetter(Letter letter);
 
-    List<Letter> findByPetId(Long petId);
+    List<LetterResponse> findByPetId(Long petId);
 
-    List<Letter> findByPetIdAndOpenedAtBefore(Long petId);
+    List<LetterResponse> findByPetIdAndOpenedAtBefore(Long petId);
 
     void sendLetters(Long petId, Long roomId);
 
@@ -22,5 +23,5 @@ public interface LetterService {
 
     Room getRoom(Long roomId);
 
-    List<Letter> findLettersByRoomIdAndOpenedAtBefore(Long roomId);
+    List<LetterResponse> findLettersByRoomIdAndOpenedAtBefore(Long roomId);
 }

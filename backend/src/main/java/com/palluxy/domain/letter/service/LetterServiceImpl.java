@@ -1,5 +1,6 @@
 package com.palluxy.domain.letter.service;
 
+import com.palluxy.domain.letter.dto.LetterResponse;
 import com.palluxy.domain.letter.dto.Writer;
 import com.palluxy.domain.letter.dto.claude.ClaudeRequest;
 import com.palluxy.domain.letter.entity.Letter;
@@ -9,6 +10,7 @@ import com.palluxy.domain.memoryRoom.room.entity.Room;
 import com.palluxy.domain.memoryRoom.room.repository.RoomRepository;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,20 +33,29 @@ public class LetterServiceImpl implements LetterService {
         letterRepository.saveAndFlush(letter);
     }
 
-    public List<Letter> findByPetId(Long petId) {
-        return letterRepository.findByPetId(petId);
+    public List<LetterResponse> findByPetId(Long petId) {
+        return convertToDto(letterRepository.findByPetId(petId));
     }
 
-    public List<Letter> findByPetIdAndOpenedAtBefore(Long petId) {
-        return letterRepository.findByPetIdAndOpenedAtBefore(petId, LocalDateTime.now());
+    public List<LetterResponse> findByPetIdAndOpenedAtBefore(Long petId) {
+        return convertToDto(letterRepository.findByPetIdAndOpenedAtBefore(petId, LocalDateTime.now()));
     }
 
-    public List<Letter> findLettersByRoomIdAndOpenedAtBefore(Long roomId) {
-        return letterRepository.findByRoom_RoomIdAndOpenedAtBefore(roomId, LocalDateTime.now());
+    public List<LetterResponse> findLettersByRoomIdAndOpenedAtBefore(Long roomId) {
+        return convertToDto(letterRepository.findByRoom_RoomIdAndOpenedAtBefore(roomId, LocalDateTime.now()));
+    }
+
+    private List<LetterResponse> convertToDto(List<Letter> letters) {
+        ArrayList<LetterResponse> response = new ArrayList<>();
+        for (Letter letter : letters) {
+            response.add(LetterResponse.of(letter));
+        }
+
+        return response;
     }
 
     public void sendLetters(Long petId, Long roomId) {
-        List<Letter> letters = findByPetId(petId);
+        List<Letter> letters = letterRepository.findByPetId(petId);
         Pet pet = getPet(petId);
         Room room = getRoom(roomId);
         aiUtil.sendRequest(aiUtil.getRequest(letters, pet), petId, room);
@@ -101,7 +112,11 @@ public class LetterServiceImpl implements LetterService {
     }
 
     public Room getRoom(Long roomId) {
-        return roomRepository.findById(roomId)
-            .orElseThrow(() -> new NotFoundException("Room not found with id: " + roomId));
+        Optional<Room> room = roomRepository.findById(roomId);
+        if (room.isEmpty()) {
+            throw new NotFoundException("Room not found with id: " + roomId);
+        }
+
+        return room.get();
     }
 }
