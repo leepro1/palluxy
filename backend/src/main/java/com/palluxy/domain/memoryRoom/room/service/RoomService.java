@@ -15,4 +15,6 @@ public interface RoomService {
     void deleteRoom(Long roomId);
     void updateThumbnailUrl(Long roomId, String thumbnailUrl);
     List<RoomDto> getRandomRoomsWithLikeStatus(Long userId, int count);
+    public List<RoomDto> getRandomRooms(int count);
+
 }
