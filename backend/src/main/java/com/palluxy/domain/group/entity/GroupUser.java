@@ -24,10 +24,10 @@ public class GroupUser extends BaseEntity {
     private boolean isLeader = false;
     private boolean isBanned;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
