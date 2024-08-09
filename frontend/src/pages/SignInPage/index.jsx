@@ -75,7 +75,7 @@ const SigninProcess = () => {
   return (
     <ContentsLayout>
       <div className="flex justify-center">
-        <div className="w-[500px] rounded bg-white bg-opacity-60 p-6">
+        <div className="w-[500px] rounded bg-white bg-opacity-60 p-6 px-10 max-[500px]:w-[300px]">
           <div className="mb-5 flex justify-center">
             <img
               src={logo}
@@ -88,11 +88,11 @@ const SigninProcess = () => {
                 {loginError}
               </div>
             )}
-            <div className="flex items-center text-center">
-              <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
+            <div className="flex flex-col items-center text-center font-jamsilLight sm:flex-row">
+              <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/4 sm:text-right">
                 이메일
               </label>
-              <div className="w-2/3">
+              <div className="w-full sm:w-3/4">
                 <Controller
                   name="email"
                   control={control}
@@ -113,19 +113,19 @@ const SigninProcess = () => {
               </div>
             </div>
             <div className="flex h-[12px]">
-              <div className="w-1/3"></div>
+              <div className="w-1/4"></div>
               {errors.email && (
-                <p className="w-2/3 text-start text-sm text-red-500">
+                <p className="w-3/4 text-start text-sm text-red-500">
                   {errors.email.message}
                 </p>
               )}
             </div>
 
-            <div className="mt-5 flex items-center text-center">
-              <label className="w-1/3 px-4 text-right font-semibold text-gray-700">
+            <div className="mt-5 flex flex-col items-center text-center sm:flex-row">
+              <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/4 sm:text-right">
                 비밀번호
               </label>
-              <div className="w-2/3">
+              <div className="w-full sm:w-3/4">
                 <Controller
                   name="password"
                   control={control}
@@ -146,9 +146,9 @@ const SigninProcess = () => {
               </div>
             </div>
             <div className="flex h-[20px]">
-              <div className="w-1/3"></div>
+              <div className="w-1/4"></div>
               {errors.password && (
-                <p className="w-2/3 text-start text-sm text-red-500">
+                <p className="w-3/4 text-start text-sm text-red-500">
                   {errors.password.message}
                 </p>
               )}
@@ -156,7 +156,7 @@ const SigninProcess = () => {
             <div className="flex justify-center gap-20">
               <button
                 type="submit"
-                className={`my-6 w-full rounded p-2 text-white ${
+                className={`my-6 w-full rounded p-2 font-jamsilLight text-white ${
                   isEmailValid && isPasswordValid
                     ? 'bg-pal-purple'
                     : 'cursor-not-allowed bg-gray-400'
@@ -167,7 +167,7 @@ const SigninProcess = () => {
               </button>
             </div>
           </form>
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center font-jamsilLight text-sm">
             <div>비밀번호를 잊어버리셨나요? </div>
             <button
               type="button"
@@ -177,7 +177,7 @@ const SigninProcess = () => {
               여기를 클릭하세요.
             </button>
           </div>
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center font-jamsilLight text-sm">
             <div>아직 팰럭시의 계정이 없으신가요? </div>
             <button
               type="button"

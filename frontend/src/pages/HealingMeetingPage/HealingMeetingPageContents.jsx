@@ -284,6 +284,7 @@ const HealingMeetingPageContents = () => {
     setPublisher(undefined);
     setIsMike(true);
     setIsCamera(true);
+    setMessages([]);
   }, [session]);
 
   const switchCamera = useCallback(async () => {
@@ -346,7 +347,13 @@ const HealingMeetingPageContents = () => {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+      const chatContainer = scrollRef.current.parentElement;
+      const isAtBottom =
+        chatContainer.scrollHeight - chatContainer.scrollTop <=
+        chatContainer.clientHeight + 1;
+      if (isAtBottom) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
     }
   }, [messages]);
 
@@ -554,10 +561,10 @@ const HealingMeetingPageContents = () => {
                 </div>
               </div>
             </div>
-            <div className="flex h-screen w-3/12">
+            <div className="flex h-screen w-3/12 overflow-y-auto">
               <ChatMessageBox
                 messages={messages}
-                scrollRef={scrollRef}
+                // scrollRef={scrollRef}
                 myUserName={myUserName}
                 onSend={sendMessage}
                 text={text}

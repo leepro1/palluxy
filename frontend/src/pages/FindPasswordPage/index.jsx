@@ -96,15 +96,15 @@ const FindPasswordModal = () => {
   return (
     <ContentsLayout>
       <div className="flex items-center justify-center">
-        <div className="w-[700px] rounded bg-white bg-opacity-60 p-6">
-          <div className="mb-4 flex justify-center">
+        <div className="w-[350px] rounded bg-white bg-opacity-60 p-6 sm:w-[700px]">
+          <div className="mb-6 flex justify-center">
             <img
               src={logo}
               alt="logo_image"
             />
           </div>
           <h4
-            className={`mb-10 text-center font-bold ${isEmailSent ? 'text-pal-purple' : 'text-black'}`}
+            className={`mb-6 text-center font-jamsilRegular ${isEmailSent ? 'text-pal-purple' : 'text-black'}`}
           >
             {isEmailSent ? (
               <>
@@ -118,8 +118,8 @@ const FindPasswordModal = () => {
           </h4>
           <form onSubmit={handleSubmit(handleFindPassword)}>
             <div className="mb-4">
-              <div className="flex flex-row items-center">
-                <label className="mr-2 w-1/3 text-end font-semibold text-gray-700">
+              <div className="flex flex-col items-center sm:flex-row">
+                <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/3 sm:text-right">
                   이메일
                 </label>
                 <Controller
@@ -130,7 +130,7 @@ const FindPasswordModal = () => {
                   render={({ field }) => (
                     <input
                       {...field}
-                      className="w-full rounded border px-3 py-2 text-black"
+                      className="w-full rounded border px-3 py-2 text-black sm:w-2/3"
                       placeholder="이메일을 입력해주세요."
                     />
                   )}
@@ -147,7 +147,7 @@ const FindPasswordModal = () => {
             </div>
 
             {/* 비밀번호 찾기 버튼 */}
-            <div className="flex justify-center gap-20">
+            <div className="flex justify-center font-jamsilRegular">
               <button
                 type="submit"
                 className={`my-6 w-full rounded p-3 text-white ${
