@@ -6,11 +6,13 @@ import { useState, useCallback } from 'react';
 import FileUploadModal from '@components/Modal/FileUploadModal';
 import ImgRotationBtn from '@components/Model/ImgRotationBtn';
 import { useModelPositionStore } from '@store/memorySpace';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { updatePalRotation, updatePalPosition } from '@/api/petapi';
 
 const SettingSideBar = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectFrame, setSelectFrame] = useState();
-
+  const queryClient = useQueryClient();
   const position = useModelPositionStore((state) => state.position);
   const rotation = useModelPositionStore((state) => state.rotation);
 
@@ -27,11 +29,61 @@ const SettingSideBar = () => {
     [isModalOpen],
   );
 
+  const { mutate: palPositionMutation } = useMutation({
+    mutationFn: updatePalPosition,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['palMeta'],
+      });
+      return alert('성공적으로 저장되었습니다!');
+    },
+  });
+
+  const { mutate: palRotationMutation } = useMutation({
+    mutationFn: updatePalRotation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['palMeta'],
+      });
+      return alert('성공적으로 저장되었습니다!');
+    },
+  });
+
   const handlePositionSave = () => {
-    console.log(position);
+    const palMetaData = queryClient.getQueryData(['palMeta']);
+    const roomData = queryClient.getQueryData(['memorySpace']);
+
+    if (!palMetaData || palMetaData.length === 0) {
+      return alert('아직 펫이 없습니다!');
+    }
+    const payload = {
+      roomId: roomData.roomId,
+      petMetaId: palMetaData[0].petMetaId,
+      position: {
+        positionX: position.positionX,
+        positionY: position.positionY,
+        positionZ: position.positionZ,
+      },
+    };
+    palPositionMutation(payload);
   };
   const handleRotationSave = () => {
-    console.log(rotation);
+    const palMetaData = queryClient.getQueryData(['palMeta']);
+    const roomData = queryClient.getQueryData(['memorySpace']);
+
+    if (!palMetaData || palMetaData.length === 0) {
+      return alert('아직 펫이 없습니다!');
+    }
+    const payload = {
+      roomId: roomData.roomId,
+      petMetaId: palMetaData[0].petMetaId,
+      rotation: {
+        rotationX: rotation.rotationX,
+        rotationY: rotation.rotationY,
+        rotationZ: rotation.rotationZ,
+      },
+    };
+    palRotationMutation(payload);
   };
 
   return (
@@ -45,21 +97,21 @@ const SettingSideBar = () => {
               <span>X</span>
               <Slider
                 type={'position'}
-                coordinate={'x'}
+                coordinate={'positionX'}
               />
             </div>
             <div className="flex gap-x-3">
               <span>Y</span>
               <Slider
                 type={'position'}
-                coordinate={'y'}
+                coordinate={'positionY'}
               />
             </div>
             <div className="flex gap-x-3">
               <span>Z</span>
               <Slider
                 type={'position'}
-                coordinate={'z'}
+                coordinate={'positionZ'}
               />
             </div>
           </div>
@@ -83,21 +135,21 @@ const SettingSideBar = () => {
               <span>X</span>
               <Slider
                 type={'rotation'}
-                coordinate={'x'}
+                coordinate={'rotationX'}
               />
             </div>
             <div className="flex gap-x-3">
               <span>Y</span>
               <Slider
                 type={'rotation'}
-                coordinate={'y'}
+                coordinate={'rotationY'}
               />
             </div>
             <div className="flex gap-x-3">
               <span>Z</span>
               <Slider
                 type={'rotation'}
-                coordinate={'z'}
+                coordinate={'rotationZ'}
               />
             </div>
           </div>
@@ -116,8 +168,8 @@ const SettingSideBar = () => {
         {/* 액자 설정 */}
         <div className="flex items-center gap-6 text-white">
           <div className="flex flex-col">
-            <span className="">추억</span>
             <span className="">사진</span>
+            <span className="">설정</span>
           </div>
           <div className="flex flex-col items-end gap-y-3">
             <div className="flex gap-x-3">
@@ -146,62 +198,6 @@ const SettingSideBar = () => {
                   upload_file
                 </span>
                 <ImgRotationBtn index={1} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>세 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(2);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={2} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>네 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(3);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={3} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>다섯 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(4);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={4} />
-              </div>
-            </div>
-            <div className="flex gap-x-3">
-              <span>여섯 번째 액자</span>
-              <div className="flex gap-x-1">
-                <span
-                  className="material-symbols-outlined cursor-pointer"
-                  onClick={() => {
-                    handleModal(5);
-                  }}
-                >
-                  upload_file
-                </span>
-                <ImgRotationBtn index={5} />
               </div>
             </div>
           </div>

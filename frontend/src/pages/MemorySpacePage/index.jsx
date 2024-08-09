@@ -18,7 +18,7 @@ const MemorySpacePage = () => {
   const { isError, isLoading, isSuccess } = useQuery({
     queryKey: ['memorySpace'],
     queryFn: () => fetchUserRoom(userId),
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
     retry: 1,
   });
 

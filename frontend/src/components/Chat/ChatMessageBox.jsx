@@ -11,7 +11,7 @@ const ChatMessageBox = ({
   setText,
 }) => {
   return (
-    <div className="flex h-full w-full flex-col border border-gray-300 bg-white p-2">
+    <div className="flex h-full w-full flex-col bg-white">
       <div className="flex-1 overflow-y-auto">
         {messages.map((message, idx) => (
           <ChatMessage
@@ -20,6 +20,7 @@ const ChatMessageBox = ({
             userId={message.sender}
             createdAt={new Date(message.timestamp).toLocaleTimeString()}
             isOwnMessage={message.sender === myUserName}
+            className="p-2"
           />
         ))}
         <div ref={scrollRef} />

@@ -52,8 +52,8 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
                 .defaultHeader("content-type", "application/json")
                 .build();
 
-        webClient.post().bodyValue(json).retrieve().bodyToMono(ClaudeResponse.class).subscribe(
-            response -> {
+        webClient.post().bodyValue(json).retrieve()
+            .bodyToMono(ClaudeResponse.class).subscribe(response -> {
                 String content = response.getText();
                 Letter letter = Letter.builder()
                     .title("편지가 도착했어요")
@@ -64,8 +64,7 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
                     .openedAt(LocalDateTime.now())
                     .build();
                 letterRepository.saveAndFlush(letter);
-            }
-        );
+            });
     }
 
     public ClaudeRequest getRequest(List<Letter> letters, Pet pet) {
@@ -73,24 +72,21 @@ public class ClaudeUtil implements AIUtil<ClaudeRequest> {
 
         List<ClaudeMessageInput> messageInputs = new ArrayList<>();
         messageInputs.add(new ClaudeMessageInput(ClaudeRole.USER, Prompt.getPrompt()));
-        for (int i = 0; i < letters.size(); i++) {
+        for (int i = 0; i < letters.size() - 1; i++) {
             Letter letter = letters.get(i);
-
-            ClaudeRole role = ClaudeRole.USER;
-            if (letter.getWriter().equals(Writer.PET)) {
-                role = ClaudeRole.ASSISTANT;
-            }
-
+            ClaudeRole role = letter.getWriter().equals(Writer.PET) ? ClaudeRole.ASSISTANT : ClaudeRole.USER;
             String content = letter.getContent();
-            if (i == letters.size() - 1) {
-                String data = pet.toString();
-                content = String.format(
-                    "%s \n\n 답장 작성에 참고할 반려동물의 데이터는 다음과 같습니다. 아래의 데이터를 참고해서, 편지만을 작성해서 답변해주세요. \n\n %s",
-                    content, data);
-            }
-
             messageInputs.add(new ClaudeMessageInput(role, content));
         }
+
+        Letter letter = letters.get(letters.size() - 1);
+        ClaudeRole role = letter.getWriter().equals(Writer.PET) ? ClaudeRole.ASSISTANT : ClaudeRole.USER;
+        String content = letter.getContent();
+        String petData = pet.toString();
+        content = String.format(
+            "%s \n\n 답장 작성에 참고할 반려동물의 데이터는 다음과 같습니다. 아래의 데이터를 참고해서, 편지만을 작성해서 답변해주세요. \n\n %s",
+            content, petData);
+        messageInputs.add(new ClaudeMessageInput(role, content));
 
         claudeRequest.setMessageInputs(messageInputs);
 

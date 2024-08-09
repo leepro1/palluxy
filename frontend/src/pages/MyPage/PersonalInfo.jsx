@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
@@ -12,10 +12,6 @@ const fetchUserInfo = async () => {
 };
 
 const PersonalInfo = () => {
-  const queryClient = useQueryClient();
-  //   const userInformation = queryClient.getQueryData(['userInfo']);
-  //   console.log(userInformation);
-  //   const userId = userInformation.id;
   const {
     data: userInformation,
     isLoading: userLoading,
@@ -26,24 +22,6 @@ const PersonalInfo = () => {
   });
 
   const [petData, setPetData] = useState(null);
-
-  //   // const getPetName = async (userId) => {
-  //   //   const { data } = await instance.get(`/api/pets/users/${userId}`);
-  //   //   return data.result;
-  //   // };
-
-  //   useEffect(() => {
-  //     const getPetName = async () => {
-  //       try {
-  //         const response = await instance.get(`/api/pets/users/${userId}`);
-  //         setPetData(response.data);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     };
-
-  //     getPetName();
-  //   }, [userId]);
 
   useEffect(() => {
     if (userInformation) {
@@ -89,8 +67,13 @@ const PersonalInfo = () => {
           반려동물 이름:
           {petData?.name ? petData.name : ' 현재 등록된 반려동물이 없습니다'}
         </li>
-        <li className="my-2 font-jamsilLight hover:font-jamsilBold">
-          <NavLink to={'/find'}>비밀번호 수정하기</NavLink>{' '}
+        <li className="my-2 font-jamsilLight">
+          <NavLink
+            to={'/reset'}
+            className="hover:font-jamsilBold"
+          >
+            비밀번호 수정하기
+          </NavLink>{' '}
         </li>
       </div>
     </ContentsLayout>

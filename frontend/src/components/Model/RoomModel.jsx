@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const RoomModel = React.memo(({ data }) => {
-  const { materials, scene } = useGLTF('/models/frameRoom.glb');
+  const { materials, scene } = useGLTF('/models/palluxy.glb');
 
   data.forEach(async (frameData) => {
     const matrialName = FRAME_INDEX[frameData.index];
@@ -17,6 +17,10 @@ const RoomModel = React.memo(({ data }) => {
       texture.rotation = frameData.angle;
     }
   });
+
+  scene.scale.x = 1.3;
+  scene.scale.y = 1.3;
+  scene.scale.z = 1.3;
 
   return (
     <primitive object={scene}>

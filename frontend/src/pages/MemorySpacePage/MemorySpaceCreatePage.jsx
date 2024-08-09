@@ -8,6 +8,7 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { ErrorMessage } from '@hookform/error-message';
 import { postCreateRoom, postCreatePet } from '@/api/memorySpace/createApi';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PersonalityCheckbox = ({ personality, checkboxName, register }) => {
   return (
@@ -41,7 +42,10 @@ const MemorySpaceCreatePage = () => {
       relation: '',
     },
   });
-  // const [isFormOpen, setFormOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const [previewPath, setPreviewPath] = useState(null);
+  const [uploadImage, setUploadImage] = useState(null);
   const [isRoomCreate, setRoomCreate] = useState(false);
   const [isPetCreate, setPetCreate] = useState(false);
   const queryClient = useQueryClient();
@@ -50,17 +54,11 @@ const MemorySpaceCreatePage = () => {
     onSuccess: async () => {
       setPetCreate(true);
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
   const { mutateAsync: roomMutate } = useMutation({
     mutationFn: postCreateRoom,
     onSuccess: async () => {
       setRoomCreate(true);
-    },
-    onError: (error) => {
-      console.log(error);
     },
   });
 
@@ -78,6 +76,17 @@ const MemorySpaceCreatePage = () => {
     );
   }
 
+  const handleUploadImage = (event) => {
+    if (event.target.files) {
+      setUploadImage(event.target.files[0]);
+      const reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]);
+      reader.onload = () => {
+        setPreviewPath(reader.result);
+      };
+    }
+  };
+
   const memorySpaceCreateSubmit = async (formValues) => {
     // resetField('name');
     // resetField('password');
@@ -88,11 +97,11 @@ const MemorySpaceCreatePage = () => {
       return value;
     });
 
-    const memorySpacePayload = {
-      name: formValues.name,
-      description: formValues.description,
-      userId: userInfo.id,
-    };
+    const memorySpacePayload = new FormData();
+    memorySpacePayload.append('file', uploadImage);
+    memorySpacePayload.append('name', formValues.name);
+    memorySpacePayload.append('description', formValues.description);
+    memorySpacePayload.append('userId', userInfo.id);
 
     const petPayload = {
       userId: userInfo.id,
@@ -103,11 +112,12 @@ const MemorySpaceCreatePage = () => {
       firstAt: formValues.first_at,
       lastAt: formValues.last_at,
     };
-
-    await petMutate(petPayload);
-    await roomMutate(memorySpacePayload);
-    if (isRoomCreate && isPetCreate) {
-      console.log('suc');
+    try {
+      await petMutate(petPayload);
+      await roomMutate(memorySpacePayload);
+      navigate(`/memoryspace/${userInfo.id}`);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -198,7 +208,7 @@ const MemorySpaceCreatePage = () => {
         <div className="w-[400px] rounded-md bg-white lg:w-[500px]">
           <div className="mb-4 flex flex-col px-6 py-4">
             <div className="py-5">
-              <h3>추억공간 생성하기</h3>
+              <h3 className="font-bold">추억공간 생성하기</h3>
             </div>
             {/* 폼 */}
             <FormProvider>
@@ -250,18 +260,34 @@ const MemorySpaceCreatePage = () => {
                 {/* 파일 업로드 */}
                 <div className="flex flex-col gap-y-1">
                   <span>추억공간 대표이미지</span>
+                  <div className="overflow-hidden">
+                    {previewPath && (
+                      <img
+                        src={previewPath}
+                        alt="preview image"
+                      />
+                    )}
+                  </div>
                   <div className="flex gap-x-4">
-                    <GlobalBtn
-                      className="bg-pal-purple text-white"
-                      size={'sm'}
-                      text={'파일선택'}
+                    <label
+                      className="flex h-[40px] w-[130px] items-center justify-center rounded-md bg-pal-purple text-white"
+                      htmlFor="fileInput"
+                    >
+                      파일선택
+                    </label>
+                    <input
+                      className="hidden"
+                      id="fileInput"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUploadImage}
                     />
                   </div>
                 </div>
                 {/* 반려동물 정보 시작 */}
                 <div className="flex flex-col gap-y-1">
                   <div className="pt-4">
-                    <h3>반려동물 인적사항??</h3>
+                    <h3 className="font-bold">반려동물 정보</h3>
                   </div>
                 </div>
                 {/* 반려동물 이름 & 별칭 */}
@@ -474,7 +500,7 @@ const MemorySpaceCreatePage = () => {
 PersonalityCheckbox.propTypes = {
   personality: PropTypes.object.isRequired,
   checkboxName: PropTypes.string.isRequired,
-  register: PropTypes.func.isRequired,
+  register: PropTypes.object.isRequired,
 };
 
 export default MemorySpaceCreatePage;
