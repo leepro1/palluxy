@@ -1,37 +1,57 @@
+/* eslint-disable react-refresh/only-export-components */
+import React from 'react';
+import { lazy } from 'react';
+
 // gaurd
-import AuthGuard from './AuthGuard';
+import AuthGuard from '@router/AuthGuard';
+import LazyLoadRoutes from '@router/LazyLoadRoutes';
+
 // home
-import HomePage from '@pages/HomePage';
+const HomePage = lazy(() => import('@pages/HomePage'));
 import MainLayout from '@layout/MainLayout';
 import NotFound from '@/components/NotFound';
 
 // admin
-import NoticeDetail from '@pages/NoticePage/NoticeDetail';
-import AdminPage from '@pages/AdminPage';
-import NoticePage from '@pages/NoticePage';
+const NoticeDetail = lazy(() => import('@pages/NoticePage/NoticeDetail'));
+const AdminPage = lazy(() => import('@pages/AdminPage'));
+const NoticePage = lazy(() => import('@pages/NoticePage'));
 
 // user
-import SignInPage from '@pages/SignInPage';
-import SignUpPage from '@pages/SignUpPage';
-import MyPage from '@pages/MyPage';
-import FindPasswordPage from '@pages/FindPasswordPage';
-import ResetPasswordPage from '@pages/ResetPasswordPage';
-import PersonalInfo from '@pages/MyPage/PersonalInfo';
+const SignInPage = lazy(() => import('@pages/SignInPage'));
+const SignUpPage = lazy(() => import('@pages/SignUpPage'));
+const MyPage = lazy(() => import('@pages/MyPage'));
+const FindPasswordPage = lazy(() => import('@pages/FindPasswordPage'));
+const ResetPasswordPage = lazy(() => import('@pages/ResetPasswordPage'));
+const PersonalInfo = lazy(() => import('@pages/MyPage/PersonalInfo'));
 
 // memorySpace
-import MemorySpacePage from '@pages/MemorySpacePage';
-import SettingSideBar from '@pages/MemorySpacePage/SideBar/SettingSideBar';
-import MailboxSideBar from '@pages/MemorySpacePage/SideBar/MailboxSideBar';
-import GuestBoxSideBar from '@pages/MemorySpacePage/SideBar/GuestBoxSideBar';
-import MemorySpaceCreatePage from '@pages/MemorySpacePage/MemorySpaceCreatePage';
-import MemorySpaceOverviewPage from '@pages/MemorySpaceOverviewPage';
+const MemorySpacePage = lazy(() => import('@pages/MemorySpacePage'));
+const SettingSideBar = lazy(
+  () => import('@pages/MemorySpacePage/SideBar/SettingSideBar'),
+);
+const UsageTipSideBar = lazy(
+  () => import('@pages/MemorySpacePage/SideBar/UsageTipSideBar'),
+);
+const GuestBoxSideBar = lazy(
+  () => import('@pages/MemorySpacePage/SideBar/GuestBoxSideBar'),
+);
+const MemorySpaceCreatePage = lazy(
+  () => import('@pages/MemorySpacePage/MemorySpaceCreatePage'),
+);
+const MemorySpaceOverviewPage = lazy(
+  () => import('@pages/MemorySpaceOverviewPage'),
+);
 
 // healing Meeting
-import HealingMeetingPage from '@pages/HealingMeetingPage';
-import HealingMeetingOverviewPage from '@pages/HealingMeetingOverviewPage';
-import MeetingDetail from '@pages/HealingMeetingOverviewPage/MeetingDetail';
-import CreatedMeetings from '@pages/MyPage/CreatedMeetings';
-import AppliedMeetings from '@pages/MyPage/AppliedMeetings';
+const HealingMeetingPage = lazy(() => import('@pages/HealingMeetingPage'));
+const HealingMeetingOverviewPage = lazy(
+  () => import('@pages/HealingMeetingOverviewPage'),
+);
+const MeetingDetail = lazy(
+  () => import('@pages/HealingMeetingOverviewPage/MeetingDetail'),
+);
+const CreatedMeetings = lazy(() => import('@pages/MyPage/CreatedMeetings'));
+const AppliedMeetings = lazy(() => import('@pages/MyPage/AppliedMeetings'));
 
 const routerInfo = [
   {
@@ -39,31 +59,55 @@ const routerInfo = [
     element: <MainLayout />,
     children: [
       { path: '*', element: <NotFound /> },
-      { index: true, element: <HomePage /> },
+      {
+        index: true,
+        element: (
+          <LazyLoadRoutes>
+            <HomePage />
+          </LazyLoadRoutes>
+        ),
+      },
 
       // notice
       {
         path: '/noticeboard',
         children: [
-          { index: true, element: <NoticePage /> },
+          {
+            index: true,
+            element: (
+              <LazyLoadRoutes>
+                <NoticePage />
+              </LazyLoadRoutes>
+            ),
+          },
           {
             path: ':pageNumber',
-            element: <NoticePage />,
+            element: (
+              <LazyLoadRoutes>
+                <NoticePage />
+              </LazyLoadRoutes>
+            ),
           },
         ],
       },
       {
         path: '/noticeboard/detail/:noticeId',
-        element: <NoticeDetail />,
+        element: (
+          <LazyLoadRoutes>
+            <NoticeDetail />
+          </LazyLoadRoutes>
+        ),
       },
 
       // 치유 모임
       {
         path: '/healingmeeting',
         element: (
-          <AuthGuard auth={true}>
-            <HealingMeetingPage />
-          </AuthGuard>
+          <LazyLoadRoutes>
+            <AuthGuard auth={true}>
+              <HealingMeetingPage />
+            </AuthGuard>
+          </LazyLoadRoutes>
         ),
       },
       {
@@ -71,11 +115,19 @@ const routerInfo = [
         children: [
           {
             path: ':pageIndex',
-            element: <HealingMeetingOverviewPage />,
+            element: (
+              <LazyLoadRoutes>
+                <HealingMeetingOverviewPage />
+              </LazyLoadRoutes>
+            ),
           },
           {
             path: 'detail/:meetingId',
-            element: <MeetingDetail />,
+            element: (
+              <LazyLoadRoutes>
+                <MeetingDetail />
+              </LazyLoadRoutes>
+            ),
           },
         ],
       },
@@ -84,19 +136,29 @@ const routerInfo = [
 
       {
         path: '/memoryspaceoverview',
-        element: <MemorySpaceOverviewPage />,
+        element: (
+          <LazyLoadRoutes>
+            <MemorySpaceOverviewPage />
+          </LazyLoadRoutes>
+        ),
       },
       {
         path: '/memoryspacecreate',
         element: (
-          <AuthGuard auth={true}>
-            <MemorySpaceCreatePage />,
-          </AuthGuard>
+          <LazyLoadRoutes>
+            <AuthGuard auth={true}>
+              <MemorySpaceCreatePage />
+            </AuthGuard>
+          </LazyLoadRoutes>
         ),
       },
       {
         path: '/memoryspace',
-        element: <MemorySpacePage />,
+        element: (
+          <LazyLoadRoutes>
+            <MemorySpacePage />
+          </LazyLoadRoutes>
+        ),
         children: [
           {
             path: ':userId',
@@ -104,22 +166,30 @@ const routerInfo = [
               {
                 path: 'setting',
                 element: (
-                  <AuthGuard auth={true}>
-                    <SettingSideBar />
-                  </AuthGuard>
+                  <LazyLoadRoutes>
+                    <AuthGuard auth={true}>
+                      <SettingSideBar />
+                    </AuthGuard>
+                  </LazyLoadRoutes>
                 ),
               },
               {
-                path: 'mailbox',
+                path: 'usage',
                 element: (
-                  <AuthGuard auth={true}>
-                    <MailboxSideBar />
-                  </AuthGuard>
+                  <LazyLoadRoutes>
+                    <AuthGuard auth={true}>
+                      <UsageTipSideBar />
+                    </AuthGuard>
+                  </LazyLoadRoutes>
                 ),
               },
               {
                 index: true,
-                element: <GuestBoxSideBar />,
+                element: (
+                  <LazyLoadRoutes>
+                    <GuestBoxSideBar />
+                  </LazyLoadRoutes>
+                ),
               },
             ],
           },
@@ -130,51 +200,85 @@ const routerInfo = [
       {
         path: '/signin',
         element: (
-          <AuthGuard auth={false}>
-            <SignInPage />
-          </AuthGuard>
+          <LazyLoadRoutes>
+            <AuthGuard auth={false}>
+              <SignInPage />
+            </AuthGuard>
+          </LazyLoadRoutes>
         ),
       },
       {
         path: '/signup',
         element: (
-          <AuthGuard auth={false}>
-            <SignUpPage />
-          </AuthGuard>
+          <LazyLoadRoutes>
+            <AuthGuard auth={false}>
+              <SignUpPage />
+            </AuthGuard>
+          </LazyLoadRoutes>
         ),
       },
-      { path: '/find', element: <FindPasswordPage /> },
-      { path: '/reset', element: <ResetPasswordPage /> },
+      {
+        path: '/find',
+        element: (
+          <LazyLoadRoutes>
+            <FindPasswordPage />
+          </LazyLoadRoutes>
+        ),
+      },
+      {
+        path: '/reset',
+        element: (
+          <LazyLoadRoutes>
+            <ResetPasswordPage />
+          </LazyLoadRoutes>
+        ),
+      },
       {
         path: '/mypage',
         element: (
-          <AuthGuard auth={true}>
-            <MyPage />
-          </AuthGuard>
+          <LazyLoadRoutes>
+            <AuthGuard auth={true}>
+              <MyPage />
+            </AuthGuard>
+          </LazyLoadRoutes>
         ),
 
         children: [
           // { index: true, element: <PersonalInfo /> },
           {
             path: 'personalInfo',
-            element: <PersonalInfo />,
+            element: (
+              <LazyLoadRoutes>
+                <PersonalInfo />
+              </LazyLoadRoutes>
+            ),
           },
           {
             path: 'createdMeetings',
-            element: <CreatedMeetings />,
+            element: (
+              <LazyLoadRoutes>
+                <CreatedMeetings />
+              </LazyLoadRoutes>
+            ),
           },
           {
             path: 'appliedMeetings',
-            element: <AppliedMeetings />,
+            element: (
+              <LazyLoadRoutes>
+                <AppliedMeetings />
+              </LazyLoadRoutes>
+            ),
           },
         ],
       },
       {
         path: '/admin/:pageIndex',
         element: (
-          <AuthGuard auth={true}>
-            <AdminPage />
-          </AuthGuard>
+          <LazyLoadRoutes>
+            <AuthGuard auth={true}>
+              <AdminPage />
+            </AuthGuard>
+          </LazyLoadRoutes>
         ),
       },
     ],

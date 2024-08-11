@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 const MemorySideBar = ({ userId }) => {
   const queryClient = useQueryClient();
-
   const currentConnetUserId = queryClient.getQueryData(['userInfo']);
 
   return (
@@ -12,7 +11,7 @@ const MemorySideBar = ({ userId }) => {
       <ul className="my-8 flex justify-center gap-x-5 px-4 text-white">
         {currentConnetUserId?.id === parseInt(userId) && (
           <li>
-            <NavLink to={`${userId}/mailbox`}>편지함</NavLink>
+            <NavLink to={`${userId}/usage`}>이용 TIP</NavLink>
           </li>
         )}
         <li>

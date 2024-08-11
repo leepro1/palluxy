@@ -53,7 +53,7 @@ const SpaceOverview = ({ data }) => {
     <div className="flex w-[330px] flex-col">
       <div className="h-[250px] w-full overflow-hidden">
         <img
-          className="object-cover"
+          className="h-full w-full object-cover"
           src={data.thumbnailUrl ? data.thumbnailUrl : defaultImage}
           alt="Room-thumbNail"
         />
