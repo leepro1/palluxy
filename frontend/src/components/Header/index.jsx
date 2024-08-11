@@ -1,7 +1,6 @@
 import Logo from '@assets/images/logo/logo.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
 import GlobalBtn from '@components/GlobalBtn';
-import ContentsLayout from '@layout/ContentsLayout';
 import { instance } from '@/utils/axios';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 

@@ -29,8 +29,8 @@ const MemorySpacePage = lazy(() => import('@pages/MemorySpacePage'));
 const SettingSideBar = lazy(
   () => import('@pages/MemorySpacePage/SideBar/SettingSideBar'),
 );
-const MailboxSideBar = lazy(
-  () => import('@pages/MemorySpacePage/SideBar/MailboxSideBar'),
+const UsageTipSideBar = lazy(
+  () => import('@pages/MemorySpacePage/SideBar/UsageTipSideBar'),
 );
 const GuestBoxSideBar = lazy(
   () => import('@pages/MemorySpacePage/SideBar/GuestBoxSideBar'),
@@ -174,11 +174,11 @@ const routerInfo = [
                 ),
               },
               {
-                path: 'mailbox',
+                path: 'usage',
                 element: (
                   <LazyLoadRoutes>
                     <AuthGuard auth={true}>
-                      <MailboxSideBar />
+                      <UsageTipSideBar />
                     </AuthGuard>
                   </LazyLoadRoutes>
                 ),

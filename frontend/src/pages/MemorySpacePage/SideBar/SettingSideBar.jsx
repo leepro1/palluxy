@@ -8,15 +8,19 @@ import ImgRotationBtn from '@components/Model/ImgRotationBtn';
 import { useModelPositionStore } from '@store/memorySpace';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updatePalRotation, updatePalPosition } from '@/api/petapi';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const SettingSideBar = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectFrame, setSelectFrame] = useState();
   const queryClient = useQueryClient();
   const position = useModelPositionStore((state) => state.position);
   const rotation = useModelPositionStore((state) => state.rotation);
+
+  const currentConnetUserId = queryClient.getQueryData(['userInfo']);
 
   const handleModal = useCallback(
     (frame) => {
@@ -87,6 +91,12 @@ const SettingSideBar = () => {
     };
     palRotationMutation(payload);
   };
+
+  useEffect(() => {
+    if (parseInt(userId) !== currentConnetUserId.id) {
+      navigate(`/memoryspace/${userId}`);
+    }
+  }, []);
 
   return (
     <MemorySideBarLayout>
