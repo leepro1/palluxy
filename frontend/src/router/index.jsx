@@ -1,6 +1,9 @@
+import React from 'react';
+
 // gaurd
 import AuthGuard from './AuthGuard';
 // home
+
 import HomePage from '@pages/HomePage';
 import MainLayout from '@layout/MainLayout';
 import NotFound from '@/components/NotFound';
