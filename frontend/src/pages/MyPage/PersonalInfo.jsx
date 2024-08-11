@@ -58,23 +58,26 @@ const PersonalInfo = () => {
 
   return (
     <ContentsLayout>
-      <div className="mx-16 font-jamsilLight text-lg md:text-xl">
-        <label className="font-jamsilRegular">개인정보</label>
-        <li className="mb-2 mt-6 font-jamsilLight">
-          닉네임: {userInformation.nickname}{' '}
-        </li>
-        <li className="mt-2 font-jamsilLight">
+      <div className="flex h-full flex-col p-4 font-jamsilLight text-lg md:text-xl">
+        <div className="py-5 text-center font-jamsilMedium text-2xl">
+          <NavLink to={'/mypage/createdMeetings'}>My Page</NavLink>
+        </div>
+        <div className="py-3 font-jamsilRegular">개인정보</div>
+        <div className="mb-2 mt-6 font-jamsilLight">
+          {userInformation.nickname} {'님 >'}
+        </div>
+        <div className="mt-2 font-jamsilLight">
           반려동물 이름:
           {petData?.name ? petData.name : ' 현재 등록된 반려동물이 없습니다'}
-        </li>
-        <li className="my-2 font-jamsilLight">
+        </div>
+        <button className="my-2 justify-center rounded border-pal-purple bg-pal-purple p-2 font-jamsilLight text-pal-purple text-white hover:border-none hover:bg-white hover:font-jamsilBold hover:text-pal-purple">
           <NavLink
             to={'/reset'}
-            className="hover:font-jamsilBold"
+            className=""
           >
             비밀번호 수정하기
           </NavLink>{' '}
-        </li>
+        </button>
       </div>
     </ContentsLayout>
   );

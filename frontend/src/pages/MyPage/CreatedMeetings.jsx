@@ -71,38 +71,36 @@ const CreatedMeetings = () => {
     content = meetings.map((meeting) => (
       <div
         key={meeting.id}
-        className="mx-16 my-2"
+        className="mx-5 my-2 rounded bg-white p-2 shadow-md"
       >
-        <div className="text-xl font-semibold">
-          <Link to={`/meetingoverview/detail/${meeting.id}`}>
-            {meeting.title}
-          </Link>
-        </div>
-        <p className="font-thin">{meeting.description}</p>
+        <Link to={`/meetingoverview/detail/${meeting.id}`}>
+          <div className="text-xl font-semibold">{meeting.title}</div>
+          <p className="font-thin">{meeting.description}</p>
+        </Link>
       </div>
     ));
   } else {
-    content = <p>현재 생성한 모임이 없습니다.</p>;
+    content = (
+      <p className="p-2 font-jamsilLight">현재 생성한 모임이 없습니다.</p>
+    );
   }
 
   return (
     <ContentsLayout>
-      <div>
-        <div className="flex flex-col justify-center">{content}</div>
-        <div className="flex justify-center">
-          <div className="absolute bottom-0">
-            <Pagination
-              itemsPerPage={itemsPerPage}
-              totalPage={totalPage}
-              paginate={paginate}
-              paginatePrev={paginatePrev}
-              paginateNext={paginateNext}
-              showingPage={currentPage}
-              showingPageMax={Math.min(currentPage + 2, totalPage)}
-              showingPageMin={Math.max(currentPage - 2, 1)}
-              pageIndexInt={currentPage}
-            />
-          </div>
+      <div className="flex min-h-[400px] flex-col justify-between">
+        <div className="flex flex-grow flex-col justify-center">{content}</div>
+        <div className="mt-4">
+          <Pagination
+            itemsPerPage={itemsPerPage}
+            totalPage={totalPage}
+            paginate={paginate}
+            paginatePrev={paginatePrev}
+            paginateNext={paginateNext}
+            showingPage={currentPage}
+            showingPageMax={Math.min(currentPage + 2, totalPage)}
+            showingPageMin={Math.max(currentPage - 2, 1)}
+            pageIndexInt={currentPage}
+          />
         </div>
       </div>
     </ContentsLayout>
