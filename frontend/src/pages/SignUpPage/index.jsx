@@ -548,7 +548,11 @@ const SignupProcess = () => {
               <button
                 type="button"
                 className="ml-2 text-pal-purple underline"
-                onClick={() => alert('이용약관 내용')}
+                onClick={() =>
+                  window.open(
+                    'https://quark-evergreen-3d7.notion.site/556c62a43f084ffebac976bae0c90c2a',
+                  )
+                }
               >
                 보기
               </button>
@@ -582,7 +586,11 @@ const SignupProcess = () => {
               <button
                 type="button"
                 className="ml-2 text-pal-purple underline"
-                onClick={() => alert('개인정보 수집 및 이용동의 내용')}
+                onClick={() =>
+                  window.open(
+                    'https://quark-evergreen-3d7.notion.site/5b56441074df47d4b332dc465763dab5',
+                  )
+                }
               >
                 보기
               </button>
