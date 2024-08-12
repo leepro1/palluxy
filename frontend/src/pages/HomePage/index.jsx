@@ -19,8 +19,8 @@ const HomePage = () => {
               <div className="h-[220px] w-[320px] bg-black lg:h-[300px] lg:w-[500px]"></div>
               <div className="flex flex-col gap-y-3 font-jamsilRegular text-lg">
                 <p>o 소중한 반려동물과의 추억을 저장해 보세요.</p>
-                <p>o 팰럭시에 살고있는 반려동물과 편지를주고받아 보세요.</p>
-                <p>o 펫로스를 겪은 다른 사용자에게 방명록을 남겨보세요.</p>
+                <p>o 팰럭시에 살고있는 반려동물과 편지를 주고받아 보세요.</p>
+                <p>o 펫로스를 겪은 다른 반려인에게 방명록을 남겨보세요.</p>
               </div>
             </div>
             {/* 치유모임 */}
@@ -29,8 +29,8 @@ const HomePage = () => {
               <div className="h-[220px] w-[320px] bg-black lg:h-[300px] lg:w-[500px]"></div>
               <div className="flex flex-col gap-y-3 font-jamsilRegular text-lg">
                 <p>
-                  o 펫로스를 겪은 다른 사용자들과의 화상 모임을 통해 서로
-                  소통해보세요.
+                  o 펫로스를 겪은 다른 반려인들과의 화상 모임을 통해 서로 소통해
+                  보세요.
                 </p>
                 <p>o 상처를 치유하고 아픔을 극복하는 데 도움이 될 것입니다.</p>
               </div>
