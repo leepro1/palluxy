@@ -92,7 +92,11 @@ const Header = () => {
               </li>
               <li>
                 <NavLink
-                  to={userData ? `/memoryspace/${userData.id}` : `/memoryspace`}
+                  to={
+                    userData
+                      ? `/memoryspace/${userData.id}/guestBox`
+                      : `/memoryspace`
+                  }
                 >
                   추억공간
                 </NavLink>

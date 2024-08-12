@@ -184,7 +184,7 @@ const routerInfo = [
                 ),
               },
               {
-                index: true,
+                path: 'guestBox',
                 element: (
                   <LazyLoadRoutes>
                     <GuestBoxSideBar />
