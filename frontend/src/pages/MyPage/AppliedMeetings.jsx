@@ -103,7 +103,7 @@ const AppliedMeetings = () => {
       <div className="flex min-h-[480px] flex-col">
         <div className="flex flex-grow flex-col">{content}</div>
         {meetings.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-4 flex justify-center">
             <Pagination
               itemsPerPage={itemsPerPage}
               totalPage={totalPage}

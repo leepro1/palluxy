@@ -37,24 +37,12 @@ const PersonalInfo = () => {
   useEffect(() => {
     if (roomData) {
       setRoomName(roomData.name);
+    } else if (roomError) {
+      setRoomName('아직 추억공간이 생성되지 않았습니다.');
+    } else if (roomData === null) {
+      setRoomName('아직 추억공간이 생성되지 않았습니다.');
     }
-  }, [roomData]);
-
-  if (userLoading || roomLoading) {
-    return (
-      <ContentsLayout>
-        <Loading />
-      </ContentsLayout>
-    );
-  }
-
-  if (userError || roomError) {
-    return (
-      <ContentsLayout>
-        <NotFound />
-      </ContentsLayout>
-    );
-  }
+  }, [roomData, roomError]);
 
   return (
     <ContentsLayout>
