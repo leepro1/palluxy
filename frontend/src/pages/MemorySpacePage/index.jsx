@@ -23,6 +23,10 @@ const MemorySpacePage = () => {
   });
 
   useEffect(() => {
+    if (!userData && !userId) {
+      navigate('/signin');
+      return;
+    }
     return () => {
       queryClient.removeQueries({ queryKey: ['memorySpace', userId] });
     };

@@ -2,7 +2,10 @@ import SpaceOverview from '@components/SpaceOverview';
 import ContentsLayout from '@layout/ContentsLayout';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchRoomOverview } from '@api/roomOverview';
+import {
+  fetchRoomOverview,
+  fetchRoomOverviewNoneUser,
+} from '@api/roomOverview';
 import { fetchUserByAccess } from '@api/user';
 
 const MemorySpaceOverviewPage = () => {
@@ -19,14 +22,31 @@ const MemorySpaceOverviewPage = () => {
         queryKey: ['userInfo'],
         queryFn: fetchUserByAccess,
       });
-      return fetchRoomOverview(data.id);
+
+      if (data) {
+        return fetchRoomOverview(data.id);
+      } else {
+        console.log('asdf');
+        return fetchRoomOverviewNoneUser();
+      }
     },
+    retry: 1,
   });
+
+  if (!roomOverview) {
+    return (
+      <div className="w-full text-center">
+        <p className="text-xl text-white">
+          탐방할 수 있는 공간이 아직 없습니다.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <ContentsLayout>
       <div className="relative flex flex-col items-center">
-        <div className="flex w-full justify-end py-4">
+        <div className="flex py-10">
           <span
             className="material-symbols-outlined cursor-pointer text-5xl text-white"
             onClick={() => {
@@ -36,7 +56,7 @@ const MemorySpaceOverviewPage = () => {
             cached
           </span>
         </div>
-        <div className="flex gap-x-32">
+        <div className="flex flex-col gap-y-8 sm:gap-y-12 lg:flex-row lg:gap-x-16">
           {isSuccess &&
             roomOverview.map((data) => (
               <SpaceOverview

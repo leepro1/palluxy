@@ -1,5 +1,4 @@
-// ConfirmModal.js
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const ConfirmModal = ({ show, message, onConfirm, onCancel }) => {
   if (!show) return null;
@@ -25,6 +24,13 @@ const ConfirmModal = ({ show, message, onConfirm, onCancel }) => {
       </div>
     </div>
   );
+};
+
+ConfirmModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default ConfirmModal;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import OpenViduVideoComponent from './OvVideo';
 
 export default class UserVideoComponent extends Component {
@@ -28,3 +29,7 @@ export default class UserVideoComponent extends Component {
     );
   }
 }
+UserVideoComponent.propTypes = {
+  streamManager: PropTypes.any,
+  isActive: PropTypes.bool,
+};

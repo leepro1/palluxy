@@ -23,6 +23,7 @@ public final class SECURITY_SET {
         // room
         "/api/rooms",
         "/api/rooms/user/*",
+        "/api/rooms/recommend",
 
         // album
         "/api/albums/*",

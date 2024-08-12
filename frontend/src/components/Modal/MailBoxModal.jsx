@@ -9,6 +9,7 @@ import { useState } from 'react';
 const MailBoxModal = ({ handler }) => {
   const queryClient = useQueryClient();
   const { userId } = useParams();
+  const [clickedMail, setClickedMail] = useState(null);
   const [selectMail, setSelectMail] = useState(null);
   const [isPostMail, setPostMail] = useState(false);
 
@@ -19,8 +20,9 @@ const MailBoxModal = ({ handler }) => {
     queryFn: () => fetchLetter(roomData.roomId),
   });
 
-  const handleOpenMail = (id) => {
+  const handleOpenMail = (id, mailIdx) => {
     setSelectMail(id);
+    setClickedMail(mailIdx);
     setPostMail(false);
   };
 
@@ -64,16 +66,23 @@ const MailBoxModal = ({ handler }) => {
           <div className="flex px-6 pb-10">
             <div className="letterBoxOverflow flex h-[400px] flex-col gap-y-2 overflow-y-scroll rounded-md border-2 border-black px-2 py-4">
               {isSuccess &&
-                letterData.map((data) => (
-                  <div
-                    key={data.id}
-                    onClick={() => {
-                      handleOpenMail(data.id);
-                    }}
-                  >
-                    <LetterIcon data={data} />
-                  </div>
-                ))}
+                letterData
+                  .slice()
+                  .reverse()
+                  .map((data, index) => (
+                    <div
+                      key={data.id}
+                      onClick={() => {
+                        handleOpenMail(data.id, letterData.length - index);
+                      }}
+                    >
+                      <LetterIcon
+                        data={data}
+                        clickedMail={clickedMail}
+                        sequence={letterData.length - index}
+                      />
+                    </div>
+                  ))}
             </div>
             <div className="flex grow flex-col justify-center">
               {selectMail && !isPostMail && (
