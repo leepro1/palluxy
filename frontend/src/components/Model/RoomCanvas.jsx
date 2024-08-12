@@ -26,7 +26,7 @@ const RoomCanvas = () => {
   const [target, setTarget] = useState({ x: 0, y: 0, z: 0 });
 
   const roomData = queryClient.getQueryData(['memorySpace', userId]);
-  const userData = queryClient.getQueryData(['userInfo', userId]);
+  const userData = queryClient.getQueryData(['userInfo']);
 
   const updatePosition = useModelPositionStore((state) => state.fetchPosition);
   const updateRotation = useModelPositionStore((state) => state.fetchRotation);
@@ -58,6 +58,7 @@ const RoomCanvas = () => {
 
   const handleModelClick = (event) => {
     if (event.object.name.includes('post')) {
+      if (parseInt(userId) !== userData?.id) return;
       setMailModalOpen(!isMailModalOpen);
       return;
     }

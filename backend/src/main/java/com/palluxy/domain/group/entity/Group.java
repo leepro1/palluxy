@@ -75,10 +75,6 @@ public class Group extends BaseEntity {
         this.remainingCapacity = newCapacity;
     }
 
-    public void updateApproveKey(String key) {
-        this.approveKey = key;
-    }
-
     public void updateInfo(String title, String description) {
         this.title = title;
         this.description = description;
@@ -86,5 +82,6 @@ public class Group extends BaseEntity {
 
     public void updateStatus(Status status, String key) {
         this.status = status;
+        this.approveKey = key;
     }
 }
