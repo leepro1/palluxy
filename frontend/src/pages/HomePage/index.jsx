@@ -8,7 +8,7 @@ const HomePage = () => {
         {/* slo */}
         <div className="flex flex-col items-center gap-y-3 py-16 font-jamsilBold text-2xl text-white lg:text-4xl">
           <h1>반려동물의 상실을 겪은 당신을 위한</h1>
-          <h1>PAL:Luxy</h1>
+          <h1>PAL:LUXY</h1>
         </div>
 
         {/* preview */}
