@@ -59,6 +59,8 @@ const RoomCanvas = () => {
   const handleModelClick = (event) => {
     if (event.object.name.includes('post')) {
       if (parseInt(userId) !== userData?.id) return;
+      if (!palMetaData || palMetaData.length === 0)
+        return alert('펫을 아직 안 불러오셨어요.');
       setMailModalOpen(!isMailModalOpen);
       return;
     }
@@ -125,7 +127,6 @@ const RoomCanvas = () => {
           <RooomModel data={isSuccess ? data.images : []} />
           <mesh>
             {palMetaData?.length >= 1 && <PalModel objData={palMetaData[0]} />}
-            {/* <PalModel /> */}
           </mesh>
         </group>
       </Canvas>

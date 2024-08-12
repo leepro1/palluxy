@@ -9,6 +9,7 @@ const UsageTipSideBar = () => {
   const navigate = useNavigate();
   const currentConnetUserId = queryClient.getQueryData(['userInfo']);
 
+  console.log('tip SideBar');
   useEffect(() => {
     if (parseInt(visitUserId) !== currentConnetUserId.id) {
       navigate(`/memoryspace/${visitUserId}`);

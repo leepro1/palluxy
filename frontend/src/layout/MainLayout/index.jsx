@@ -13,11 +13,11 @@ const MainLayout = () => {
   });
 
   return (
-    <div className="flex min-h-screen grow flex-col">
+    <div className="flex min-h-screen flex-col">
       <div className="fixed left-0 top-0 -z-20 min-h-screen w-screen bg-main-background bg-cover"></div>
       <div className="flex grow flex-col">
         <Header />
-        <div className="flex grow items-center justify-center">
+        <div className="read-only: grow">
           <Outlet />
         </div>
       </div>

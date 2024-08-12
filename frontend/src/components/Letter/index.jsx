@@ -5,12 +5,17 @@ import { useParams } from 'react-router-dom';
 
 import { postLetter, fetchPetId } from '@api/memorySpace/letterApi';
 
-export const LetterIcon = ({ data }) => {
+export const LetterIcon = ({ data, sequence, clickedMail }) => {
   return (
-    <div className="flex flex-col gap-y-2 rounded-md px-3 py-2 text-sm text-white">
+    <div
+      className={`flex flex-col gap-y-2 rounded-md px-3 py-2 text-sm text-white ${clickedMail === sequence && 'bg-[#E3E3E3]'}`}
+    >
       <div
-        className={`flex ${data.writer === 'USER' ? 'justify-start' : 'justify-end'} `}
+        className={`relative flex ${data.writer === 'USER' ? 'justify-start' : 'justify-end'} `}
       >
+        <span className="absolute -left-2 -top-2 w-4 items-center justify-center rounded-full bg-pal-purple text-center text-xs text-white">
+          {sequence}
+        </span>
         <span
           className={`material-symbols-outlined cursor-pointer ${data.writer === 'USER' ? 'text-[#91C166]' : 'text-pal-purple'}`}
         >
@@ -117,6 +122,8 @@ export const LetterCreate = ({ handler }) => {
 
 LetterIcon.propTypes = {
   data: PropTypes.object.isRequired,
+  sequence: PropTypes.number.isRequired,
+  clickedMail: PropTypes.number.isRequired,
 };
 
 LetterContent.propTypes = {

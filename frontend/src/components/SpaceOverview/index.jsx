@@ -78,7 +78,7 @@ const SpaceOverview = ({ data }) => {
             handleHome();
           }}
         >
-          <span className="material-symbols-outlined p-1 text-[#EADDFF]">
+          <span className="material-symbols-outlined p-1 text-[#E8B0B0]">
             home
           </span>
         </div>
