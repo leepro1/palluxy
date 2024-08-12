@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const ChatMessage = ({ content, userId, createdAt, isOwnMessage }) => {
   return (
@@ -18,6 +18,13 @@ const ChatMessage = ({ content, userId, createdAt, isOwnMessage }) => {
       </div>
     </div>
   );
+};
+
+ChatMessage.propTypes = {
+  content: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired,
+  isOwnMessage: PropTypes.bool.isRequired,
 };
 
 export default ChatMessage;

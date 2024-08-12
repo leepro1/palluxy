@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import ChatMessage from './ChatMessage';
-import ChatInput from './ChatInput';
+import { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import ChatMessage from '@components/Chat/ChatMessage';
+import ChatInput from '@components/Chat/ChatInput';
 
 const ChatMessageBox = ({ messages, myUserName, onSend, text, setText }) => {
   const chatContainerRef = useRef(null);
@@ -41,6 +42,24 @@ const ChatMessageBox = ({ messages, myUserName, onSend, text, setText }) => {
       />
     </div>
   );
+};
+
+ChatMessageBox.propTypes = {
+  messages: PropTypes.arrayOf(
+    PropTypes.shape({
+      content: PropTypes.string.isRequired,
+      sender: PropTypes.string.isRequired,
+      timestamp: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.instanceOf(Date),
+      ]).isRequired,
+    }),
+  ),
+  myUserName: PropTypes.string.isRequired,
+  onSend: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
+  setText: PropTypes.func.isRequired,
 };
 
 export default ChatMessageBox;

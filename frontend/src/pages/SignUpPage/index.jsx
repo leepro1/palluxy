@@ -622,15 +622,17 @@ const SignupProcess = () => {
           </div>
           {/* 성공 모달  */}
           {showSuccessModal && (
-            <div className="flex items-center justify-center bg-black bg-opacity-50">
-              <div className="rounded bg-white p-6">
-                <h3 className="mb-4 text-xl font-bold">{successMessage}</h3>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="z-60 flex flex-col items-center justify-center rounded bg-white p-6">
+                <h3 className="mb-4 font-jamsilRegular text-lg">
+                  {successMessage}
+                </h3>
                 <button
                   onClick={() => {
                     setShowSuccessModal(false);
                     navigate('/signin');
                   }}
-                  className="mt-4 justify-center rounded bg-pal-purple px-4 py-2 text-white"
+                  className="mt-4 justify-center rounded bg-pal-purple px-4 py-2 font-jamsilRegular text-white"
                 >
                   확인
                 </button>
