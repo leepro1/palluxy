@@ -119,8 +119,6 @@ const SignupProcess = () => {
 
   const registerUser = async (data) => {
     try {
-      console.log('유저 등록', data);
-
       const response = await instance.post('/api/users', data);
 
       if (response.status !== 201) {

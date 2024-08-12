@@ -26,7 +26,6 @@ const MemorySpaceOverviewPage = () => {
       if (data) {
         return fetchRoomOverview(data.id);
       } else {
-        console.log('asdf');
         return fetchRoomOverviewNoneUser();
       }
     },

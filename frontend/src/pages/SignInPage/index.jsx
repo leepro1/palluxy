@@ -50,12 +50,10 @@ const SigninProcess = () => {
   const { mutate: signMutate } = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
-      console.log('로그인 성공', data);
       queryClient.setQueryData(['userInfo'], data);
       navigate('/', { replace: true });
     },
-    onError: (error) => {
-      console.log('로그인 실패', error);
+    onError: () => {
       reset({ email: '', password: '' });
       setLoginError('아이디 또는 비밀번호가 잘못 입력되었습니다.');
     },
