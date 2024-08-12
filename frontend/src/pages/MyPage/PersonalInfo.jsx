@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
-import Loading from '@components/Loading';
+import SvgLoading from '@components/DynamicLoading/SvgLoading';
 import NotFound from '@components/NotFound';
 import { fetchUserRoom } from '@api/memorySpace/roomApi';
 
@@ -20,6 +20,7 @@ const PersonalInfo = () => {
   } = useQuery({
     queryKey: ['userInfo'],
     queryFn: fetchUserInfo,
+    retry: 1,
   });
 
   const [roomName, setRoomName] = useState('');
@@ -32,6 +33,7 @@ const PersonalInfo = () => {
     queryKey: ['userRoom', userInfo?.id],
     queryFn: () => fetchUserRoom(userInfo?.id),
     enabled: !!userInfo?.id,
+    retry: 1,
   });
 
   useEffect(() => {
@@ -43,6 +45,22 @@ const PersonalInfo = () => {
       setRoomName('아직 추억공간이 생성되지 않았습니다.');
     }
   }, [roomData, roomError]);
+
+  if (userLoading || roomLoading) {
+    return (
+      <ContentsLayout>
+        <div className="flex h-full items-end justify-center">
+          <SvgLoading />
+        </div>
+      </ContentsLayout>
+    );
+  } else if (userError) {
+    return (
+      <ContentsLayout>
+        <NotFound />
+      </ContentsLayout>
+    );
+  }
 
   return (
     <ContentsLayout>

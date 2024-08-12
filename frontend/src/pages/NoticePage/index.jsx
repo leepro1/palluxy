@@ -104,37 +104,35 @@ const NoticeBoard = () => {
           )}
 
           <div className="mt-2">
-            <div className="flex w-full rounded-tl-md rounded-tr-md border-white bg-pal-purple font-jamsilRegular text-sm text-white md:text-base">
-              <div className="w-[50px] items-center justify-center py-3 pl-2 sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
+            <div className="flex w-full items-center rounded-t-md bg-pal-purple pl-2 font-jamsilRegular text-sm text-white md:text-base">
+              <div className="w-[50px] py-3 sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
                 <p>No.</p>
               </div>
-              <div className="w-[150px] items-center py-3 pl-2 sm:w-[250px] sm:pl-4 md:w-[600px] md:pl-10">
+              <div className="w-[150px] py-3 sm:w-[250px] sm:pl-4 md:w-[600px] md:pl-10">
                 <p>제목</p>
               </div>
-              <div className="w-[100px] items-center py-3 sm:w-[150px] sm:pl-4 md:w-[300px] md:pl-10">
+              <div className="w-[100px] py-3 sm:w-[150px] sm:pl-4 md:w-[300px] md:pl-10">
                 <p>날짜</p>
               </div>
             </div>
           </div>
-          <div className="mb-5 rounded-bl-md rounded-br-md bg-white bg-opacity-70">
+          <div className="mb-5 rounded-b-md bg-white bg-opacity-70">
             {notices.length > 0 ? (
               notices.map((notice) => (
                 <div
                   key={notice.id}
-                  className="border-y-1 flex w-full flex-row py-3 font-jamsilLight hover:bg-white hover:bg-opacity-40 hover:font-jamsilMedium"
+                  className="border-y-1 flex w-full py-3 font-jamsilLight hover:bg-white hover:bg-opacity-40 hover:font-jamsilMedium"
                 >
                   <Link to={`/noticeboard/detail/${notice.id}`}>
-                    <div className="flex w-full flex-col text-sm md:text-base">
-                      <div className="flex flex-row">
-                        <div className="w-[50px] pl-2 sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
-                          {notice.id}
-                        </div>
-                        <div className="w-[150px] pl-2 sm:w-[250px] sm:pl-4 md:w-[600px] md:pl-10">
-                          {notice.title}
-                        </div>
-                        <div className="w-[100px] pl-2 sm:w-[150px] sm:pl-4 md:w-[300px]">
-                          {notice.createdAt}
-                        </div>
+                    <div className="flex w-full items-center pl-2 text-sm md:text-base">
+                      <div className="w-[50px] sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
+                        {notice.id}
+                      </div>
+                      <div className="w-[150px] sm:w-[250px] sm:pl-4 md:w-[600px] md:pl-8">
+                        {notice.title}
+                      </div>
+                      <div className="w-[100px] sm:w-[150px] sm:pl-4 md:w-[240px] md:pl-0">
+                        {notice.createdAt}
                       </div>
                     </div>
                   </Link>

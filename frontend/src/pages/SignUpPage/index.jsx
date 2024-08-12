@@ -3,6 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
+import CustomModal from '@components/Modal/CustomModal';
 
 const SignupProcess = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const SignupProcess = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
 
   const {
     handleSubmit,
@@ -26,6 +30,16 @@ const SignupProcess = () => {
     setError,
     clearErrors,
   } = useForm({ mode: 'onChange' });
+
+  const showModal = (title, message) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     let timerInterval;
@@ -180,9 +194,9 @@ const SignupProcess = () => {
       }
 
       setVerificationCodeSent(true);
-      alert('인증코드가 이메일로 전송되었습니다.');
+      showModal('Success', '인증코드가 이메일로 전송되었습니다.');
     } catch (error) {
-      throw new Error(error.message);
+      showModal('Error', error.message);
     }
   };
 
@@ -196,9 +210,9 @@ const SignupProcess = () => {
       if (response.status === 200) {
         setIsEmailVerified(true);
         clearErrors('emailVerification');
-        alert('이메일 인증에 성공했습니다.');
+        showModal('Success', '이메일 인증에 성공했습니다.');
       } else {
-        throw new Error('인증코드가 올바르지 않습니다.');
+        showModal('Error', '인증코드가 올바르지 않습니다.');
       }
     } catch (error) {
       setError('emailVerification', {
@@ -641,6 +655,12 @@ const SignupProcess = () => {
           )}
         </div>
       </div>
+      <CustomModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={modalTitle}
+        message={modalMessage}
+      />
     </ContentsLayout>
   );
 };

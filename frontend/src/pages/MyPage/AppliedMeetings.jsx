@@ -80,10 +80,7 @@ const AppliedMeetings = () => {
               <div className="font-jamsilRegular text-xl">{meeting.title}</div>
               <p className="font-jamsilLight">{meeting.description}</p>
             </Link>
-            <div
-              className="flex items-center text-end"
-              x
-            >
+            <div className="flex items-center text-end">
               {meeting.startTime.split('T')[0]}
             </div>
           </div>
