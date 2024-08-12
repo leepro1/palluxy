@@ -32,7 +32,7 @@ const MemorySpaceOverviewPage = () => {
     retry: 1,
   });
 
-  if (!roomOverview) {
+  if (!roomOverview || roomOverview.length === 0) {
     return (
       <div className="w-full text-center">
         <p className="text-xl text-white">
@@ -45,7 +45,8 @@ const MemorySpaceOverviewPage = () => {
   return (
     <ContentsLayout>
       <div className="relative flex flex-col items-center">
-        <div className="flex py-10">
+        <div className="flex items-center gap-x-4 py-10 text-xl text-white">
+          <span>새로고침</span>
           <span
             className="material-symbols-outlined cursor-pointer text-5xl text-white"
             onClick={() => {

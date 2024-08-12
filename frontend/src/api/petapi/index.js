@@ -20,4 +20,16 @@ const updatePalRotation = async (payload) => {
   );
 };
 
-export { fetchpetPersonalities, updatePalPosition, updatePalRotation };
+const updatePalObj = async (payload) => {
+  await instance.put(
+    `api/rooms/${payload.roomId}/petmeta/${payload.petMetaId}`,
+    payload.data,
+  );
+};
+
+export {
+  fetchpetPersonalities,
+  updatePalPosition,
+  updatePalRotation,
+  updatePalObj,
+};
