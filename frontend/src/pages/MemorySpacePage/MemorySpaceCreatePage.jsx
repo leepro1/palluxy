@@ -82,6 +82,9 @@ const MemorySpaceCreatePage = () => {
   const memorySpaceCreateSubmit = async (formValues) => {
     // resetField('name');
     // resetField('password');
+    if (!uploadImage) {
+      return alert('추억공간 대표 이미지는 필수입니다.');
+    }
     const userInfo = queryClient.getQueryData(['userInfo']);
     const characters = queryClient.getQueryData(['petPersonalities']);
     const filteredValue = formValues.character.map((character) => {
@@ -104,6 +107,7 @@ const MemorySpaceCreatePage = () => {
       firstAt: formValues.first_at,
       lastAt: formValues.last_at,
     };
+
     try {
       await petMutate(petPayload);
       await roomMutate(memorySpacePayload);

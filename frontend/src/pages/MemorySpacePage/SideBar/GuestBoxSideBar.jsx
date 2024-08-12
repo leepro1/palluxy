@@ -16,7 +16,6 @@ const GuestBoxSideBar = () => {
   const { userId } = useParams();
   const userData = queryClient.getQueryData(['userInfo']);
   const roomData = queryClient.getQueryData(['memorySpace', userId]);
-  console.log('guiest book side');
   const { data: guestBookData, isSuccess } = useQuery({
     queryKey: ['guestBook', userId],
     queryFn: () => fetchGuestbookComment(roomData.roomId),

@@ -57,17 +57,21 @@ const PalCreateModal = ({ roomId, handler }) => {
     };
     try {
       const res = await palImageMutate(payload);
+      console.log('asdf');
       const palMetaPayload = {
         roomId: res.roomId,
         objFilePath: res.file,
       };
+
       await palMetaMutate(palMetaPayload);
+      console.log('asdfasdf');
       const petId = await fetchPetId();
       const letterPayload = {
         roomId: res.roomId,
         petId: petId,
       };
       await palLetterMutate(letterPayload);
+      console.log('asdfasdfasdf');
     } catch (e) {
       alert('렌더링 과정 중 오류가 발생했습니다.');
     }
