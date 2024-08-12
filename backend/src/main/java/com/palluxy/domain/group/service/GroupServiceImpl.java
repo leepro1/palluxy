@@ -130,6 +130,7 @@ public class GroupServiceImpl implements GroupService {
         Group group = findById(groupId);
         String key = generateKey();
         updateGroupStatus(group, Status.ACCEPT, key);
+        groupRepository.saveAndFlush(group);
 
         return group;
     }
