@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { postPalImage, postCreatePalmeta } from '@api/memorySpace/createApi';
 import { postFirstLetter, fetchPetId } from '@api/memorySpace/letterApi';
+import { updatePalObj } from '@api/petapi';
 
 const PalCreateModal = ({ roomId, handler }) => {
   const [uploadImage, setUploadImage] = useState(null);
@@ -17,6 +18,16 @@ const PalCreateModal = ({ roomId, handler }) => {
       mutationFn: postPalImage,
     });
 
+  const { mutateAsync: updatePalMetaMutate } = useMutation({
+    mutationFn: updatePalObj,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['palMeta', userId],
+      });
+      handler(false);
+    },
+  });
+
   const { mutateAsync: palMetaMutate } = useMutation({
     mutationFn: postCreatePalmeta,
     onSuccess: () => {
@@ -26,6 +37,7 @@ const PalCreateModal = ({ roomId, handler }) => {
       handler(false);
     },
   });
+
   const { mutateAsync: palLetterMutate } = useMutation({
     mutationFn: postFirstLetter,
   });
@@ -55,25 +67,41 @@ const PalCreateModal = ({ roomId, handler }) => {
       roomId: roomId,
       data: formData,
     };
-    try {
-      const res = await palImageMutate(payload);
-      console.log('asdf');
-      const palMetaPayload = {
-        roomId: res.roomId,
-        objFilePath: res.file,
-      };
-
-      await palMetaMutate(palMetaPayload);
-      console.log('asdfasdf');
-      const petId = await fetchPetId();
-      const letterPayload = {
-        roomId: res.roomId,
-        petId: petId,
-      };
-      await palLetterMutate(letterPayload);
-      console.log('asdfasdfasdf');
-    } catch (e) {
-      alert('렌더링 과정 중 오류가 발생했습니다.');
+    const palData = queryClient.getQueryData(['palMeta', userId]);
+    if (palData.length >= 1) {
+      try {
+        // 3d 파일 받기
+        const res = await palImageMutate(payload);
+        const palMetaPayload = {
+          roomId: res.roomId,
+          petMetaId: palData[0].petMetaId,
+          data: { objFilePath: res.file },
+        };
+        // palmeta 생성
+        await updatePalMetaMutate(palMetaPayload);
+      } catch (e) {
+        alert('렌더링 과정 중 오류가 발생했습니다.');
+      }
+    } else {
+      try {
+        // 3d 파일 받기
+        const res = await palImageMutate(payload);
+        const palMetaPayload = {
+          roomId: res.roomId,
+          objFilePath: res.file,
+        };
+        // palmeta 생성
+        await palMetaMutate(palMetaPayload);
+        const petId = await fetchPetId();
+        const letterPayload = {
+          roomId: res.roomId,
+          petId: petId,
+        };
+        // 첫편지 보내기
+        await palLetterMutate(letterPayload);
+      } catch (e) {
+        alert('렌더링 과정 중 오류가 발생했습니다.');
+      }
     }
   };
 
