@@ -19,7 +19,7 @@ const MyPage = () => {
   return (
     <ContentsLayout>
       <div className="flex flex-col items-center justify-center gap-10 md:w-full md:flex-row">
-        <aside className="h-[400px] w-[500px] rounded-lg bg-white bg-opacity-50 p-4 md:mt-10 md:h-[520px] md:w-[400px]">
+        <aside className="h-[350px] w-[500px] self-center rounded-lg bg-white p-4 md:mt-10 md:h-[400px] md:w-[350px] md:self-end">
           <PersonalInfo />
         </aside>
         <div className="flex min-h-[500px] w-[500px] flex-col md:w-[800px]">
@@ -28,7 +28,7 @@ const MyPage = () => {
               to="createdMeetings"
               className={`${
                 location.pathname === '/mypage/createdMeetings'
-                  ? 'rounded-t-lg bg-white bg-opacity-70 p-2 font-jamsilMedium text-black'
+                  ? 'rounded-t-lg bg-white bg-opacity-70 p-2 font-jamsilMedium text-pal-purple'
                   : 'rounded-t-lg bg-white bg-opacity-50 p-2'
               }`}
             >
@@ -45,7 +45,7 @@ const MyPage = () => {
               신청한 치유모임
             </Link>
           </nav>
-          <div className="min-h-[400px] rounded-b-md rounded-tr-md bg-white bg-opacity-70 p-5">
+          <div className="min-h-[480px] rounded-b-md rounded-tr-md bg-white bg-opacity-70 p-5">
             <Outlet />
           </div>
         </div>
