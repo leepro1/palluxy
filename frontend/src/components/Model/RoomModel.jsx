@@ -6,7 +6,8 @@ import React from 'react';
 
 const RoomModel = React.memo(({ data }) => {
   const { materials, scene } = useGLTF('/models/palluxy.glb');
-
+  materials['frameMaterial.001'].map = null;
+  materials['frameMaterial.002'].map = null;
   scene.scale.x = 1.3;
   scene.scale.y = 1.3;
   scene.scale.z = 1.3;

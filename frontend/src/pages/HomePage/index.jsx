@@ -8,16 +8,16 @@ const HomePage = () => {
         {/* slo */}
         <div className="flex flex-col items-center gap-y-3 py-16 font-jamsilBold text-2xl text-white lg:text-4xl">
           <h1>반려동물의 상실을 겪은 당신을 위한</h1>
-          <h1>PAL:Luxy</h1>
+          <h1>PAL:LUXY</h1>
         </div>
 
         {/* preview */}
         <div className="mx-5 my-10">
           <div className="grid justify-center gap-y-10 lg:flex lg:justify-between">
             {/* 추억공간 */}
-            <div className="flex flex-col gap-y-5 rounded-md bg-pal-purple px-4 py-10 font-jamsilBold text-white">
+            <div className="flex flex-col gap-y-5 rounded-md px-4 py-10 font-jamsilBold text-white">
               <h2 className="text-2xl">반려동물 추억공간</h2>
-              <div className="h-[220px] w-[320px] bg-black lg:h-[300px] lg:w-[500px]">
+              <div className="h-[180px] w-[280px] bg-black lg:h-[300px] lg:w-[500px]">
                 <img
                   className="h-full w-full"
                   src={roomPreview}
@@ -31,9 +31,9 @@ const HomePage = () => {
               </div>
             </div>
             {/* 치유모임 */}
-            <div className="flex flex-col gap-y-5 rounded-md bg-pal-purple px-4 py-10 font-jamsilBold text-white">
+            <div className="flex flex-col gap-y-5 rounded-md px-4 py-10 font-jamsilBold text-white">
               <h2 className="text-2xl">치유모임</h2>
-              <div className="h-[220px] w-[320px] bg-black lg:h-[300px] lg:w-[500px]">
+              <div className="h-[180px] w-[280px] bg-black lg:h-[300px] lg:w-[500px]">
                 <img
                   className="h-full w-full"
                   src={meetingPreview}

@@ -11,7 +11,7 @@ services:
       my-cache-server:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/ssafy_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/test_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=ssafy
       - SPRING_REDIS_HOST=my-cache-server

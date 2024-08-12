@@ -22,7 +22,7 @@ const MemorySideBar = ({ userId }) => {
             <NavLink
               to={`${userId}/usage`}
               className={({ isActive }) =>
-                isActive && 'border-b-2 border-white pb-1'
+                isActive ? 'border-b-2 border-white pb-1' : undefined
               }
             >
               이용 TIP
@@ -33,7 +33,7 @@ const MemorySideBar = ({ userId }) => {
           <NavLink
             to={`${userId}/guestBox`}
             className={({ isActive }) =>
-              isActive && 'border-b-2 border-white pb-1'
+              isActive ? 'border-b-2 border-white pb-1' : undefined
             }
           >
             방명록
@@ -44,7 +44,7 @@ const MemorySideBar = ({ userId }) => {
             <NavLink
               to={`${userId}/setting`}
               className={({ isActive }) =>
-                isActive && 'border-b-2 border-white pb-1'
+                isActive ? 'border-b-2 border-white pb-1' : undefined
               }
             >
               추억공간 설정
