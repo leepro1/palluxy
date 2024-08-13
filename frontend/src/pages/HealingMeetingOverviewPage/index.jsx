@@ -278,8 +278,8 @@ const HealingSessionPage = () => {
             ))}
           </div>
         ) : (
-          <div className="w-full py-10 text-center">
-            <p className="text-xl text-white">
+          <div className="h-[50vh] w-full py-10 text-center">
+            <p className="flex h-full items-center justify-center text-xl text-white">
               아직 신청할 수 있는 모임이 없습니다! 새로운 모집 공고를 내보시는게
               어떨까요?
             </p>
