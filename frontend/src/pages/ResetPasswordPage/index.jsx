@@ -64,44 +64,46 @@ const ResetPasswordModal = () => {
   return (
     <ContentsLayout>
       <div className="flex items-center justify-center">
-        <div className="w-[700px] rounded bg-white bg-opacity-60 p-10">
-          <div className="mb-4 flex justify-center">
+        <div className="w-[350px] rounded bg-white bg-opacity-60 p-6 sm:w-[600px]">
+          <div className="mb-6 flex justify-center">
             <img
               src={logo}
               alt="logo_image"
             />
           </div>
-          <h4 className="mb-10 text-center font-jamsilRegular text-black">
+          <h4 className="mb-6 text-center font-jamsilRegular text-black">
             변경하실 비밀번호를 입력하세요.
           </h4>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
-              <div className="flex flex-row items-center">
-                <label className="mr-2 w-1/3 text-end font-jamsilRegular text-gray-700">
+              <div className="flex flex-col items-center sm:flex-row">
+                <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/4 sm:text-right">
                   비밀번호
                 </label>
-                <Controller
-                  name="password"
-                  control={control}
-                  defaultValue=""
-                  rules={{
-                    required: '비밀번호를 입력해주세요.',
-                    validate: validatePassword,
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="password"
-                      className="w-full rounded border px-3 py-2 text-black"
-                      placeholder="비밀번호를 입력해주세요."
-                    />
-                  )}
-                />
+                <div className="w-full sm:w-3/4">
+                  <Controller
+                    name="password"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: '비밀번호를 입력해주세요.',
+                      validate: validatePassword,
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="password"
+                        className="w-full rounded border px-3 py-2 text-black"
+                        placeholder="비밀번호를 입력해주세요."
+                      />
+                    )}
+                  />
+                </div>
               </div>
-              <div className="flex flex-row">
-                <div className="w-1/3"></div>
-                <div className="w-full">
+              <div className="flex">
+                <div className="w-1/4"></div>
+                <div className="w-full sm:w-3/4">
                   {errors.password && (
                     <p className="text-red-500">{errors.password.message}</p>
                   )}
@@ -112,27 +114,29 @@ const ResetPasswordModal = () => {
             {/* 비밀번호 재확인 */}
             <div className="mb-4">
               <div className="flex flex-row items-center">
-                <label className="mr-2 w-1/3 text-end font-jamsilRegular text-gray-700">
+                <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/4 sm:text-right">
                   비밀번호 확인
                 </label>
-                <Controller
-                  name="confirmPassword"
-                  control={control}
-                  defaultValue=""
-                  rules={{
-                    required: '비밀번호를 다시 입력해주세요.',
-                    validate: (value) =>
-                      value === password || '비밀번호가 일치하지 않습니다.',
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="password"
-                      className="w-full rounded border px-3 py-2 text-black"
-                      placeholder="비밀번호를 다시 입력해주세요."
-                    />
-                  )}
-                />
+                <div className="w-full sm:w-3/4">
+                  <Controller
+                    name="confirmPassword"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: '비밀번호를 다시 입력해주세요.',
+                      validate: (value) =>
+                        value === password || '비밀번호가 일치하지 않습니다.',
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="password"
+                        className="w-full rounded border px-3 py-2 text-black"
+                        placeholder="비밀번호를 다시 입력해주세요."
+                      />
+                    )}
+                  />
+                </div>
               </div>
               <div className="flex flex-row">
                 <div className="w-1/3"></div>

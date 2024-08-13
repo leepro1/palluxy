@@ -71,6 +71,7 @@ const CreatedMeetings = () => {
 
   if (meetings.length > 0) {
     content = meetings.map((meeting) => {
+      console.log(meeting);
       return (
         <div
           key={meeting.id}
@@ -81,12 +82,18 @@ const CreatedMeetings = () => {
               <div className="font-jamsilRegular text-xl">{meeting.title}</div>
               <p className="font-jamsilLight">{meeting.description}</p>
             </Link>
-            <div
-              className="flex items-center text-end"
-              x
-            >
-              {meeting.startTime.split('T')[0]}
-            </div>
+            {meeting.status === 'ACCEPT' ? (
+              <div className="flex items-center text-end">
+                {meeting.startTime.split('T')[0]}
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-gray-400">
+                <span className="material-symbols-outlined">pending</span>
+                <span className="flex items-center text-end">
+                  {'승인 대기 중'}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       );

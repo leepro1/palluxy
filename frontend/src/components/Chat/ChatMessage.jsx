@@ -3,19 +3,25 @@ import PropTypes from 'prop-types';
 const ChatMessage = ({ content, userId, createdAt, isOwnMessage }) => {
   return (
     <div
-      className={`mb-2 flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+      className={`mb-2 flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}
     >
+      <p
+        className={`mb-1 text-xs font-medium ${isOwnMessage ? 'mr-1' : 'ml-1'}`}
+      >
+        {userId}
+      </p>
       <div
-        className={`max-w-full break-words rounded-lg p-2 ${
+        className={`max-w-[75%] break-words rounded-t-3xl p-2 ${
           isOwnMessage
-            ? 'bg-pal-purple text-white'
-            : 'bg-pal-disable text-white'
+            ? 'rounded-bl-3xl bg-pal-purple text-white'
+            : 'rounded-br-3xl bg-pal-disable text-white'
         }`}
       >
-        <p className="text-xs">{userId}</p>
         <p className="text-sm">{content}</p>
-        <p className="mt-1 text-right text-xs">{createdAt}</p>
       </div>
+      <p className={`mt-1 text-xs ${isOwnMessage ? 'mr-1' : 'ml-1'}`}>
+        {createdAt}
+      </p>
     </div>
   );
 };

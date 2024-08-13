@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { instance } from '@/utils/axios';
 import ContentsLayout from '@layout/ContentsLayout';
-import Loading from '@components/Loading';
+import SvgLoading from '@components/DynamicLoading/SvgLoading';
 import NotFound from '@components/NotFound';
 import { fetchUserRoom } from '@api/memorySpace/roomApi';
 
@@ -20,6 +20,7 @@ const PersonalInfo = () => {
   } = useQuery({
     queryKey: ['userInfo'],
     queryFn: fetchUserInfo,
+    retry: 1,
   });
 
   const [roomName, setRoomName] = useState('');
@@ -32,6 +33,7 @@ const PersonalInfo = () => {
     queryKey: ['userRoom', userInfo?.id],
     queryFn: () => fetchUserRoom(userInfo?.id),
     enabled: !!userInfo?.id,
+    retry: 1,
   });
 
   useEffect(() => {
@@ -44,13 +46,26 @@ const PersonalInfo = () => {
     }
   }, [roomData, roomError]);
 
+  if (userLoading || roomLoading) {
+    return (
+      <ContentsLayout>
+        <div className="flex h-full items-end justify-center">
+          <SvgLoading />
+        </div>
+      </ContentsLayout>
+    );
+  }
+
   return (
     <ContentsLayout>
       <div className="flex h-full flex-col p-4 font-jamsilLight md:text-xl">
         <div className="py-5 text-center font-jamsilMedium text-2xl text-pal-purple">
           <NavLink to={'/mypage/createdMeetings'}>My Page</NavLink>
         </div>
-        <div className="py-3 font-jamsilRegular text-lg">개인정보</div>
+        <div className="flex items-center py-3 text-center font-jamsilRegular text-lg">
+          <span className="material-symbols-outlined">account_circle</span>
+          <span>개인정보</span>
+        </div>
         <div className="mb-2 mt-6 font-jamsilLight text-base">
           {'닉네임 > '}
           {userInfo.nickname}

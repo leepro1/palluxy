@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ContentsLayout from '@layout/ContentsLayout';
 import PersonalInfo from '@pages/MyPage/PersonalInfo';
 
 const MyPage = () => {
-  const queryClient = useQueryClient();
-  const userInfo = queryClient.getQueryData(['userInfo']);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -19,7 +16,7 @@ const MyPage = () => {
   return (
     <ContentsLayout>
       <div className="flex flex-col items-center justify-center gap-10 md:w-full md:flex-row">
-        <aside className="h-[350px] w-[500px] self-center rounded-lg bg-white p-4 md:mt-10 md:h-[400px] md:w-[350px] md:self-start">
+        <aside className="h-[350px] w-[500px] self-center rounded-xl bg-white p-4 md:mt-10 md:h-[400px] md:w-[350px] md:self-start">
           <PersonalInfo />
         </aside>
         <div className="flex min-h-[500px] w-[500px] flex-col md:w-[800px]">

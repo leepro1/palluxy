@@ -21,7 +21,7 @@ const ChatMessageBox = ({ messages, myUserName, onSend, text, setText }) => {
     <div className="flex h-full w-full flex-col bg-white">
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto p-2"
+        className="flex-1 overflow-y-auto p-3"
         style={{ height: 'calc(100vh - 80px)' }}
       >
         {messages.map((message, idx) => (
