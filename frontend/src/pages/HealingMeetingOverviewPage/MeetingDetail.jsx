@@ -137,6 +137,13 @@ const MeetingDetail = () => {
         </button>
       );
     }
+
+    const now = new Date();
+    const startTime = new Date(data.startTime);
+    if (now >= startTime) {
+      return <p>이미 마감된 공고입니다</p>;
+    }
+
     if (data.groupUserId?.includes(userInfo.id)) {
       return (
         <button
