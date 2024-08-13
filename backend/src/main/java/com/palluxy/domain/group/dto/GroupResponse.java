@@ -19,6 +19,7 @@ public record GroupResponse(
     String title,
     String description,
     String filePath,
+    Status status,
     LocalDateTime startTime,
     LocalDateTime endTime,
     int maxCapacity,
@@ -38,6 +39,7 @@ public record GroupResponse(
             .title(group.getTitle())
             .description(group.getDescription())
             .filePath(group.getFilePath())
+            .status(group.getStatus())
             .startTime(group.getStartTime())
             .endTime(group.getEndTime())
             .maxCapacity(group.getMaxCapacity())
