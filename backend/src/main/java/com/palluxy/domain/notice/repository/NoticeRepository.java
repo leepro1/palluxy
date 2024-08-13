@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    Page<Notice> findAllOrderByCreatedAtDesc(Pageable pageable);
+    Page<Notice> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }
