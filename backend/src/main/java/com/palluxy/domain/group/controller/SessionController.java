@@ -37,8 +37,6 @@ public class SessionController {
         groupHistoryService.createHistory(
             new GroupHistory(group.getLeader(), group, Action.CREATE));
 
-        openviduService.createConnection(session, null);
-
         return CommonResponse.ok(
             "Session successfully created and sessionId ready to be used", session.getSessionId());
     }
