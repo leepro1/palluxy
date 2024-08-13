@@ -46,13 +46,18 @@ const PalCreateModal = ({ roomId, handler }) => {
     if (!event.target.files[0].type.includes('image')) {
       return alert('이미지파일이 아닙니다!');
     }
-    if (event.target.files) {
-      setUploadImage(event.target.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onload = () => {
-        setPreviewPath(reader.result);
-      };
+    const extension = event.target.files[0].type.split('/');
+    if (extension[1] === 'png' || extension[1] === 'jpeg') {
+      if (event.target.files) {
+        setUploadImage(event.target.files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () => {
+          setPreviewPath(reader.result);
+        };
+      }
+    } else {
+      return alert('png, jpg 확장자만 지원합니다.');
     }
   };
 
@@ -137,9 +142,10 @@ const PalCreateModal = ({ roomId, handler }) => {
             </div>
           ) : (
             <div>
-              <div className="grow px-8">
+              <div className="flex h-[400px] grow justify-center px-8">
                 {previewPath && (
                   <img
+                    className="h-full"
                     src={previewPath}
                     alt="preview image"
                   />
