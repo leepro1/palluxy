@@ -64,7 +64,7 @@ const ResetPasswordModal = () => {
   return (
     <ContentsLayout>
       <div className="flex items-center justify-center">
-        <div className="w-[350px] rounded bg-white bg-opacity-60 p-6 sm:w-[700px]">
+        <div className="w-[350px] rounded bg-white bg-opacity-60 p-6 sm:w-[600px]">
           <div className="mb-6 flex justify-center">
             <img
               src={logo}
@@ -114,27 +114,29 @@ const ResetPasswordModal = () => {
             {/* 비밀번호 재확인 */}
             <div className="mb-4">
               <div className="flex flex-row items-center">
-                <label className="mr-2 w-1/3 text-end font-jamsilRegular text-gray-700">
+                <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/4 sm:text-right">
                   비밀번호 확인
                 </label>
-                <Controller
-                  name="confirmPassword"
-                  control={control}
-                  defaultValue=""
-                  rules={{
-                    required: '비밀번호를 다시 입력해주세요.',
-                    validate: (value) =>
-                      value === password || '비밀번호가 일치하지 않습니다.',
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      type="password"
-                      className="w-full rounded border px-3 py-2 text-black"
-                      placeholder="비밀번호를 다시 입력해주세요."
-                    />
-                  )}
-                />
+                <div className="w-full sm:w-3/4">
+                  <Controller
+                    name="confirmPassword"
+                    control={control}
+                    defaultValue=""
+                    rules={{
+                      required: '비밀번호를 다시 입력해주세요.',
+                      validate: (value) =>
+                        value === password || '비밀번호가 일치하지 않습니다.',
+                    }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        type="password"
+                        className="w-full rounded border px-3 py-2 text-black"
+                        placeholder="비밀번호를 다시 입력해주세요."
+                      />
+                    )}
+                  />
+                </div>
               </div>
               <div className="flex flex-row">
                 <div className="w-1/3"></div>

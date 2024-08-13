@@ -5,7 +5,9 @@ const ChatMessage = ({ content, userId, createdAt, isOwnMessage }) => {
     <div
       className={`mb-2 flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'}`}
     >
-      <p className={`text-sm font-medium ${isOwnMessage ? 'mr-3' : 'ml-3'}`}>
+      <p
+        className={`mb-1 text-xs font-medium ${isOwnMessage ? 'mr-1' : 'ml-1'}`}
+      >
         {userId}
       </p>
       <div
