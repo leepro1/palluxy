@@ -156,7 +156,7 @@
 
 ## Infra
 
-- ![Infra 구성도](./docs/images/Infra.png)
+- ![Infra 구성도](./docs/images/PALLUXY_Infra.png)
 
 ## 데이터 베이스 모델링(ERD)
 
