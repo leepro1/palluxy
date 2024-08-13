@@ -9,9 +9,9 @@ public interface NoticeService {
 
     NoticeResponse getNotices(Pageable pageable);
 
-    void createNotice(Notice notice);
+    Notice createNotice(Notice notice);
 
-    void updateNotice(Long noticeId, NoticeRequest noticeRequest);
+    Notice updateNotice(Long noticeId, NoticeRequest noticeRequest);
 
     void deleteNotice(Long noticeId);
 

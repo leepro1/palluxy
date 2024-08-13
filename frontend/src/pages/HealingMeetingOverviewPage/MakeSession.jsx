@@ -17,11 +17,19 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
   const [uploadImage, setUploadImage] = useState(null);
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    if (e.target.files) {
-      setUploadImage(e.target.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(e.target.files[0]);
+    if (!e.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
+    const extension = e.target.files[0].type.split('/');
+    if (extension[1] === 'png' || extension[1] === 'jpeg') {
+      setSelectedFile(e.target.files[0]);
+      if (e.target.files) {
+        setUploadImage(e.target.files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    } else {
+      return alert('png, jpg 확장자만 지원합니다.');
     }
   };
   const onSubmit = async (data) => {
@@ -262,6 +270,7 @@ const MakeSession = ({ removeModal, onSessionCreated }) => {
             </label>
             <input
               type="file"
+              accept="image/*"
               className="w-full rounded border px-3 py-2 font-jamsilLight"
               onChange={handleFileChange}
             />

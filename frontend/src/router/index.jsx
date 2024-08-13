@@ -43,7 +43,8 @@ const MemorySpaceOverviewPage = lazy(
 );
 
 // healing Meeting
-const HealingMeetingPage = lazy(() => import('@pages/HealingMeetingPage'));
+import HealingMeetingPage from '@pages/HealingMeetingPage';
+
 const HealingMeetingOverviewPage = lazy(
   () => import('@pages/HealingMeetingOverviewPage'),
 );
@@ -103,11 +104,9 @@ const routerInfo = [
       {
         path: '/healingmeeting',
         element: (
-          <LazyLoadRoutes>
-            <AuthGuard auth={true}>
-              <HealingMeetingPage />
-            </AuthGuard>
-          </LazyLoadRoutes>
+          <AuthGuard auth={true}>
+            <HealingMeetingPage />
+          </AuthGuard>
         ),
       },
       {

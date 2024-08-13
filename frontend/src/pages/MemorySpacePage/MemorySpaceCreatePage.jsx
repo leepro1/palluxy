@@ -69,13 +69,21 @@ const MemorySpaceCreatePage = () => {
   }
 
   const handleUploadImage = (event) => {
-    if (event.target.files) {
-      setUploadImage(event.target.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onload = () => {
-        setPreviewPath(reader.result);
-      };
+    if (!event.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
+    const extension = event.target.files[0].type.split('/');
+    if (extension[1] === 'png' || extension[1] === 'jpeg') {
+      if (event.target.files) {
+        setUploadImage(event.target.files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () => {
+          setPreviewPath(reader.result);
+        };
+      }
+    } else {
+      return alert('png, jpg 확장자만 지원합니다.');
     }
   };
 
@@ -412,7 +420,12 @@ const MemorySpaceCreatePage = () => {
                 </div>
                 {/* 반려동물 성격 */}
                 <div className="flex flex-col gap-y-1">
-                  <span>성격</span>
+                  <div className="flex items-center gap-x-3">
+                    <span>성격</span>
+                    <span className="text-xs text-pal-error">
+                      최소1개 최대3개를 선택할 수 있습니다.
+                    </span>
+                  </div>
                   <div className="relative flex gap-x-4">
                     {/* 성격 첫 번째 줄 */}
                     <div className="grid w-full grid-cols-4 grid-rows-3">
