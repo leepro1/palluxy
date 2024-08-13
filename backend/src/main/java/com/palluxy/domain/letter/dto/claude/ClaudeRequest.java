@@ -10,7 +10,7 @@ import lombok.Setter;
 public class ClaudeRequest extends AIRequest {
 
     private final String model = "claude-3-5-sonnet-20240620";
-    private final int maxTokens = 512;
+    private final int maxTokens = 700;
     @Setter
     private List<ClaudeMessageInput> messageInputs;
 }
