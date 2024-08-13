@@ -2,6 +2,8 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { instance } from '@/utils/axios';
 import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 const CreateNotice = ({ removeModal, onSessionCreated }) => {
   const {
@@ -9,6 +11,8 @@ const CreateNotice = ({ removeModal, onSessionCreated }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleBackgroundClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -26,6 +30,8 @@ const CreateNotice = ({ removeModal, onSessionCreated }) => {
       await instance.post('/api/notice', postData, {});
       onSessionCreated('공지사항이 등록되었습니다');
       removeModal();
+      queryClient.invalidateQueries(['notices']);
+      navigate('/noticeboard');
     } catch (error) {
       console.error('Error:', error);
       onSessionCreated('에러 발생, 잠시 후에 시도해 주세요');

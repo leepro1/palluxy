@@ -54,12 +54,6 @@ const PersonalInfo = () => {
         </div>
       </ContentsLayout>
     );
-  } else if (userError) {
-    return (
-      <ContentsLayout>
-        <NotFound />
-      </ContentsLayout>
-    );
   }
 
   return (
@@ -68,7 +62,10 @@ const PersonalInfo = () => {
         <div className="py-5 text-center font-jamsilMedium text-2xl text-pal-purple">
           <NavLink to={'/mypage/createdMeetings'}>My Page</NavLink>
         </div>
-        <div className="py-3 font-jamsilRegular text-lg">개인정보</div>
+        <div className="flex items-center py-3 text-center font-jamsilRegular text-lg">
+          <span className="material-symbols-outlined">account_circle</span>
+          <span>개인정보</span>
+        </div>
         <div className="mb-2 mt-6 font-jamsilLight text-base">
           {'닉네임 > '}
           {userInfo.nickname}

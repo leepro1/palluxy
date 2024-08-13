@@ -9,7 +9,7 @@ const ChatInput = ({ onSend, text, setText, btnText = '전송' }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex h-20 w-full bg-pal-purple p-2"
+      className="flex h-20 w-full bg-gray-700 p-2"
     >
       <textarea
         value={text}

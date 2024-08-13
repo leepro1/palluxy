@@ -99,16 +99,20 @@ const AdminPage = () => {
     <ContentsLayout>
       <ScrollRestoration />
       <div>
-        <p className="text-4xl text-pal-lightwhite">관리자 페이지</p>
-        <div className="flex justify-center">
+        <p className="mb-4 text-center font-jamsilMedium text-4xl text-pal-lightwhite">
+          관리자 페이지
+        </p>
+        <div className="flex justify-center font-jamsilRegular">
           <p className="mx-36 w-full rounded-lg bg-pal-purple p-2 text-center text-lg text-pal-lightwhite">
             치유모임 관리
           </p>
         </div>
-        <p></p>
+        <p className="py-2 text-center font-jamsilRegular text-2xl text-white">
+          {datalength ? null : '신청된 모임이 없습니다.'}
+        </p>
       </div>
-      <div className="text-white">
-        {datalength ? (
+      <div className="min-h-[350px] text-white">
+        {datalength > 0 ? (
           <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
             {data?.map((item, index) => (
               <div
@@ -167,13 +171,13 @@ const AdminPage = () => {
                   <div className="flex justify-between px-5 text-pal-lightwhite">
                     <button
                       onClick={() => handleAcceptButton(item.id)}
-                      className="mx-1 w-full rounded-lg bg-pal-purple py-2 hover:bg-purple-950"
+                      className="mx-1 w-full rounded-lg bg-pal-purple py-2 font-jamsilRegular hover:bg-purple-950"
                     >
                       수락
                     </button>
                     <button
                       onClick={() => handleRejectButton(item.id)}
-                      className="mx-1 w-full rounded-lg bg-pal-error py-2 hover:bg-red-800"
+                      className="mx-1 w-full rounded-lg bg-pal-error py-2 font-jamsilRegular hover:bg-red-800"
                     >
                       거절
                     </button>
@@ -183,19 +187,25 @@ const AdminPage = () => {
             ))}
           </div>
         ) : (
-          <p className="text-center text-5xl">신청된 모임이 없습니다.</p>
+          <span className="material-symbols-outlined w-full text-center">
+            check_circle
+          </span>
         )}
-        <Pagination
-          itemsPerPage={itemsPerPage}
-          totalPage={totalPage}
-          paginate={paginate}
-          paginatePrev={paginatePrev}
-          paginateNext={paginateNext}
-          showingPage={showingPage}
-          showingPageMax={showingPageMax}
-          showingPageMin={showingPageMin}
-          pageIndexInt={pageIndexInt}
-        />
+        {datalength && (
+          <div className="flex items-center justify-center text-white">
+            <Pagination
+              itemsPerPage={itemsPerPage}
+              totalPage={totalPage}
+              paginate={paginate}
+              paginatePrev={paginatePrev}
+              paginateNext={paginateNext}
+              showingPage={showingPage}
+              showingPageMax={showingPageMax}
+              showingPageMin={showingPageMin}
+              pageIndexInt={pageIndexInt}
+            />
+          </div>
+        )}
       </div>
     </ContentsLayout>
   );

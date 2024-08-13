@@ -33,10 +33,10 @@ const FindPasswordModal = () => {
     onSuccess: () => {
       setIsEmailSent(true);
     },
-    onError: (error) => {
+    onError: () => {
       setError('email', {
         type: 'manual',
-        message: error.message,
+        message: '이메일 전송에 실패하였습니다.',
       });
     },
   });
@@ -119,26 +119,28 @@ const FindPasswordModal = () => {
           <form onSubmit={handleSubmit(handleFindPassword)}>
             <div className="mb-4">
               <div className="flex flex-col items-center sm:flex-row">
-                <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/3 sm:text-right">
+                <label className="w-full pl-2 pr-4 text-start font-jamsilRegular text-gray-700 sm:w-1/4 sm:text-right">
                   이메일
                 </label>
-                <Controller
-                  name="email"
-                  control={control}
-                  defaultValue=""
-                  rules={{ validate: validateEmail }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      className="w-full rounded border px-3 py-2 text-black sm:w-2/3"
-                      placeholder="이메일을 입력해주세요."
-                    />
-                  )}
-                />
+                <div className="w-full sm:w-3/4">
+                  <Controller
+                    name="email"
+                    control={control}
+                    defaultValue=""
+                    rules={{ validate: validateEmail }}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        className="w-full rounded border px-3 py-2 text-black"
+                        placeholder="이메일을 입력해주세요."
+                      />
+                    )}
+                  />
+                </div>
               </div>
               <div className="flex flex-row">
-                <div className="w-1/3"></div>
-                <div className="w-full">
+                <div className="w-1/4"></div>
+                <div className="w-full sm:w-3/4">
                   {errors.email && (
                     <p className="text-red-500">{errors.email.message}</p>
                   )}

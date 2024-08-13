@@ -146,18 +146,20 @@ const NoticeBoard = () => {
           </div>
         </div>
         <div className="flex justify-center">
-          <div className="">
-            <Pagination
-              itemsPerPage={itemsPerPage}
-              totalPage={totalPage}
-              paginate={paginate}
-              paginatePrev={paginatePrev}
-              paginateNext={paginateNext}
-              showingPage={currentPage}
-              showingPageMax={Math.min(currentPage + 2, totalPage)}
-              showingPageMin={Math.max(currentPage - 2, 1)}
-              pageIndexInt={currentPage}
-            />
+          <div className="text-pal-lightwhite">
+            {notices.length > 0 && (
+              <Pagination
+                itemsPerPage={itemsPerPage}
+                totalPage={totalPage}
+                paginate={paginate}
+                paginatePrev={paginatePrev}
+                paginateNext={paginateNext}
+                showingPage={currentPage}
+                showingPageMax={Math.min(currentPage + 2, totalPage)}
+                showingPageMin={Math.max(currentPage - 2, 1)}
+                pageIndexInt={currentPage}
+              />
+            )}
           </div>
         </div>
       </div>
