@@ -79,4 +79,13 @@ public class RoomController {
         List<RoomDto> recommendedRooms = roomService.getRandomRoomsWithLikeStatus(userId, 3);
         return CommonResponse.ok("Recommended rooms retrieved successfully", recommendedRooms);
     }
+
+
+    @GetMapping("/recommend")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse<List<RoomDto>> getRecommendedRooms() {
+        int count = 3;
+        List<RoomDto> recommendedRooms = roomService.getRandomRooms(count);
+        return CommonResponse.ok("Recommended rooms retrieved successfully", recommendedRooms);
+    }
 }

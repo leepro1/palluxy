@@ -16,15 +16,19 @@ const MemorySpacePage = () => {
   const { userId } = useParams();
   const userData = queryClient.getQueryData(['userInfo']);
   const { isError, isLoading, isSuccess } = useQuery({
-    queryKey: ['memorySpace'],
+    queryKey: ['memorySpace', userId],
     queryFn: () => fetchUserRoom(userId),
-    // staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
     retry: 1,
   });
 
   useEffect(() => {
+    if (!userData && !userId) {
+      navigate('/signin');
+      return;
+    }
     return () => {
-      queryClient.removeQueries({ queryKey: ['memorySpace'] });
+      queryClient.removeQueries({ queryKey: ['memorySpace', userId] });
     };
   }, [userId]);
 

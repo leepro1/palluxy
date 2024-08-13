@@ -7,8 +7,10 @@ import {
   fetchFrameImage,
   updateFrameImage,
 } from '@/api/memorySpace/frameImageApi';
+import { useParams } from 'react-router-dom';
 
 const FileUploadModal = ({ handler, selectFrame }) => {
+  const { userId } = useParams();
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
   const queryClient = useQueryClient();
@@ -16,23 +18,19 @@ const FileUploadModal = ({ handler, selectFrame }) => {
   const { mutate: fetchMutate } = useMutation({
     mutationFn: fetchFrameImage,
     onSuccess: async () => {
-      // Invalidate and refetch
       await queryClient.invalidateQueries({
-        queryKey: ['palFrameImage'],
+        queryKey: ['palFrameImage', userId],
       });
       handler(false);
-      // window.location.href = '/memorySpace';
     },
   });
   const { mutate: updateMutate } = useMutation({
     mutationFn: updateFrameImage,
     onSuccess: () => {
-      // Invalidate and refetch
       queryClient.invalidateQueries({
-        queryKey: ['palFrameImage'],
+        queryKey: ['palFrameImage', userId],
       });
       handler(false);
-      // window.location.href = '/memorySpace';
     },
   });
 
@@ -40,13 +38,18 @@ const FileUploadModal = ({ handler, selectFrame }) => {
     if (!event.target.files[0].type.includes('image')) {
       return alert('이미지파일이 아닙니다!');
     }
-    if (event.target.files) {
-      setUploadImage(event.target.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onload = () => {
-        setPreviewPath(reader.result);
-      };
+    const extension = event.target.files[0].type.split('/');
+    if (extension[1] === 'png' || extension[1] === 'jpeg') {
+      if (event.target.files) {
+        setUploadImage(event.target.files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () => {
+          setPreviewPath(reader.result);
+        };
+      }
+    } else {
+      return alert('png, jpg 확장자만 지원합니다.');
     }
   };
 
@@ -55,7 +58,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
       return;
     }
     const formData = new FormData();
-    const frameData = queryClient.getQueryData(['palFrameImage']);
+    const frameData = queryClient.getQueryData(['palFrameImage', userId]);
     const selectData = frameData.images.find(
       (frame) => frame.index === selectFrame,
     );
@@ -94,10 +97,16 @@ const FileUploadModal = ({ handler, selectFrame }) => {
               close
             </span>
           </div>
+          <div>
+            <p className="px-8 text-pal-error">
+              사진 업로드 후 새로고침을 해주세요!
+            </p>
+          </div>
           {/* none */}
-          <div className="grow px-8">
+          <div className="flex h-[400px] grow justify-center px-8">
             {previewPath && (
               <img
+                className="h-full"
                 src={previewPath}
                 alt="preview image"
               />

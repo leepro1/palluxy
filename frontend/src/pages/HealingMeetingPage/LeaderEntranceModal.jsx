@@ -1,5 +1,4 @@
-// ConfirmModal.js
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const LeaderEntranceModal = ({
   show,
@@ -7,7 +6,6 @@ const LeaderEntranceModal = ({
   onConfirm,
   onCancel,
   handleChangeApproveKey,
-  approveKey,
 }) => {
   if (!show) return null;
 
@@ -45,6 +43,14 @@ const LeaderEntranceModal = ({
       </div>
     </div>
   );
+};
+
+LeaderEntranceModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  handleChangeApproveKey: PropTypes.func.isRequired,
 };
 
 export default LeaderEntranceModal;

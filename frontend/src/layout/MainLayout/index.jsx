@@ -17,7 +17,7 @@ const MainLayout = () => {
       <div className="fixed left-0 top-0 -z-20 min-h-screen w-screen bg-main-background bg-cover"></div>
       <div className="flex grow flex-col">
         <Header />
-        <div className="relative grow">
+        <div className="read-only: grow">
           <Outlet />
         </div>
       </div>

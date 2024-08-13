@@ -21,7 +21,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
 
     public NoticeResponse getNotices(Pageable pageable) {
-        Page<Notice> noticePage = noticeRepository.findAll(pageable);
+        Page<Notice> noticePage = noticeRepository.findAllByOrderByCreatedAtDesc(pageable);
         List<NoticeDto> notices = new ArrayList<>();
         for (Notice notice : noticePage.getContent()) {
             notices.add(NoticeDto.of(notice));
@@ -30,13 +30,16 @@ public class NoticeServiceImpl implements NoticeService {
         return new NoticeResponse(notices, noticePage.getTotalElements());
     }
 
-    public void createNotice(Notice notice) {
-        noticeRepository.saveAndFlush(notice);
+    public Notice createNotice(Notice notice) {
+        Long noticeId = noticeRepository.save(notice).getId();
+        return getNoticeById(noticeId);
     }
 
-    public void updateNotice(Long noticeId, NoticeRequest noticeRequest) {
+    public Notice updateNotice(Long noticeId, NoticeRequest noticeRequest) {
         Notice notice = getNoticeById(noticeId);
         notice.updateInfo(noticeRequest);
+        noticeRepository.saveAndFlush(notice);
+        return getNoticeById(noticeId);
     }
 
     public void deleteNotice(Long noticeId) {

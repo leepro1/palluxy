@@ -9,7 +9,7 @@ const ContentsLayout = ({ children }) => {
 };
 
 ContentsLayout.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.node,
 };
 
 export default ContentsLayout;

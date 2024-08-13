@@ -46,20 +46,12 @@ const MemorySpaceCreatePage = () => {
   const navigate = useNavigate();
   const [previewPath, setPreviewPath] = useState(null);
   const [uploadImage, setUploadImage] = useState(null);
-  const [isRoomCreate, setRoomCreate] = useState(false);
-  const [isPetCreate, setPetCreate] = useState(false);
   const queryClient = useQueryClient();
   const { mutateAsync: petMutate } = useMutation({
     mutationFn: postCreatePet,
-    onSuccess: async () => {
-      setPetCreate(true);
-    },
   });
   const { mutateAsync: roomMutate } = useMutation({
     mutationFn: postCreateRoom,
-    onSuccess: async () => {
-      setRoomCreate(true);
-    },
   });
 
   const { data: petPersonalities, isSuccess } = useQuery({
@@ -77,19 +69,30 @@ const MemorySpaceCreatePage = () => {
   }
 
   const handleUploadImage = (event) => {
-    if (event.target.files) {
-      setUploadImage(event.target.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onload = () => {
-        setPreviewPath(reader.result);
-      };
+    if (!event.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
+    const extension = event.target.files[0].type.split('/');
+    if (extension[1] === 'png' || extension[1] === 'jpeg') {
+      if (event.target.files) {
+        setUploadImage(event.target.files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () => {
+          setPreviewPath(reader.result);
+        };
+      }
+    } else {
+      return alert('png, jpg 확장자만 지원합니다.');
     }
   };
 
   const memorySpaceCreateSubmit = async (formValues) => {
     // resetField('name');
     // resetField('password');
+    if (!uploadImage) {
+      return alert('추억공간 대표 이미지는 필수입니다.');
+    }
     const userInfo = queryClient.getQueryData(['userInfo']);
     const characters = queryClient.getQueryData(['petPersonalities']);
     const filteredValue = formValues.character.map((character) => {
@@ -112,6 +115,7 @@ const MemorySpaceCreatePage = () => {
       firstAt: formValues.first_at,
       lastAt: formValues.last_at,
     };
+
     try {
       await petMutate(petPayload);
       await roomMutate(memorySpacePayload);
@@ -416,7 +420,12 @@ const MemorySpaceCreatePage = () => {
                 </div>
                 {/* 반려동물 성격 */}
                 <div className="flex flex-col gap-y-1">
-                  <span>성격</span>
+                  <div className="flex items-center gap-x-3">
+                    <span>성격</span>
+                    <span className="text-xs text-pal-error">
+                      최소1개 최대3개를 선택할 수 있습니다.
+                    </span>
+                  </div>
                   <div className="relative flex gap-x-4">
                     {/* 성격 첫 번째 줄 */}
                     <div className="grid w-full grid-cols-4 grid-rows-3">

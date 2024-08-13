@@ -4,6 +4,12 @@ const fetchRoomOverview = async (payload) => {
   const res = await instance.get(`/api/rooms/recommend/${payload}`);
   return res.data.result;
 };
+
+const fetchRoomOverviewNoneUser = async () => {
+  const res = await instance.get(`/api/rooms/recommend`);
+  return res.data.result;
+};
+
 const likeRoomOverview = async (payload) => {
   await instance.post(
     `/api/likes/room/${payload.roomId}/user/${payload.userId}`,
@@ -15,4 +21,9 @@ const unlikeRoomOverview = async (payload) => {
   );
 };
 
-export { fetchRoomOverview, likeRoomOverview, unlikeRoomOverview };
+export {
+  fetchRoomOverview,
+  likeRoomOverview,
+  unlikeRoomOverview,
+  fetchRoomOverviewNoneUser,
+};

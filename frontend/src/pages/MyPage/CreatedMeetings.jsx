@@ -67,30 +67,44 @@ const CreatedMeetings = () => {
         <NotFound />
       </ContentsLayout>
     );
-  } else if (meetings.length > 0) {
-    content = meetings.map((meeting) => (
-      <div
-        key={meeting.id}
-        className="mx-16 my-2"
-      >
-        <div className="text-xl font-semibold">
-          <Link to={`/meetingoverview/detail/${meeting.id}`}>
-            {meeting.title}
-          </Link>
+  }
+
+  if (meetings.length > 0) {
+    content = meetings.map((meeting) => {
+      return (
+        <div
+          key={meeting.id}
+          className="mx-5 my-2 rounded bg-white px-5 py-2 shadow-md transition-transform duration-300 hover:-translate-y-1"
+        >
+          <div className="flex flex-row justify-between">
+            <Link to={`/meetingoverview/detail/${meeting.id}`}>
+              <div className="font-jamsilRegular text-xl">{meeting.title}</div>
+              <p className="font-jamsilLight">{meeting.description}</p>
+            </Link>
+            <div
+              className="flex items-center text-end"
+              x
+            >
+              {meeting.startTime.split('T')[0]}
+            </div>
+          </div>
         </div>
-        <p className="font-thin">{meeting.description}</p>
-      </div>
-    ));
+      );
+    });
   } else {
-    content = <p>현재 생성한 모임이 없습니다.</p>;
+    content = (
+      <p className="p-2 font-jamsilLight text-lg">
+        현재 생성한 모임이 없습니다.
+      </p>
+    );
   }
 
   return (
     <ContentsLayout>
-      <div>
-        <div className="flex flex-col justify-center">{content}</div>
-        <div className="flex justify-center">
-          <div className="absolute bottom-0">
+      <div className="flex min-h-[480px] flex-col">
+        <div className="flex flex-grow flex-col">{content}</div>
+        {meetings.length > 0 && (
+          <div className="mt-4 flex items-center justify-center">
             <Pagination
               itemsPerPage={itemsPerPage}
               totalPage={totalPage}
@@ -103,7 +117,7 @@ const CreatedMeetings = () => {
               pageIndexInt={currentPage}
             />
           </div>
-        </div>
+        )}
       </div>
     </ContentsLayout>
   );

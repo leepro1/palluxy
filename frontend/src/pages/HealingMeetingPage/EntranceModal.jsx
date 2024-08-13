@@ -1,5 +1,4 @@
-// ConfirmModal.js
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const EntranceModal = ({ show, message, onConfirm, onCancel }) => {
   if (!show) return null;
@@ -25,6 +24,13 @@ const EntranceModal = ({ show, message, onConfirm, onCancel }) => {
       </div>
     </div>
   );
+};
+
+EntranceModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func,
+  onCancel: PropTypes.func,
 };
 
 export default EntranceModal;

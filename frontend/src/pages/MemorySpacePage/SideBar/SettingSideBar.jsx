@@ -8,13 +8,19 @@ import ImgRotationBtn from '@components/Model/ImgRotationBtn';
 import { useModelPositionStore } from '@store/memorySpace';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updatePalRotation, updatePalPosition } from '@/api/petapi';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const SettingSideBar = () => {
+  const { userId } = useParams();
+  const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectFrame, setSelectFrame] = useState();
   const queryClient = useQueryClient();
   const position = useModelPositionStore((state) => state.position);
   const rotation = useModelPositionStore((state) => state.rotation);
+
+  const currentConnetUserId = queryClient.getQueryData(['userInfo']);
 
   const handleModal = useCallback(
     (frame) => {
@@ -33,7 +39,7 @@ const SettingSideBar = () => {
     mutationFn: updatePalPosition,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['palMeta'],
+        queryKey: ['palMeta', userId],
       });
       return alert('성공적으로 저장되었습니다!');
     },
@@ -43,15 +49,15 @@ const SettingSideBar = () => {
     mutationFn: updatePalRotation,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['palMeta'],
+        queryKey: ['palMeta', userId],
       });
       return alert('성공적으로 저장되었습니다!');
     },
   });
 
   const handlePositionSave = () => {
-    const palMetaData = queryClient.getQueryData(['palMeta']);
-    const roomData = queryClient.getQueryData(['memorySpace']);
+    const palMetaData = queryClient.getQueryData(['palMeta', userId]);
+    const roomData = queryClient.getQueryData(['memorySpace', userId]);
 
     if (!palMetaData || palMetaData.length === 0) {
       return alert('아직 펫이 없습니다!');
@@ -68,8 +74,8 @@ const SettingSideBar = () => {
     palPositionMutation(payload);
   };
   const handleRotationSave = () => {
-    const palMetaData = queryClient.getQueryData(['palMeta']);
-    const roomData = queryClient.getQueryData(['memorySpace']);
+    const palMetaData = queryClient.getQueryData(['palMeta', userId]);
+    const roomData = queryClient.getQueryData(['memorySpace', userId]);
 
     if (!palMetaData || palMetaData.length === 0) {
       return alert('아직 펫이 없습니다!');
@@ -85,6 +91,12 @@ const SettingSideBar = () => {
     };
     palRotationMutation(payload);
   };
+
+  useEffect(() => {
+    if (parseInt(userId) !== currentConnetUserId.id) {
+      navigate(`/memoryspace/${userId}`);
+    }
+  }, []);
 
   return (
     <MemorySideBarLayout>

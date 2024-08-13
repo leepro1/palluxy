@@ -86,9 +86,9 @@ const NoticeBoard = () => {
 
   return (
     <ContentsLayout>
-      <div className="flex flex-col">
-        <div className="mx-auto min-h-[1000px] sm:w-[500px] md:w-[1000px]">
-          <h1 className="mb-10 text-center font-jamsilBold text-3xl text-white">
+      <div className="flex h-full flex-col">
+        <div className="mx-auto min-h-[600px] sm:w-[500px] md:w-[1000px]">
+          <h1 className="mb-10 text-center font-jamsilBold text-xl text-white md:text-3xl">
             공지사항
           </h1>
 
@@ -104,15 +104,15 @@ const NoticeBoard = () => {
           )}
 
           <div className="mt-2">
-            <div className="flex w-full flex-row rounded-tl-md rounded-tr-md border-white bg-pal-purple">
-              <div className="w-[50px] items-center justify-center py-3 pl-2 font-jamsilRegular text-white sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
-                No.
+            <div className="flex w-full rounded-tl-md rounded-tr-md border-white bg-pal-purple font-jamsilRegular text-sm text-white md:text-base">
+              <div className="w-[50px] items-center justify-center py-3 pl-2 sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
+                <p>No.</p>
               </div>
-              <div className="w-[150px] items-center py-3 pl-2 font-jamsilRegular text-white sm:w-[250px] sm:pl-4 md:w-[600px] md:pl-10">
-                제목
+              <div className="w-[150px] items-center py-3 pl-2 sm:w-[250px] sm:pl-4 md:w-[600px] md:pl-10">
+                <p>제목</p>
               </div>
-              <div className="w-[100px] items-center py-3 font-jamsilRegular text-white sm:w-[150px] sm:pl-4 md:w-[300px] md:pl-10">
-                날짜
+              <div className="w-[100px] items-center py-3 sm:w-[150px] sm:pl-4 md:w-[300px] md:pl-10">
+                <p>날짜</p>
               </div>
             </div>
           </div>
@@ -124,7 +124,7 @@ const NoticeBoard = () => {
                   className="border-y-1 flex w-full flex-row py-3 font-jamsilLight hover:bg-white hover:bg-opacity-40 hover:font-jamsilMedium"
                 >
                   <Link to={`/noticeboard/detail/${notice.id}`}>
-                    <div className="flex w-full flex-col">
+                    <div className="flex w-full flex-col text-sm md:text-base">
                       <div className="flex flex-row">
                         <div className="w-[50px] pl-2 sm:w-[80px] sm:pl-4 md:w-[150px] md:pl-10">
                           {notice.id}

@@ -277,6 +277,7 @@ const HealingMeetingPageContents = () => {
     setPublisher(undefined);
     setIsMike(true);
     setIsCamera(true);
+    setMessages([]);
   }, [session]);
 
   const switchCamera = useCallback(async () => {
@@ -338,7 +339,13 @@ const HealingMeetingPageContents = () => {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+      const chatContainer = scrollRef.current.parentElement;
+      const isAtBottom =
+        chatContainer.scrollHeight - chatContainer.scrollTop <=
+        chatContainer.clientHeight + 1;
+      if (isAtBottom) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
     }
   }, [messages]);
 
@@ -347,9 +354,11 @@ const HealingMeetingPageContents = () => {
       {session === undefined ? (
         <ContentsLayout>
           {data?.length === 0 ? (
-            <div className="flex flex-col text-2xl text-pal-lightwhite">
-              현재 입장 가능한 치유모임이 없습니다. 새로운 치유모임을 만들거나,
-              다른 치유모임에 참가 신청을 하시겠어요?
+            <div className="flex flex-col items-center justify-center gap-y-5 text-pal-lightwhite">
+              <p className="text-center text-sm font-semibold md:text-xl">
+                현재 입장 가능한 치유모임이 없습니다. 새로운 치유모임을
+                만들거나, 다른 치유모임에 참가 신청을 하시겠어요?
+              </p>
               <NavLink to={'/meetingoverview/1'}>
                 <button className="w-max rounded-lg bg-pal-purple px-4 py-2 text-sm font-medium text-white hover:bg-purple-950 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   치유모임 모아보기
@@ -546,10 +555,10 @@ const HealingMeetingPageContents = () => {
                 </div>
               </div>
             </div>
-            <div className="flex h-screen w-3/12">
+            <div className="flex h-screen w-3/12 overflow-y-auto">
               <ChatMessageBox
                 messages={messages}
-                scrollRef={scrollRef}
+                // scrollRef={scrollRef}
                 myUserName={myUserName}
                 onSend={sendMessage}
                 text={text}
@@ -574,7 +583,6 @@ const HealingMeetingPageContents = () => {
         onConfirm={handleLeaderEntrance}
         onCancel={cancelLeaderEntrance}
         handleChangeApproveKey={handleChangeApproveKey}
-        approveKey={approveKey}
       />
     </div>
   );
