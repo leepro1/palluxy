@@ -45,8 +45,8 @@ public class NoticeController {
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> updateNotice(@PathVariable("noticeId") Long noticeId,
         @RequestBody NoticeRequest noticeRequest) {
-        noticeService.updateNotice(noticeId, noticeRequest);
-        return CommonResponse.ok("공지사항이 정상적으로 수정되었음");
+        Notice notice = noticeService.updateNotice(noticeId, noticeRequest);
+        return CommonResponse.ok("공지사항이 정상적으로 수정되었음", notice);
     }
 
     @DeleteMapping("/detail/{noticeId}")
@@ -59,7 +59,7 @@ public class NoticeController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public CommonResponse<?> createNotice(@RequestBody NoticeRequest noticeRequest) {
-        noticeService.createNotice(Notice.of(noticeRequest));
+        Notice notice = noticeService.createNotice(Notice.of(noticeRequest));
         return CommonResponse.created("공지사항이 정상적으로 등록되었음");
     }
 
