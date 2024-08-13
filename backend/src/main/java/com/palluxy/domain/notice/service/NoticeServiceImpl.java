@@ -21,7 +21,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
 
     public NoticeResponse getNotices(Pageable pageable) {
-        Page<Notice> noticePage = noticeRepository.findAllOrderByCreatedAt(pageable);
+        Page<Notice> noticePage = noticeRepository.findAllOrderByCreatedAtDesc(pageable);
         List<NoticeDto> notices = new ArrayList<>();
         for (Notice notice : noticePage.getContent()) {
             notices.add(NoticeDto.of(notice));
