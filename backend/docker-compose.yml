@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   my-server:
     build: .
@@ -11,7 +9,7 @@ services:
       my-cache-server:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/test_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://my-db:3306/palluxy_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=ssafy
       - SPRING_REDIS_HOST=my-cache-server
@@ -25,7 +23,7 @@ services:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: ssafy
-      MYSQL_DATABASE: ssafy_db
+      MYSQL_DATABASE: palluxy_db
         - TZ=Asia/Seoul
     volumes:
       - /home/ubuntu/data/mysql:/var/lib/mysql
