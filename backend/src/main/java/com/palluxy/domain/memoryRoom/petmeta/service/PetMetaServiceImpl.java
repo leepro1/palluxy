@@ -34,7 +34,7 @@ public class PetMetaServiceImpl implements PetMetaService {
   private final WebClient webClient;
 
   public PetMetaServiceImpl(WebClient.Builder webClientBuilder) {
-    this.webClient = webClientBuilder.baseUrl("http://35.241.111.176/").build();
+    this.webClient = webClientBuilder.baseUrl("http://34.47.119.27/").build();
   }
 
   @Override
