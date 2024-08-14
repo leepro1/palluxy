@@ -17,7 +17,7 @@ class RunModelAPIView(APIView):
         else:
             return Response({"message": "request false",}, status=status.HTTP_400_BAD_REQUEST)
 
-        image = request.FILES.get('image')
+        image = request.FILES.get('file')
         
 
         if not image:
@@ -44,7 +44,7 @@ class RunModelAPIView(APIView):
             return Response({"error": "Output file not found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # 스프링 서버로 obj 파일 전송
-        spring_server_url = f'http://localhost:8080/api/rooms/{roomId}/petmeta/upload-obj' # 스프링 서버 URL은 settings.py에 정의
+        spring_server_url = f'{settings.SPRING_SERVER_URL}/api/rooms/{roomId}/petmeta/webhook' # 스프링 서버 URL은 settings.py에 정의
         try:
             with open(output_file, 'rb') as f:
                 files = {'file': (f'{image.name}.obj', f, 'application/octet-stream')}
