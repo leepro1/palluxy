@@ -290,7 +290,7 @@ const MemorySpaceCreatePage = () => {
                 <div className="flex flex-col gap-y-1">
                   <div className="flex justify-between gap-x-2">
                     <div className="flex flex-col">
-                      <span>이름</span>
+                      <span>반려동물 이름</span>
                       <div className="relative flex gap-x-4">
                         <input
                           className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite"
@@ -310,7 +310,7 @@ const MemorySpaceCreatePage = () => {
                     </div>
                     {/* 반려동물 별칭 */}
                     <div className="flex flex-col">
-                      <span>별칭</span>
+                      <span>반려동물에게 나는</span>
                       <div className="relative flex gap-x-4">
                         <input
                           className="h-[40px] w-full rounded-md border-2 border-black bg-pal-lightwhite px-1"
@@ -413,7 +413,7 @@ const MemorySpaceCreatePage = () => {
                 {/* 반려동물 성격 */}
                 <div className="flex flex-col gap-y-1">
                   <div className="flex items-center gap-x-3">
-                    <span>성격</span>
+                    <span>반려동물 성격</span>
                     <span className="text-xs text-pal-error">
                       최소1개 최대3개를 선택할 수 있습니다.
                     </span>
