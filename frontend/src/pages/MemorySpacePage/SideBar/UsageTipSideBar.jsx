@@ -44,6 +44,14 @@ const UsageTipSideBar = () => {
             편지입니다.
           </p>
         </div>
+        <div className="rounded-md bg-white px-4 py-4 text-center font-bold">
+          <p>5. 액자를 클릭해보세요.</p>
+          <br />
+          <p>
+            <span className="text-pal-error">하드웨어 가속</span>을 키시면 더욱
+            원활히 이용 가능합니다.
+          </p>
+        </div>
       </div>
     </MemorySideBarLayout>
   );

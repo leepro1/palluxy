@@ -125,6 +125,16 @@ const Header = () => {
               >
                 로그아웃
               </p>
+              {userData.isAdmin && (
+                <p
+                  className="cursor-pointer"
+                  onClick={() => {
+                    navigate('/admin/1');
+                  }}
+                >
+                  관리자페이지
+                </p>
+              )}
             </div>
           </div>
         ) : (
