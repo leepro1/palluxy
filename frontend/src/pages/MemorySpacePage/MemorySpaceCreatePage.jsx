@@ -148,20 +148,12 @@ const MemorySpaceCreatePage = () => {
       value: true,
       message: '해당 칸이 빈칸입니다.',
     },
-    pattern: {
-      value: /^[가-힣a-zA-Z0-9]{1,100}$/,
-      message: '추억공간 이름이 올바르지 않습니다.',
-    },
   });
 
   const roomDesRegister = register('description', {
     required: {
       value: true,
       message: '해당 칸이 빈칸입니다.',
-    },
-    pattern: {
-      value: /^[가-힣a-zA-Z0-9]{1,500}$/,
-      message: '추억공간 설명이 올바르지 않습니다.',
     },
   });
 
