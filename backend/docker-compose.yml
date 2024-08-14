@@ -62,6 +62,7 @@ services:
       - /home/ubuntu/data/nginx:/etc/nginx/conf.d
       - /home/ubuntu/data/letsencrypt:/etc/letsencrypt
       - /var/www/html/dist:/usr/share/nginx/html
+      - /var/www/error-codes-motion-graphic/errors:/usr/share/nginx/html/errors
     depends_on:
       - my-server
     environment:
