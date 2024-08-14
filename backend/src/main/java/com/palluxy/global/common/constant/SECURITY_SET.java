@@ -93,9 +93,11 @@ public final class SECURITY_SET {
         "/api/group",
         "/api/group/detail/*/join",
         "/api/group/my/*/*",
+        "/api/group/my/all/*/*",
 
         // letter
-        "/api/letter/*"
+        "/api/letter/*",
+        "/api/letter/room/*"
     };
 
     public static final String[] NEED_ADMIN_ROLE_URL_PATTERNS = {
@@ -104,7 +106,8 @@ public final class SECURITY_SET {
 
         // user
         "/api/users/nickname/*",
-        "/api/users/email/*"
+        "/api/users/email/*",
+        "/api/users"
     };
 
     private SECURITY_SET() {
