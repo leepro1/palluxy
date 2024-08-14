@@ -149,7 +149,6 @@ const HealingMeetingPageContents = () => {
     }
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
-    console.log(1, newSession);
     setSession(newSession);
     newSession.on('streamCreated', (event) => {
       const subscriber = newSession.subscribe(event.stream, undefined);
@@ -176,8 +175,6 @@ const HealingMeetingPageContents = () => {
 
     try {
       const token = await getToken(role, mySessionId, code);
-      console.log(2, token);
-      console.log(3, newSession);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,

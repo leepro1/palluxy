@@ -237,7 +237,7 @@ const HealingSessionPage = () => {
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
                         <button className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite hover:bg-purple-950">
-                          신청하기
+                          상세정보
                         </button>
                       </div>
                     </div>
