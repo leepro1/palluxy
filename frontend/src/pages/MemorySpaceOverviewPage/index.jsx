@@ -45,14 +45,14 @@ const MemorySpaceOverviewPage = () => {
   return (
     <ContentsLayout>
       <div className="relative flex flex-col items-center">
-        <div className="flex items-center gap-x-4 py-10 text-xl text-white">
-          <span>새로고침</span>
-          <span
-            className="material-symbols-outlined cursor-pointer text-5xl text-white"
-            onClick={() => {
-              refetch();
-            }}
-          >
+        <div
+          className="flex items-center gap-x-4 py-10 text-xl text-white"
+          onClick={() => {
+            refetch();
+          }}
+        >
+          <span>다른 공간 둘러보기</span>
+          <span className="material-symbols-outlined cursor-pointer text-5xl text-white">
             cached
           </span>
         </div>
