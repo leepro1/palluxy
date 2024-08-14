@@ -37,7 +37,6 @@ public final class SECURITY_SET {
         "/api/pets/personalities",
 
         // user
-        "/api/users",
         "/api/users/reset-password",
         "/api/users/check-nickname/*",
         "/api/users/check-email/*",
