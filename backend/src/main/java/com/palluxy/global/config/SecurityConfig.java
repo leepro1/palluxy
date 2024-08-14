@@ -71,7 +71,7 @@ public class SecurityConfig {
             .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(PERMITALL_URL_PATTERNS).permitAll()
                 .requestMatchers(NEED_LOGIN_URL_PATTERNS).authenticated()
-                .requestMatchers(NEED_ADMIN_ROLE_URL_PATTERNS).hasRole("ADMIN")
+                .requestMatchers(NEED_ADMIN_ROLE_URL_PATTERNS).hasRole("ROLE_ADMIN")
                 .anyRequest().permitAll()
             )
 
