@@ -94,7 +94,7 @@ const CreateNotice = ({ removeModal, onSessionCreated }) => {
               type="submit"
               className="rounded bg-pal-purple px-4 py-2 text-white"
             >
-              등록하기
+              신청하기
             </button>
             <button
               type="button"
