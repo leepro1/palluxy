@@ -66,13 +66,6 @@ public class UserController {
         return CommonResponse.ok("비밀번호 변경 성공");
     }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> getUsers() {
-        List<UserResponse> response = userService.getUsers();
-        return CommonResponse.ok("유저 리스트 조회 성공", response);
-    }
-
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> getUserById(@PathVariable Long id) {
