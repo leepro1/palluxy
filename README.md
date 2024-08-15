@@ -1,6 +1,6 @@
 # 공통 프로젝트 Pal:Luxy
 
-## 과제 개요
+## 프로젝트 개요
 
 팰럭시는 소중한 반려동물을 떠나보낼 때 겪는 슬픈 감정, 즉 펫로스 증후군을 개선하는 데 도움이 될 수 있는 서비스들을 제공하는 웹 페이지입니다. 저희 팀은 다양한 기사와 논문을 조사하여, 반려동물을 기르는 가구 수가 증가하고 있음에도 불구하고, 반려동물의 죽음으로 인한 비애가 사회적으로 충분히 인정받지 못하고 있는 실태를 파악했습니다. 이에, 반려인들의 상처를 치유하고 반려동물을 기르지 않는 사람들에게도 펫로스 증후군에 대한 관심을 불러일으킬 수 있는 서비스를 만들기 위해, '극복'과 '소통'이라는 키워드를 중심으로 프로젝트를 구상하였습니다.
 
@@ -65,9 +65,9 @@
 
 - **[임가현](https://github.com/kyeong8139) (팀원 - FE)**
 
-  > **FE**
-  > 사용자 인증 및 계정 관리 기능
-  > 사용자 프로필 페이지 및 사용자 치유모임 관리
+  > **FE**  
+  > 사용자 인증 및 계정 관리 기능  
+  > 사용자 프로필 페이지 및 사용자 치유모임 관리  
   > Openvidu 실시간 채팅 구현
 
 - **[차재훈](https://github.com/chajaeh) (팀원 - FE)**
@@ -165,7 +165,7 @@
 
 > 치유모임
 
-![healing](./docs/images/service_healingOverview.png)
+![healing](./docs/images/service_healing.png)
 
 > 치유모임 모아보기
 
@@ -173,22 +173,18 @@
 
 > 추억공간
 
-![memoryspace](./docs/images/service_memoryspace.png)
+![memoryspace](./docs/images/service_memory.png)
 
 > 추억공간 모아보기
 
 ![memoryspaceOverview](./docs/images/service_memoryOverview.png)
 
 > 펫에게 편지 보내기
-> ![memoryspaceOverview](./docs/images/service_memoryOverview.png)
+> ![memoryspaceOverview](./docs/images/service_memoryPost.png)
 
 ## API 명세서
 
 > Swaager 사용
-
-## Git 컨벤션
-
-[깃 컨벤션 문서](./Docs/convention/GIT_CONVENTION.md)
 
 ## 프로젝트를 하면서 느낀점
 
