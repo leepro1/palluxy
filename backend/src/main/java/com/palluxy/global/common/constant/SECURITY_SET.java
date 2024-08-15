@@ -106,7 +106,6 @@ public final class SECURITY_SET {
         // user
         "/api/users/nickname/*",
         "/api/users/email/*",
-        "/api/users"
     };
 
     private SECURITY_SET() {
