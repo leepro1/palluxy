@@ -72,18 +72,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getUsers() {
-        List<User> data = userRepository.findAll();
-        if (data.isEmpty()) {
-            throw new NotFoundException("user");
-        }
-
-        return data.stream()
-            .map(UserResponse::of)
-            .toList();
-    }
-
-    @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("user : " + id));
