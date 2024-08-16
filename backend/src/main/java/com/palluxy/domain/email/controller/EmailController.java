@@ -4,7 +4,7 @@ import com.palluxy.domain.email.dto.EmailRequest;
 import com.palluxy.domain.email.dto.EmailVerifyRequest;
 import com.palluxy.domain.email.service.EmailService;
 import com.palluxy.domain.user.exception.SignupFormatException;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,18 +20,33 @@ public class EmailController {
 
     @PostMapping("/code")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> sendCode(@Valid @RequestBody EmailRequest request, BindingResult bindingResult) {
+    public CommonResponse<?> sendCode(@Valid @RequestBody EmailRequest request,
+        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new SignupFormatException();
         }
 
-        emailService.sendVerificationCode(request.type(), request.email());
+        String code;
+        if (request.type().equals("signup")) {
+            code = emailService.generateVerificationCodeForSignup(request.email());
+        } else if (request.type().equals("password")) {
+            code = emailService.generateResetPasswordToken(request.email());
+        } else {
+            throw new IllegalArgumentException("Invalid request type");
+        }
+
+        emailService.sendVerificationCode(request.type(), request.email(), code, null);
         return CommonResponse.ok("이메일 전송 성공");
     }
 
     @PostMapping("/verify")
     @ResponseStatus(HttpStatus.OK)
-    public CommonResponse<?> verifyCode(@RequestBody EmailVerifyRequest request) {
+    public CommonResponse<?> verifyCode(@Valid @RequestBody EmailVerifyRequest request,
+        BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new SignupFormatException();
+        }
+
         emailService.verifyCode(request.email(), request.verifyCode());
         return CommonResponse.ok("이메일 인증 성공");
     }

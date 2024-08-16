@@ -2,6 +2,7 @@ package com.palluxy.domain.memoryRoom.petmeta.entity;
 
 import com.palluxy.domain.memoryRoom.room.entity.Room;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 

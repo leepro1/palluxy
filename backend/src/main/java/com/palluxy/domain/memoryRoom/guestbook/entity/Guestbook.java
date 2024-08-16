@@ -24,9 +24,9 @@ public class Guestbook {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User owner;  // 방명록 소유자
+    private User owner;
 
-    @OneToMany(mappedBy = "guestbook", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "guestbook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     public Guestbook() {

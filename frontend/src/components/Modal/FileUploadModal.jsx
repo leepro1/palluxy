@@ -1,58 +1,93 @@
 import PropTypes from 'prop-types';
-import Button from '@components/Button';
+import GlobalBtn from '@components/GlobalBtn';
 import { useState } from 'react';
-import { instance } from '@/utils/axios';
+import { FRAME_NAME_KOR } from '@/constants/frameIndex';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import {
+  fetchFrameImage,
+  updateFrameImage,
+} from '@/api/memorySpace/frameImageApi';
+import { useParams } from 'react-router-dom';
 
 const FileUploadModal = ({ handler, selectFrame }) => {
+  const { userId } = useParams();
   const [uploadImage, setUploadImage] = useState(null);
   const [previewPath, setPreviewPath] = useState(null);
+  const queryClient = useQueryClient();
+
+  const { mutate: fetchMutate } = useMutation({
+    mutationFn: fetchFrameImage,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['palFrameImage', userId],
+      });
+      handler(false);
+    },
+  });
+  const { mutate: updateMutate } = useMutation({
+    mutationFn: updateFrameImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['palFrameImage', userId],
+      });
+      handler(false);
+    },
+  });
 
   const handleUploadImage = (event) => {
-    console.log(event.target.files[0]);
-    if (event.target.files) {
-      setUploadImage(event.target.files[0]);
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onload = () => {
-        setPreviewPath(reader.result);
-      };
+    if (!event.target.files[0].type.includes('image')) {
+      return alert('이미지파일이 아닙니다!');
+    }
+    const extension = event.target.files[0].type.split('/');
+    if (extension[1] === 'png' || extension[1] === 'jpeg') {
+      if (event.target.files) {
+        setUploadImage(event.target.files[0]);
+        const reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () => {
+          setPreviewPath(reader.result);
+        };
+      }
+    } else {
+      return alert('png, jpg 확장자만 지원합니다.');
     }
   };
 
   const submitUploadImage = () => {
     if (!uploadImage) {
-      console.log('이미지 없음');
-
       return;
     }
     const formData = new FormData();
+    const frameData = queryClient.getQueryData(['palFrameImage', userId]);
+    const selectData = frameData.images.find(
+      (frame) => frame.index === selectFrame,
+    );
+
     formData.append('file', uploadImage);
-    formData.append('filleNmae', uploadImage.name);
-    const config = {
-      headers: {
-        'content-type': 'multipart/form-data',
-      },
-    };
-    instance.post('/asdf', formData, config);
-    handler(false);
-    // .then((res) => {
-    //   console.log(res);
-    // })
-    // .catch((error) => {
-    //   console.log('err');
-    // });
+    if (selectData) {
+      updateMutate({
+        data: formData,
+        imageId: selectData.imageId,
+        albumId: frameData.albumId,
+      });
+    } else {
+      formData.append('index', selectFrame);
+      fetchMutate({ data: formData, albumId: frameData.albumId });
+    }
   };
 
   return (
-    <div>
+    <div className="z-50">
       <div
         className="fixed left-0 top-0 h-screen w-screen overflow-hidden bg-black opacity-50"
         onClick={() => handler(false)}
       ></div>
-      <div className="absolute left-1/2 top-1/2 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white">
+      <div className="fixed left-1/2 top-1/2 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-white">
         <div className="flex h-full w-full flex-col">
           <div className="flex p-8">
-            <p className="grow font-jamsilBold">{selectFrame}이미지 업로드</p>
+            <p className="grow font-jamsilBold">
+              {FRAME_NAME_KOR[selectFrame]} 이미지 업로드
+            </p>
             <span
               className="material-symbols-outlined cursor-pointer"
               onClick={() => {
@@ -62,10 +97,16 @@ const FileUploadModal = ({ handler, selectFrame }) => {
               close
             </span>
           </div>
+          <div>
+            <p className="px-8 text-pal-error">
+              사진 업로드 후 새로고침을 해주세요!
+            </p>
+          </div>
           {/* none */}
-          <div className="grow px-8">
+          <div className="flex h-[400px] grow justify-center px-8">
             {previewPath && (
               <img
+                className="h-full"
                 src={previewPath}
                 alt="preview image"
               />
@@ -82,10 +123,11 @@ const FileUploadModal = ({ handler, selectFrame }) => {
                 className="hidden"
                 id="fileInput"
                 type="file"
+                accept="image/*"
                 onChange={handleUploadImage}
               />
             </label>
-            <Button
+            <GlobalBtn
               className="bg-pal-purple text-white"
               onClick={submitUploadImage}
               size={'md'}
@@ -100,7 +142,7 @@ const FileUploadModal = ({ handler, selectFrame }) => {
 
 FileUploadModal.propTypes = {
   handler: PropTypes.func.isRequired,
-  selectFrame: PropTypes.string,
+  selectFrame: PropTypes.number.isRequired,
 };
 
 export default FileUploadModal;

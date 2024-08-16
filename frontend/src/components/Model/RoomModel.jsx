@@ -1,57 +1,34 @@
 import { useGLTF } from '@react-three/drei';
-import { useLoader } from '@react-three/fiber';
-import { TextureLoader } from 'three';
-import { getFrameImage } from '@api/memorySpace/frameImageApi';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useLayoutEffect } from 'react';
+import { FRAME_INDEX } from '@/constants/frameIndex';
+import FrameTexture from '@components/Model/FrameTexture';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-const RoomModel = () => {
-  const { nodes, materials, scene } = useGLTF('/models/frameRoom.glb');
-  const texture = useLoader(TextureLoader, '/models/texture_1.jpg');
-  const texture1 = useLoader(
-    TextureLoader,
-    'https://palluxytest-resdstone.s3.ap-northeast-2.amazonaws.com/cat2.jpg',
-  );
-  // console.log(nodes);
-  // // console.log(scene);
-  // console.log(materials);
+const RoomModel = React.memo(({ data }) => {
+  const { materials, scene } = useGLTF('/models/palluxy.glb');
+  materials['frameMaterial.001'].map = null;
+  materials['frameMaterial.002'].map = null;
+  scene.scale.x = 1.3;
+  scene.scale.y = 1.3;
+  scene.scale.z = 1.3;
 
-  const { data: frameImages, isSuccess } = useQuery({
-    queryKey: ['nika'],
-    queryFn: getFrameImage,
-  });
-
-  if (isSuccess) {
-    // console.log(texture);
-    // console.log(frameImages[0].url);
-    materials['frameMaterial.001'].map = texture1;
-    materials['frameMaterial.002'].map = texture;
-  }
-  // console.log(frameImages);
-  // console.log(frameImages);
-
-  // materials['frameMaterial.001'].map = texture;
-  // materials['frameMaterial.002'].map = texture;
-  // materials['frameMaterial.003'].map = texture;
-  // materials['frameMaterial.004'].map = texture;
-  // materials['frameMaterial.005'].map = texture;
-  // materials['frameMaterial.006'].map = texture;
-
-  // const handleModelClick = (event) => {
-  //   console.log(event.object);
-  //   if (event.object.name === 'frame006') {
-  //     console.log('select 6');
-  //   }
-  // };
-  useLayoutEffect(() => {});
   return (
-    <primitive
-      object={scene}
-      // onClick={(e) => handleModelClick(e)}
-    />
+    <primitive object={scene}>
+      {data.map((frameData) => (
+        <FrameTexture
+          key={frameData.imageId}
+          frameData={frameData}
+          materials={materials}
+          matrialName={FRAME_INDEX[frameData.index]}
+        />
+      ))}
+    </primitive>
   );
+});
+
+RoomModel.displayName = 'RoomModel';
+
+RoomModel.propTypes = {
+  data: PropTypes.any.isRequired,
 };
-
-// useGLTF.preload('/models/Room.glb');
-
 export default RoomModel;

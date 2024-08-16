@@ -20,7 +20,7 @@ public class AlbumServiceImpl implements AlbumService {
   @Override
   public AlbumDto createAlbum(AlbumDto albumDto) {
     Room room = roomRepository.findById(albumDto.getRoomId())
-            .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Room not found"));
     if (room.getAlbum() != null) {
       throw new IllegalArgumentException("Album already exists for this room");
     }
@@ -34,26 +34,25 @@ public class AlbumServiceImpl implements AlbumService {
   @Override
   public AlbumDto getAlbumById(Long albumId) {
     Album album = albumRepository.findById(albumId)
-            .orElseThrow(() -> new IllegalArgumentException("Album not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Album not found"));
     return new AlbumDto(album);
   }
 
   @Override
   public AlbumDto getAlbumByRoomId(Long roomId) {
-    // Room room = roomRepository.findById(roomId)
-    //     .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-    // Album album = room.getAlbum();
-    // if (album == null) {
-    //     throw new IllegalArgumentException("Album not found for this room");
-    // }
-    // return new AlbumDto(album);
-    throw new UnsupportedOperationException("This operation is temporarily disabled.");
+    Room room = roomRepository.findById(roomId)
+        .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+    Album album = room.getAlbum();
+    if (album == null) {
+      throw new IllegalArgumentException("Album not found for this room");
+    }
+    return new AlbumDto(album);
   }
 
   @Override
   public AlbumDto updateAlbum(Long albumId, AlbumDto albumDto) {
     Album album = albumRepository.findById(albumId)
-            .orElseThrow(() -> new IllegalArgumentException("Album not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Album not found"));
 
     album = albumRepository.save(album);
     return new AlbumDto(album);

@@ -2,7 +2,7 @@ package com.palluxy.domain.memoryRoom.album.controller;
 
 import com.palluxy.domain.memoryRoom.album.dto.AlbumDto;
 import com.palluxy.domain.memoryRoom.album.service.AlbumService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +15,10 @@ public class AlbumController {
     @Autowired
     private AlbumService albumService;
 
-    @PostMapping
+    @PostMapping("/{roomId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse<AlbumDto> createAlbum(@Valid @RequestBody AlbumDto albumDto) {
+    public CommonResponse<AlbumDto> createAlbum(@PathVariable Long roomId, @RequestBody AlbumDto albumDto) {
+        albumDto.setRoomId(roomId);  // Set the roomId from the path variable to the DTO
         AlbumDto createdAlbum = albumService.createAlbum(albumDto);
         return CommonResponse.created("Album created successfully");
     }

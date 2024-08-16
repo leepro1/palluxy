@@ -1,9 +1,9 @@
 package com.palluxy.domain.memoryRoom.album.controller;
 
 import com.palluxy.domain.memoryRoom.album.dto.ImageDto;
-import com.palluxy.domain.memoryRoom.album.service.FileStorageService;
 import com.palluxy.domain.memoryRoom.album.service.ImageService;
-import com.palluxy.global.common.CommonResponse;
+import com.palluxy.global.common.data.CommonResponse;
+import com.palluxy.global.config.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +17,19 @@ import java.util.List;
 @RequestMapping("/api/albums/{albumId}/images")
 public class ImageController {
 
-  @Autowired
-  private ImageService imageService;
+  @Autowired private ImageService imageService;
 
-  @Autowired
-  private FileStorageService fileStorageService;
+  @Autowired private FileStorageService fileStorageService;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommonResponse<ImageDto> createImage(@PathVariable Long albumId, @RequestParam("file") MultipartFile file, @RequestParam("index") int index) {
+  public CommonResponse<ImageDto> createImage(
+      @PathVariable Long albumId,
+      @RequestParam("file") MultipartFile file,
+      @RequestParam("index") int index) {
     try {
-      String fileName = fileStorageService.storeFile(file);
+      String folderName = "albums/" + albumId; // albumId 포함하여 해당 유저 저장소 매핑
+      String fileName = imageService.storeFileInFolder(file, folderName);
       String fileUrl = fileStorageService.getFileUrl(fileName);
       ImageDto imageDto = new ImageDto();
       imageDto.setUrl(fileUrl);
@@ -59,7 +61,10 @@ public class ImageController {
 
   @PutMapping("/{imageId}")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImage(@PathVariable Long albumId, @PathVariable Long imageId, @Valid @RequestBody ImageDto imageDto) {
+  public CommonResponse<ImageDto> updateImage(
+      @PathVariable Long albumId,
+      @PathVariable Long imageId,
+      @Valid @RequestBody ImageDto imageDto) {
     try {
       ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
       return CommonResponse.ok("Image updated successfully", updatedImage);
@@ -70,7 +75,8 @@ public class ImageController {
 
   @PutMapping("/{imageId}/angle")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImageAngle(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("angle") double angle) {
+  public CommonResponse<ImageDto> updateImageAngle(
+      @PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("angle") double angle) {
     ImageDto imageDto = imageService.getImageById(imageId);
     imageDto.setAngle(angle);
     ImageDto updatedImage = imageService.updateImage(imageId, imageDto);
@@ -79,9 +85,13 @@ public class ImageController {
 
   @PutMapping("/{imageId}/url")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImageUrl(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("file") MultipartFile file) {
+  public CommonResponse<ImageDto> updateImageUrl(
+      @PathVariable Long albumId,
+      @PathVariable Long imageId,
+      @RequestParam("file") MultipartFile file) {
     try {
-      String fileName = fileStorageService.storeFile(file);
+      String folderName = "albums/" + albumId;
+      String fileName = imageService.storeFileInFolder(file, folderName);
       String fileUrl = fileStorageService.getFileUrl(fileName);
       ImageDto imageDto = imageService.getImageById(imageId);
       imageDto.setUrl(fileUrl);
@@ -94,7 +104,8 @@ public class ImageController {
 
   @PutMapping("/{imageId}/index")
   @ResponseStatus(HttpStatus.OK)
-  public CommonResponse<ImageDto> updateImageIndex(@PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
+  public CommonResponse<ImageDto> updateImageIndex(
+      @PathVariable Long albumId, @PathVariable Long imageId, @RequestParam("index") int index) {
     try {
       ImageDto imageDto = imageService.getImageById(imageId);
       imageDto.setIndex(index);

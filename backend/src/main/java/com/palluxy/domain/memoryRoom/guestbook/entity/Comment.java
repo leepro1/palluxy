@@ -25,11 +25,11 @@ public class Comment {
   private User user;
 
   private String content;
-
-  private int reportCount = 0; // 신고 개수
-
+  private int reportCount = 0;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+
+  @Column(nullable = false, columnDefinition = "boolean default false")
   private boolean isDeleted = false;
 
   @PrePersist

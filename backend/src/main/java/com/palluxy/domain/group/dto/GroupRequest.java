@@ -1,10 +1,21 @@
 package com.palluxy.domain.group.dto;
 
-import com.palluxy.domain.group.entity.Group;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
+import org.springframework.web.multipart.MultipartFile;
 
-@Data
-public class GroupRequest {
-    private Group group;
-    private Long userId;
+public record GroupRequest(
+    String title,
+    String description,
+    MultipartFile file,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    LocalDateTime startTime,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    LocalDateTime endTime,
+    int maxCapacity,
+
+    Long leaderId,
+    Long userId
+) {
+
 }

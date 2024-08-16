@@ -32,11 +32,18 @@ public class LikeServiceImpl implements LikeService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+    if (likeRepository.findByRoom_RoomIdAndUser_Id(roomId, userId).isPresent()) {
+      throw new IllegalArgumentException("User has already liked this room");
+    }
+
     Like like = new Like();
     like.setRoom(room);
     like.setUser(user);
+    room.setLikeCount(room.getLikeCount() + 1);
 
     like = likeRepository.save(like);
+    roomRepository.save(room);
+
     return new LikeDto(like);
   }
 
@@ -44,7 +51,11 @@ public class LikeServiceImpl implements LikeService {
   public void removeLike(Long roomId, Long userId) {
     Like like = likeRepository.findByRoom_RoomIdAndUser_Id(roomId, userId)
         .orElseThrow(() -> new IllegalArgumentException("Like not found"));
+    Room room = like.getRoom();
+    room.setLikeCount(room.getLikeCount() - 1);
+
     likeRepository.delete(like);
+    roomRepository.save(room);
   }
 
   @Override

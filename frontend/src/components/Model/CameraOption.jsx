@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { OrbitControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
@@ -7,7 +8,6 @@ const CameraOption = ({ target, position }) => {
   const cameraRef = useRef();
   const { camera } = useThree();
 
-  console.log(cameraRef);
   function cameraAnimate() {
     if (cameraRef.current) {
       gsap.to(camera.position, {
@@ -21,8 +21,8 @@ const CameraOption = ({ target, position }) => {
         duration: 1,
         repeat: 0,
         x: target.x,
-        y: target.y,
-        z: target.z,
+        y: target.y + 0.2,
+        z: target.z + 0.08,
         ease: 'power3.inOut',
       });
     }
@@ -35,10 +35,15 @@ const CameraOption = ({ target, position }) => {
   return (
     <OrbitControls
       ref={cameraRef}
-      minDistance={10}
-      maxDistance={80}
+      minDistance={0}
+      maxDistance={13}
     />
   );
+};
+
+CameraOption.propTypes = {
+  target: PropTypes.object.isRequired,
+  position: PropTypes.object.isRequired,
 };
 
 export default CameraOption;

@@ -3,11 +3,8 @@ package com.palluxy.domain.user.service;
 import com.palluxy.domain.user.dto.request.UserResetPasswordRequest;
 import com.palluxy.domain.user.dto.request.UserSignupRequest;
 import com.palluxy.domain.user.dto.response.UserResponse;
-import com.palluxy.domain.user.exception.BadResetPasswordCodeUserException;
-import com.palluxy.domain.user.exception.DuplicateUserException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
@@ -18,10 +15,6 @@ public interface UserService {
     void duplicateNickname(String nickname);
 
     void resetPassword(UserResetPasswordRequest request);
-
-    void verifyResetPasswordCode(String code);
-
-    List<UserResponse> getUsers();
 
     UserResponse getUserById(Long id);
 

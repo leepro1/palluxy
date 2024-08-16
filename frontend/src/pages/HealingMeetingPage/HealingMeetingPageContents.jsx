@@ -1,35 +1,86 @@
-import ChatBox from '@/pages/HealingMeetingPage/ChatBox';
-import { useEffect, useCallback, useState, useRef } from 'react';
-import axios from 'axios';
-import '@/pages/HealingMeetingPage/HealingMeetingPageContents.css';
-import UserVideoComponent from './UserVideoComponent';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import ContentsLayout from '@/layout/ContentsLayout';
+import UserVideoComponent from '@pages/HealingMeetingPage/UserVideoComponent';
+import ChatMessageBox from '@/components/Chat/ChatMessageBox';
+import LeaderEntranceModal from '@pages/HealingMeetingPage/LeaderEntranceModal';
+import defaultImage from '@assets/images/healingMeetingOverview/default.png';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { instance } from '@/utils/axios';
+import EntranceModal from '@pages/HealingMeetingPage/EntranceModal';
+import { NavLink } from 'react-router-dom';
 
-const APPLICATION_SERVER_URL = 'http://localhost:5000/';
+const formatDateRange = (startDate, endDate) => {
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const start = new Date(startDate).toLocaleString('ko-KR', options);
+  const end = new Date(endDate).toLocaleString('ko-KR', options);
+
+  return `${start.replace(',', '')}~${end.split(' ')[3]}`;
+};
+
+const fetchGroupData = async (userId) => {
+  const { data } = await instance.get(`api/group/my/available/${userId}`);
+  return data.result.groups;
+};
+const fetchUserByAccess = async () => {
+  const access = sessionStorage.getItem('access');
+  if (!access) return null;
+  const res = await instance.get('/api/users/user-info');
+
+  return res.data.result;
+};
 
 const HealingMeetingPageContents = () => {
-  const [mySessionId, setMySessionId] = useState('SessionA');
-  const [myUserName, setMyUserName] = useState(
-    'Participant' + Math.floor(Math.random() * 100),
-  );
+  const queryClient = useQueryClient();
+  const userInfo = queryClient.getQueryData(['userInfo']);
+  const { data } = useQuery({
+    queryKey: ['groupData', userInfo?.id],
+    queryFn: async () => {
+      const data = await queryClient.ensureQueryData({
+        queryKey: ['userInfo'],
+        queryFn: fetchUserByAccess,
+      });
+      return fetchGroupData(data.id);
+    },
+  });
+
+  const [mySessionId, setMySessionId] = useState(null);
+  const myUserName = userInfo?.nickname;
   const [session, setSession] = useState(undefined);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState(undefined);
-  const OV = useRef(null);
   const [isMike, setIsMike] = useState(true);
   const [isCamera, setIsCamera] = useState(true);
+  const role = 'PUBLISHER';
+  const [approveKey, setApproveKey] = useState('');
+  // const [data, setData] = useState(null);
+  const OV = useRef(null);
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
+  const [myMeetingName, setMyMeetingName] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const scrollRef = useRef(null);
+
+  const [entranceModal, setEntranceModal] = useState(false);
+  const [entranceLeaderModal, setEntranceLeaderModal] = useState(false);
+
   const handleToggle = (kind) => {
     if (publisher) {
       switch (kind) {
         case 'camera':
-          // setIsCamera(!isCamera);
           setIsCamera((prevState) => {
             const newState = !prevState;
             publisher.publishVideo(newState);
-            console.log(newState);
             return newState;
           });
           break;
@@ -40,35 +91,46 @@ const HealingMeetingPageContents = () => {
             return newState;
           });
           break;
-
         default:
           break;
       }
     }
   };
+
   useEffect(() => {
-    const handleBeforeUnload = (event) => {
+    const handleBeforeUnload = () => {
       leaveSession();
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
+      leaveSession();
+      // handleBeforeUnload();
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 
-  const handleChangeSessionId = (e) => {
-    setMySessionId(e.target.value);
+  const confirmEntrance = () => {
+    setEntranceModal(true);
   };
-
-  const handleChangeUserName = (e) => {
-    setMyUserName(e.target.value);
+  const confirmLeaderEntrance = () => {
+    setEntranceLeaderModal(true);
   };
-
-  const handleMainVideoStream = (stream) => {
-    if (mainStreamManager !== stream) {
-      setMainStreamManager(stream);
-    }
+  const handleEntrance = () => {
+    setEntranceModal(false);
+    joinSession(1);
+  };
+  const cancelEntrance = () => {
+    setEntranceModal(false);
+    setMySessionId(null);
+  };
+  const handleLeaderEntrance = () => {
+    setEntranceLeaderModal(false);
+    joinSession(2);
+  };
+  const cancelLeaderEntrance = () => {
+    setEntranceLeaderModal(false);
+    setMySessionId(null);
   };
 
   const deleteSubscriber = (streamManager) => {
@@ -77,12 +139,17 @@ const HealingMeetingPageContents = () => {
     );
   };
 
-  const joinSession = async () => {
+  const changeSession = (sessionId) => {
+    setMySessionId(sessionId);
+  };
+
+  const joinSession = async (code) => {
+    if (mySessionId === null) {
+      return;
+    }
     OV.current = new OpenVidu();
     const newSession = OV.current.initSession();
-
     setSession(newSession);
-
     newSession.on('streamCreated', (event) => {
       const subscriber = newSession.subscribe(event.stream, undefined);
       setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
@@ -95,9 +162,19 @@ const HealingMeetingPageContents = () => {
     newSession.on('exception', (exception) => {
       console.warn(exception);
     });
+    newSession.on('publisherStartSpeaking', (event) => {
+      setActiveSpeaker(event.connection.connectionId);
+    });
+
+    newSession.on('signal:my-chat', (event) => {
+      if (event.from.connectionId !== newSession.connection.connectionId) {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    });
 
     try {
-      const token = await getToken();
+      const token = await getToken(role, mySessionId, code);
       await newSession.connect(token, { clientData: myUserName });
       const newPublisher = await OV.current.initPublisherAsync(undefined, {
         audioSource: undefined,
@@ -136,6 +213,59 @@ const HealingMeetingPageContents = () => {
     }
   };
 
+  const getToken = async (role, id, code) => {
+    if (code === 2) {
+      await createSession(id);
+    }
+
+    return await createToken(mySessionId, role, id);
+  };
+
+  const createSession = async (sessionId) => {
+    try {
+      const response = await instance.post(
+        'api/sessions',
+        {
+          params: {
+            customSessionId: String(sessionId),
+          },
+          // customSessionId: sessionId,
+          userId: userInfo.id,
+          groupId: sessionId,
+          approveKey: approveKey,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      setSession(undefined);
+      alert('에러 발생! 입장 키를 다시 확인해 주세요');
+    }
+  };
+
+  const createToken = async (sessionId, role, id) => {
+    try {
+      const response = await instance.post(
+        `api/sessions/${sessionId}/connections`,
+        { role, userId: userInfo.id, groupId: id },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      return response.data.result;
+    } catch (error) {
+      setSession(undefined);
+      alert('아직 방이 만들어지지 않았습니다. 잠시만 기다려주세요!');
+      console.error(error);
+      throw error; // optional: rethrow the error if you want it to propagate
+    }
+  };
+
+  const handleChangeApproveKey = (e) => {
+    setApproveKey(e.target.value);
+  };
   const leaveSession = useCallback(() => {
     if (session) {
       session.disconnect();
@@ -144,12 +274,12 @@ const HealingMeetingPageContents = () => {
     OV.current = null;
     setSession(undefined);
     setSubscribers([]);
-    setMySessionId('SessionA');
-    setMyUserName('Participant' + Math.floor(Math.random() * 100));
+    setMySessionId(null);
     setMainStreamManager(undefined);
     setPublisher(undefined);
     setIsMike(true);
     setIsCamera(true);
+    setMessages([]);
   }, [session]);
 
   const switchCamera = useCallback(async () => {
@@ -185,119 +315,160 @@ const HealingMeetingPageContents = () => {
     }
   }, [session, mainStreamManager, currentVideoDevice]);
 
-  const getToken = async () => {
-    const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId);
+  const sendMessage = () => {
+    if (text.trim()) {
+      const newMessage = {
+        sender: myUserName,
+        content: text,
+        type: 'CHAT',
+        timestamp: new Date().toISOString(),
+      };
+      session
+        .signal({
+          data: JSON.stringify(newMessage),
+          to: [],
+          type: 'my-chat',
+        })
+        .then(() => {
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setText('');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   };
 
-  const createSession = async (sessionId) => {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + 'api/sessions',
-      { customSessionId: sessionId },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    return response.data; // The sessionId
-  };
+  useEffect(() => {
+    if (scrollRef.current) {
+      const chatContainer = scrollRef.current.parentElement;
+      const isAtBottom =
+        chatContainer.scrollHeight - chatContainer.scrollTop <=
+        chatContainer.clientHeight + 1;
+      if (isAtBottom) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    }
+  }, [messages]);
 
-  const createToken = async (sessionId) => {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections',
-      {},
-      {
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-    return response.data; // The token
-  };
   return (
     <div className="container mx-auto">
-      {/* 사용자의 세션이 없을때(세션정보를 입력하기 전) */}
       {session === undefined ? (
-        <div>
-          <div
-            id="join-dialog"
-            className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md"
-          >
-            <h1 className="mb-4 text-2xl font-bold">사용자와 세션 정보 입력</h1>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                joinSession(e);
-              }}
-            >
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  사용자id:
-                </label>
-                <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  type="text"
-                  id="userName"
-                  value={myUserName}
-                  onChange={handleChangeUserName}
-                  required
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-700">
-                  세션id:
-                </label>
-                <input
-                  className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                  type="text"
-                  id="sessionId"
-                  value={mySessionId}
-                  onChange={handleChangeSessionId}
-                  required
-                />
-              </div>
-              <div className="flex items-center justify-center">
-                <input
-                  className="focus:shadow-outline rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none"
-                  type="submit"
-                  value="JOIN"
-                />
-              </div>
-            </form>
+        <ContentsLayout>
+          {data?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-y-5 text-pal-lightwhite">
+              <p className="text-center text-sm font-semibold md:text-xl">
+                현재 입장 가능한 치유모임이 없습니다. 새로운 치유모임을
+                만들거나, 다른 치유모임에 참가 신청을 하시겠어요?
+              </p>
+              <NavLink to={'/meetingoverview/1'}>
+                <button className="w-max rounded-lg bg-pal-purple px-4 py-2 text-sm font-medium text-white hover:bg-purple-950 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  치유모임 모아보기
+                </button>
+              </NavLink>
+            </div>
+          ) : (
+            <div></div>
+          )}
+          <div className="m-5 grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {data &&
+              data.map((item, index) => (
+                <form
+                  className="m-3 flex w-3/4 flex-col items-center rounded-md border border-gray-700 bg-pal-lightwhite text-pal-overlay shadow transition hover:-translate-x-1 hover:-translate-y-2 hover:shadow-lg hover:shadow-gray-900"
+                  key={index}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    changeSession(item.id);
+                    setMyMeetingName(item.title);
+                    if (item.leaderId === userInfo.id) {
+                      confirmLeaderEntrance();
+                    } else {
+                      confirmEntrance();
+                    }
+                  }}
+                >
+                  <div className="relative w-full rounded-md">
+                    {item.filePath === null ? (
+                      <div className="mb-1 flex aspect-square w-full justify-center">
+                        <img
+                          src={defaultImage}
+                          alt="image"
+                          className="rounded-md"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mb-1 flex aspect-square w-full justify-center">
+                        <img
+                          src={item.filePath}
+                          alt="image"
+                          className="rounded-md"
+                        />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 hover:opacity-100">
+                      <button
+                        type="submit"
+                        className="rounded border-gray-700 bg-pal-purple px-4 py-2 text-pal-lightwhite hover:bg-purple-950"
+                      >
+                        모임 입장
+                      </button>
+                    </div>
+                  </div>
+                  <div className="w-full p-4 text-left">
+                    <p className="mb-2 text-2xl font-semibold text-gray-900">
+                      {item.title}
+                    </p>
+                    <div className="flex flex-row gap-x-2 text-pal-purple">
+                      <span className="material-symbols-outlined">
+                        calendar_month
+                      </span>
+                      <p>{formatDateRange(item.startTime, item.endTime)}</p>
+                    </div>
+                    <div className="my-1 flex flex-row gap-x-2 text-pal-purple">
+                      <span className="material-symbols-outlined">groups</span>
+                      <p>
+                        {item.maxCapacity - item.remainCapacity}/
+                        {item.maxCapacity}
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              ))}
           </div>
-        </div>
+        </ContentsLayout>
       ) : null}
-      {/* 사용자의 세션이 있을때(join한 후) */}
+
       {session !== undefined ? (
         <ContentsLayout>
           <div className="flex flex-row">
             <div className="relative flex h-screen w-10/12 flex-col">
               {/* 헤더 */}
               <div className="flex h-16 w-full items-center justify-center bg-gray-900">
-                <p className="text-2xl text-white">
-                  치유모임 이름 {mySessionId}
-                </p>
+                <p className="text-2xl text-white">{myMeetingName}</p>
               </div>
               {/* 비디오 */}
               <div className="flex grow bg-black">
                 <div className="flex grow flex-wrap">
                   {publisher !== undefined ? (
-                    <div
-                      className="relative w-1/2 border-2 border-solid border-gray-900 p-6"
-                      onClick={() => handleMainVideoStream(publisher)}
-                    >
+                    <div className="relative w-1/2 border-2 border-solid border-gray-900 p-8">
                       <UserVideoComponent streamManager={publisher} />
                     </div>
                   ) : null}
-                  {subscribers.map((sub, i) => (
+                  {subscribers.map((sub) => (
                     <div
                       key={sub.id}
-                      className="w-1/2 border-2 border-solid border-gray-900 p-6"
-                      onClick={() => handleMainVideoStream(sub)}
+                      className="group flex w-1/2 flex-col items-center border-2 border-solid border-gray-900 p-8"
                     >
                       <span>{sub.id}</span>
-                      <UserVideoComponent streamManager={sub} />
+                      <UserVideoComponent
+                        streamManager={sub}
+                        isActive={
+                          sub.stream.connection.connectionId === activeSpeaker
+                        }
+                      />
                     </div>
                   ))}
                 </div>
-                {/* <ChatBox className="w-2/12" /> */}
               </div>
               {/* 푸터 */}
               <div className="flex h-20 w-full items-center justify-between bg-gray-800 px-4">
@@ -305,7 +476,7 @@ const HealingMeetingPageContents = () => {
                   className="focus:shadow-outline rounded bg-gray-800 px-4 py-2 font-bold text-gray-800"
                   type="button"
                   id="buttonLeaveSession"
-                  value="가나 다라마"
+                  value="다라마"
                 />
                 <div className="flex flex-1 items-center justify-center gap-x-10">
                   {isCamera === true ? (
@@ -375,19 +546,46 @@ const HealingMeetingPageContents = () => {
                     <span className="text-sm text-white">카메라 바꾸기</span>
                   </div>
                 </div>
-                <input
-                  className="focus:shadow-outline rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
-                  type="button"
-                  id="buttonLeaveSession"
-                  onClick={leaveSession}
-                  value="세션 나가기"
-                />
+                <div className="flex flex-col items-center">
+                  <span
+                    onClick={leaveSession}
+                    className="material-symbols-outlined cursor-pointer text-5xl text-red-500"
+                  >
+                    door_open
+                  </span>
+                  <span className="text-sm text-red-500">세션 나가기</span>
+                </div>
               </div>
             </div>
-            <ChatBox className="h-auto w-2/12" />
+            <div className="flex h-screen w-3/12 overflow-y-auto">
+              <ChatMessageBox
+                messages={messages}
+                // scrollRef={scrollRef}
+                myUserName={myUserName}
+                onSend={sendMessage}
+                text={text}
+                setText={setText}
+              />
+            </div>
           </div>
         </ContentsLayout>
       ) : null}
+
+      {/* 확인 모달 */}
+
+      <EntranceModal
+        show={entranceModal}
+        message="정말 입장하시겠습니까?"
+        onConfirm={handleEntrance}
+        onCancel={cancelEntrance}
+      />
+      <LeaderEntranceModal
+        show={entranceLeaderModal}
+        message="정말 입장하시겠습니까?"
+        onConfirm={handleLeaderEntrance}
+        onCancel={cancelLeaderEntrance}
+        handleChangeApproveKey={handleChangeApproveKey}
+      />
     </div>
   );
 };
